@@ -28,6 +28,15 @@ There is **no test runner installed yet**. Do not invent `pnpm test` — add Vit
 
 `tech-stack.md` notes the `vite-react` starter **fails the `convention_based` agent-friendliness gate** — that's why this file exists. When you add subsystems (routing, data-fetching, Supabase client, feature folders), prefer one obvious pattern and document the choice here rather than improvising per-file.
 
+## Deployment
+
+Production: https://polygo.pages.dev (auto-deploy on push to `main` via `.github/workflows/deploy.yml`). Full procedure, env-var locations, rollback steps, and known failure modes live in **`docs/runbooks/deploy.md`** — read it before touching anything CI/CD-related, before rotating Supabase or Cloudflare credentials, or when a CI run goes red.
+
+Two non-negotiables:
+
+- **Service-role Supabase keys must never carry a `VITE_` prefix.** Vite inlines `VITE_*` into the client bundle; a leaked service-role key bypasses RLS. The CI bundle leak check (`grep -rE 'service_role|sb_secret_' dist/`) backstops this — do not disable it.
+- **Wrangler v4 + Node 22+ in CI.** `cloudflare/wrangler-action@v3` defaults to its bundled Wrangler v3; we pin `wranglerVersion: "4.93.1"` explicitly and Node 22 (Wrangler 4 requires it). Don't downgrade either without re-validating the deploy.
+
 ## Load-bearing product rules (these are bugs if violated)
 
 These come from the PRD's `Business Logic` and `Guardrails` and should shape any code touching directory, chat, profile, or auth surfaces:
