@@ -1,0 +1,15 @@
+dist
+node_modules
+pnpm-lock.yaml
+
+# Out of scope for formatting — only `src/` is formatted.
+.agents
+.claude
+.github
+context
+docs
+CLAUDE.md
+README.md
+*.md
+*.yml
+*.yaml
