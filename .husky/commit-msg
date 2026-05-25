@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+# Enforce Conventional Commits: <type>(<optional-scope>): <subject>
+#   type    ∈ feat|fix|chore|docs|refactor|test|ci|build|perf|style|revert
+#   scope   optional, lowercase
+#   subject lowercase, imperative, no trailing period, ≤ 72 chars
+# Merge/revert/fixup commits are exempt.
+
+msg_file="$1"
+first_line=$(head -n1 "$msg_file")
+
+case "$first_line" in
+  "Merge "*|"Revert "*|"fixup! "*|"squash! "*) exit 0 ;;
+esac
+
+pattern='^(feat|fix|chore|docs|refactor|test|ci|build|perf|style|revert)(\([a-z0-9-]+\))?: [a-z].{1,70}[^.]$'
+
+if ! printf '%s' "$first_line" | grep -Eq "$pattern"; then
+  echo "✖ Commit message does not follow Conventional Commits."
+  echo ""
+  echo "  Got:      $first_line"
+  echo "  Expected: <type>(<optional-scope>): <subject>"
+  echo ""
+  echo "  type:    feat | fix | chore | docs | refactor | test | ci | build | perf | style | revert"
+  echo "  scope:   optional, lowercase (e.g. auth, chat, directory)"
+  echo "  subject: lowercase, imperative, no trailing period, ≤ 72 chars"
+  echo ""
+  echo "  Examples:"
+  echo "    feat(directory): gate search on activated state"
+  echo "    fix(chat): preserve history on deactivation"
+  echo "    chore: bump wrangler to 4.93.1"
+  exit 1
+fi

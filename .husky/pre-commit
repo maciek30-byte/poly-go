@@ -1,1 +1,4 @@
+# Lint + format staged files. Commit-message format is enforced separately
+# in .husky/commit-msg (Conventional Commits). Branch naming convention:
+# <type>/<kebab-slug> (e.g. feat/directory-search) — documented, not enforced.
 pnpm exec lint-staged
