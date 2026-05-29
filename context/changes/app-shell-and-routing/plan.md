@@ -418,32 +418,32 @@ Wire `createBrowserRouter` with the full route topology, build the authenticated
 
 #### Automated
 
-- [x] 1.1 `pnpm install` completes cleanly
-- [x] 1.2 TypeScript compiles
-- [x] 1.3 Lint passes
-- [x] 1.4 Build succeeds
-- [x] 1.5 Bundle leak check finds nothing
-- [x] 1.6 Folder structure exists
+- [x] 1.1 `pnpm install` completes cleanly — 92088dc
+- [x] 1.2 TypeScript compiles — 92088dc
+- [x] 1.3 Lint passes — 92088dc
+- [x] 1.4 Build succeeds — 92088dc
+- [x] 1.5 Bundle leak check finds nothing — 92088dc
+- [x] 1.6 Folder structure exists — 92088dc
 
 #### Manual
 
-- [x] 1.7 `pnpm dev` boots without error
-- [x] 1.8 Missing `VITE_SUPABASE_URL` fails fast with named error
+- [x] 1.7 `pnpm dev` boots without error — 92088dc
+- [x] 1.8 Missing `VITE_SUPABASE_URL` fails fast with named error — 92088dc
 
 ### Phase 2: AuthContext + ProtectedRoute
 
 #### Automated
 
-- [ ] 2.1 TypeScript compiles
-- [ ] 2.2 Lint passes
-- [ ] 2.3 Build succeeds
-- [ ] 2.4 Dev-fake-profile prod guard is present in source
+- [x] 2.1 TypeScript compiles
+- [x] 2.2 Lint passes
+- [x] 2.3 Build succeeds
+- [x] 2.4 Dev-fake-profile prod guard is present in source
 
 #### Manual
 
-- [ ] 2.5 App behaves as unauthenticated SPA with `VITE_DEV_FAKE_PROFILE` unset
-- [ ] 2.6 `VITE_DEV_FAKE_PROFILE=owner:locked` triggers gate redirect
-- [ ] 2.7 `useAuth()` shape returns `{ session, user, status, signOut }` with correct transition
+- [x] 2.5 App behaves as unauthenticated SPA with `VITE_DEV_FAKE_PROFILE` unset
+- [x] 2.6 `VITE_DEV_FAKE_PROFILE=owner:locked` triggers gate redirect
+- [x] 2.7 `useAuth()` shape returns `{ session, user, status, signOut }` with correct transition
 
 ### Phase 3: Routes + Layout Shell + Terminal Screens
 
