@@ -434,33 +434,33 @@ Wire `createBrowserRouter` with the full route topology, build the authenticated
 
 #### Automated
 
-- [x] 2.1 TypeScript compiles
-- [x] 2.2 Lint passes
-- [x] 2.3 Build succeeds
-- [x] 2.4 Dev-fake-profile prod guard is present in source
+- [x] 2.1 TypeScript compiles — 5de55b7
+- [x] 2.2 Lint passes — 5de55b7
+- [x] 2.3 Build succeeds — 5de55b7
+- [x] 2.4 Dev-fake-profile prod guard is present in source — 5de55b7
 
 #### Manual
 
-- [x] 2.5 App behaves as unauthenticated SPA with `VITE_DEV_FAKE_PROFILE` unset
-- [x] 2.6 `VITE_DEV_FAKE_PROFILE=owner:locked` triggers gate redirect
-- [x] 2.7 `useAuth()` shape returns `{ session, user, status, signOut }` with correct transition
+- [x] 2.5 App behaves as unauthenticated SPA with `VITE_DEV_FAKE_PROFILE` unset — 5de55b7
+- [x] 2.6 `VITE_DEV_FAKE_PROFILE=owner:locked` triggers gate redirect — 5de55b7
+- [x] 2.7 `useAuth()` shape returns `{ session, user, status, signOut }` with correct transition — 5de55b7
 
 ### Phase 3: Routes + Layout Shell + Terminal Screens
 
 #### Automated
 
-- [ ] 3.1 TypeScript compiles
-- [ ] 3.2 Lint passes
-- [ ] 3.3 Build succeeds
-- [ ] 3.4 Bundle leak check
-- [ ] 3.5 Robots meta present in built HTML
-- [ ] 3.6 Cloudflare SPA fallback present in build output
-- [ ] 3.7 Vite demo assets are gone
+- [x] 3.1 TypeScript compiles
+- [x] 3.2 Lint passes
+- [x] 3.3 Build succeeds
+- [x] 3.4 Bundle leak check
+- [x] 3.5 Robots meta present in built HTML
+- [x] 3.6 Cloudflare SPA fallback present in build output
+- [x] 3.7 Vite demo assets are gone
 
 #### Manual
 
-- [ ] 3.8 Deep-link redirect preserves intended URL in router state
-- [ ] 3.9 Sign-out flow clears session and lands on `/login`
-- [ ] 3.10 Locked / pending screens render correct Polish copy with no app chrome
-- [ ] 3.11 Polish 404 renders for unknown paths
-- [ ] 3.12 3-click NFR audit: four capabilities reachable in one click from `/app/dashboard`
+- [x] 3.8 Deep-link redirect preserves intended URL in router state
+- [x] 3.9 Sign-out flow clears session and lands on `/login`
+- [x] 3.10 Locked / pending screens render correct Polish copy with no app chrome
+- [x] 3.11 Polish 404 renders for unknown paths
+- [x] 3.12 3-click NFR audit: four capabilities reachable in one click from `/app/dashboard`

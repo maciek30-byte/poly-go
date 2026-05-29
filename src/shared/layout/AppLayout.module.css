@@ -1,0 +1,130 @@
+.root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  color: #111;
+  background: #fafafa;
+}
+
+.appBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background: #fff;
+  border-bottom: 1px solid #e6e6e6;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: #111;
+  letter-spacing: -0.01em;
+}
+
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.userEmail {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.signOutButton {
+  padding: 0.4rem 0.85rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar {
+  width: 14rem;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid #e6e6e6;
+  padding: 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.navLink {
+  display: block;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.navLink:hover {
+  background: #f0f0f0;
+}
+
+.navLink[aria-current='page'] {
+  background: #111;
+  color: #fff;
+}
+
+.content {
+  flex: 1;
+  padding: 1.5rem;
+  min-width: 0;
+}
+
+.bottomBar {
+  display: none;
+}
+
+/* Mobile: sidebar → bottom tab bar */
+@media (max-width: 767px) {
+  .sidebar {
+    display: none;
+  }
+  .body {
+    padding-bottom: 4rem;
+  }
+  .bottomBar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #e6e6e6;
+    z-index: 10;
+  }
+  .bottomBar .navLink {
+    text-align: center;
+    border-radius: 0;
+    padding: 0.85rem 0.25rem;
+    font-size: 0.85rem;
+  }
+  .bottomBar .navLink[aria-current='page'] {
+    background: transparent;
+    color: #111;
+    border-top: 2px solid #111;
+    padding-top: calc(0.85rem - 2px);
+  }
+}
