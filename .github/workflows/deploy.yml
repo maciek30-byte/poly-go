@@ -36,10 +36,10 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Bundle leak check (service_role key must not ship to client)
+      - name: Bundle leak check (service_role key + dev-only env vars must not ship to client)
         run: |
-          if grep -rE 'service_role|sb_secret_' dist/ 2>/dev/null; then
-            echo "::error::Service-role key or secret pattern detected in client bundle. Refusing to deploy."
+          if grep -rE 'service_role|sb_secret_|VITE_DEV_FAKE_PROFILE' dist/ 2>/dev/null; then
+            echo "::error::Service-role key, secret pattern, or VITE_DEV_FAKE_PROFILE detected in client bundle. Refusing to deploy."
             exit 1
           fi
           echo "Bundle leak check passed."

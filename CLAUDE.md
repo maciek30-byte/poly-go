@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Invite-only B2B directory + 1:1 messenger for the Polish plastics industry. Solo, after-hours build. Browser-only (no native mobile). Product surfaces are **Polish-language only** for end users; admin surfaces may be English. See `@docs/raw-idea.md`, `@context/foundation/prd.md`, `@context/foundation/tech-stack.md` for the source-of-truth product spec.
 
-The codebase is currently the **stock `vite-react` scaffold** (`src/App.tsx` is the Vite/React landing page). No domain code, Supabase wiring, routing, or auth has been written yet.
+The application shell, router, Supabase client, AuthContext, i18n, and Polish layout were landed by the F-01 slice (`context/changes/app-shell-and-routing/`). See "Conventions (locked by F-01)" below for the patterns every later slice must inherit.
 
 ## Commands
 
@@ -34,7 +34,7 @@ Production: https://polygo.pages.dev (auto-deploy on push to `main` via `.github
 
 Two non-negotiables:
 
-- **Service-role Supabase keys must never carry a `VITE_` prefix.** Vite inlines `VITE_*` into the client bundle; a leaked service-role key bypasses RLS. The CI bundle leak check (`grep -rE 'service_role|sb_secret_' dist/`) backstops this — do not disable it.
+- **Service-role Supabase keys must never carry a `VITE_` prefix.** Vite inlines `VITE_*` into the client bundle; a leaked service-role key bypasses RLS. The CI bundle leak check (`grep -rE 'service_role|sb_secret_|VITE_DEV_FAKE_PROFILE' dist/`) backstops this — do not disable it. The `VITE_DEV_FAKE_PROFILE` term is part of the same grep because that variable is dev-only (see Conventions below).
 - **Wrangler v4 + Node 22+ in CI.** `cloudflare/wrangler-action@v3` defaults to its bundled Wrangler v3; we pin `wranglerVersion: "4.93.1"` explicitly and Node 22 (Wrangler 4 requires it). Don't downgrade either without re-validating the deploy.
 
 ## Load-bearing product rules (these are bugs if violated)
@@ -49,6 +49,18 @@ These come from the PRD's `Business Logic` and `Guardrails` and should shape any
 6. **No public/SEO surfaces.** Company profile pages must not be visible to unauthenticated visitors and must not be indexable by external search engines. (PRD: `## Non-Goals`.)
 7. **Notifications: in-app badge + browser push only.** Email notifications are deliberately out of MVP scope (FR-019). Do not add email-on-new-message flows without an explicit PRD update.
 8. **Attachments: PDF only, ≤ 10 MB.** Images, voice notes, and other file types are out of MVP scope. Reject > 10 MB with a clear user-facing error. (PRD: `FR-016`, `## Non-Goals`.)
+
+## Conventions (locked by F-01)
+
+These choices were made by the `app-shell-and-routing` slice and every subsequent slice inherits them. Don't drift; if a slice has a strong reason to break one, update this section in the same PR.
+
+- **Router: `react-router-dom@^7` data routers.** Use `createBrowserRouter` + `<RouterProvider>` (`src/App.tsx`, `src/shared/routing/router.tsx`). Do not regress to v6's `<BrowserRouter>` — the v7 data-router APIs are the locked pattern. **All imports must come from the top-level `react-router-dom` barrel.** Deep imports like `react-router/dom` or per-module subpaths are strictly forbidden — they trip `eslint-plugin-import` module resolution in several common setups and produce inconsistent lint failures across slices.
+- **Folder layout: feature folders + shared/.** Co-locate everything a single feature owns under `src/features/<feature>/` (e.g., `src/features/account-status/`). Cross-feature primitives live in `src/shared/{ui,lib,layout,routing,i18n}/`. **Promotion rule:** a module belongs in `src/features/<feature>/` while exactly one feature consumes it. The moment a second feature imports it, move it to the appropriate `src/shared/*` subdir. This prevents both god-`shared/` erosion and cross-feature import spaghetti.
+- **Supabase client: `src/shared/lib/supabaseClient.ts`.** Single module, default-exports the client built with **anon key only** (`VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`). Service-role keys are never imported anywhere in `src/`. Env-var validation throws at module-load time so a missing var fails on dev-boot, not on first auth call.
+- **i18n: i18next, business app only, `pl` default.** Init in `src/shared/i18n/index.ts` with an inline resource bundle in `src/shared/i18n/pl.ts`; types are augmented in `src/shared/i18n/i18next.d.ts` so `t('…')` autocompletes and typos are TS errors. New slices add their keys to `pl.ts`. The `/admin/*` tree **intentionally does not consume i18n** — admin strings are inline English. If a second locale is added post-MVP, only the business app is in scope.
+- **Dev-fake-profile: `VITE_DEV_FAKE_PROFILE`.** Dev-only seam at `src/shared/routing/useFakeProfile.ts` that previews locked/pending screens without a real profile fetch. Three-layer defense: (1) this rule documents that the variable **must never be set in the Cloudflare Pages environment**; (2) the CI leak grep (above) fails the build if the variable name appears in `dist/`; (3) the file's top-level `import.meta.env.PROD` throw crashes the module at load time if it ever ships to prod. The whole seam is deleted by F-02 when the real DB-backed profile fetch lands.
+- **Deep-link preservation on auth redirects.** `ProtectedRoute` redirects unauthenticated users with `navigate('/login', { state: { from: location.pathname + location.search } })`. S-01's login flow will read `state.from` to send users back to their intended URL — preserve this exact field name.
+- **Status type narrowing below `SessionGate`.** `useAuth()` returns `status: 'loading' | 'unauthenticated' | 'authenticated'`. Inside `SessionGate` the `loading` branch is handled, and children are wrapped in `ResolvedAuthContext` whose hook `useResolvedAuth()` exposes a status narrowed to `Exclude<AuthStatus, 'loading'>`. **Downstream of `SessionGate` (`ProtectedRoute`, `RootRedirect`, etc.) consume `useResolvedAuth()`, not `useAuth()`** — that way TypeScript rejects any code path that tries to handle `loading` below the gate.
 
 ## Three roles
 
@@ -67,49 +79,54 @@ These come from the PRD's `Business Logic` and `Guardrails` and should shape any
 
 `context/foundation/` holds the canonical product artifacts (`prd.md`, `tech-stack.md`, `shape-notes.md`). When you need to know "what does the product do / why", read those before guessing. `context/changes/` holds in-flight change packets; `context/archive/` is **immutable** — never write into it.
 
-The `
-
 <!-- BEGIN @przeprogramowani/10x-cli -->
 
-## 10xDevs AI Toolkit - Module 2, Lesson 1
+## 10xDevs AI Toolkit - Module 2, Lesson 2
 
-Move from sprint-zero setup to project orchestration with the **roadmap chain**:
+Turn one roadmap item into the first implementation cycle with the **change planning chain**:
 
 ```
-(Module 1 foundation docs) -> /10x-roadmap -> backlog-ready roadmap items
+/10x-roadmap -> /10x-new -> /10x-plan -> /10x-plan-review -> /10x-implement
 ```
 
-`/10x-roadmap` is the lesson focus. `/10x-new` is intentionally introduced in Module 2, Lesson 2, when a selected roadmap item becomes an implementation change folder.
+`/10x-new`, `/10x-plan`, `/10x-plan-review`, and `/10x-implement` are the lesson focus. `/10x-frame` and `/10x-research` are not required rituals here; they are escalation paths introduced in the next lesson.
 
 ### Task Router - Where to start
 
 | Skill | Use it when |
 | --- | --- |
-| **Roadmap (lesson focus)** | |
-| `/10x-roadmap` | You have `context/foundation/prd.md` and a scaffolded project baseline, and you need a vertical-first MVP roadmap. The skill reads the PRD, inspects the code baseline, uses available foundation docs such as `tech-stack.md`, `infrastructure.md`, and `deploy-plan.md`, then writes `context/foundation/roadmap.md`. Use it BEFORE creating per-change folders or implementation plans. |
-| **Re-run upstream if needed** | |
-| `/10x-shape` / `/10x-prd` / `/10x-tech-stack-selector` / `/10x-bootstrapper` / `/10x-agents-md` / `/10x-infra-research` | Bundled from Module 1 so foundation contracts can be fixed before roadmap sequencing. If roadmap generation exposes a PRD gap, repair the PRD before pretending the backlog is ready. |
+| **Change setup (lesson focus)** | |
+| `/10x-new <change-id>` | You selected a roadmap item and need a stable change folder. Creates `context/changes/<change-id>/change.md` so planning, implementation, progress, commits, and later review all share one identity. Use AFTER roadmap selection, BEFORE `/10x-plan`. |
+| **Planning (lesson focus)** | |
+| `/10x-plan <change-id>` | You have a change folder and need a reviewable implementation plan. Reads roadmap context, foundation docs, codebase evidence, and any existing change notes; writes `plan.md` and `plan-brief.md` with phases, file contracts, success criteria, and `## Progress`. |
+| **Plan readiness (lesson focus)** | |
+| `/10x-plan-review <change-id>` | You have `plan.md` and need a light pre-code readiness check. Use it to catch missing end state, weak contracts, malformed progress, scope drift, or blind spots before code changes begin. |
+| **Implementation (lesson focus)** | |
+| `/10x-implement <change-id> phase <n>` | You have an approved plan and want to execute one phase with verification, manual gate, commit ritual, and SHA write-back to `## Progress`. |
+| **Lifecycle closure** | |
+| `/10x-archive <change-id>` | A change is merged or intentionally closed. Move it out of active `context/changes/` into archive state. |
 
 ### How the chain hands off
 
-- `/10x-roadmap` bridges product and implementation. It does not choose frameworks, design schemas, or write a per-change implementation plan.
-- The output is `context/foundation/roadmap.md`: ordered milestones, vertical slices, bounded foundations, dependencies, unknowns, risk, and backlog handoff fields.
-- Roadmap items should receive stable human-readable identifiers in backlog tools. The actual `context/changes/<change-id>/` folder is created in Lesson 2 with `/10x-new`.
+- `/10x-new` creates the durable change identity.
+- `/10x-plan` turns that identity into an implementation contract.
+- `/10x-plan-review` checks the plan before the agent mutates code.
+- `/10x-implement` executes one planned phase, verifies, asks for manual confirmation when needed, commits, and records progress.
 
-### Roadmap boundaries
+### Lesson boundaries
 
-- Default to vertical slices: user-visible outcomes that cross UI, data, business logic, and integrations.
-- Horizontal work is allowed only as a bounded enabler that names the downstream vertical milestone it unlocks.
-- Avoid orphan horizontal work such as "build the whole database", "build all API endpoints", or "design the whole UI" before the first user-visible flow.
-- Roadmap is not a calendar estimate. Do not invent dates, story points, or sprint velocity unless the user explicitly asks for a separate planning artifact.
+- Plan is the default router after roadmap selection. Start with `/10x-plan` unless the problem is unclear or external evidence is blocking.
+- Do not run `/10x-frame + /10x-research` as ceremony for every change.
+- Do not turn this lesson into a full end-to-end product build. A checkpoint with a planned and partially or fully implemented stream is valid.
+- Code review of the implemented diff belongs to Lesson 3 via `/10x-impl-review`.
+- Lifecycle closure via `/10x-archive` after a change is merged or intentionally closed.
 
-### Foundation paths used by this lesson
+### Paths used by this lesson
 
-- `context/foundation/prd.md` - input
-- `context/foundation/tech-stack.md` - optional input
-- `context/foundation/infrastructure.md` - optional input
-- `context/deployment/deploy-plan.md` - optional input
-- `context/foundation/roadmap.md` - output
+- `context/foundation/roadmap.md` - upstream roadmap
+- `context/changes/<change-id>/change.md` - change identity
+- `context/changes/<change-id>/plan.md` - implementation contract
+- `context/changes/<change-id>/plan-brief.md` - compressed handoff
 - `context/foundation/lessons.md` - recurring rules and pitfalls
 - `docs/reference/contract-surfaces.md` - load-bearing names registry
 
