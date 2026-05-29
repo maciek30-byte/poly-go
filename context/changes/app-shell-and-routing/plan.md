@@ -449,18 +449,18 @@ Wire `createBrowserRouter` with the full route topology, build the authenticated
 
 #### Automated
 
-- [x] 3.1 TypeScript compiles
-- [x] 3.2 Lint passes
-- [x] 3.3 Build succeeds
-- [x] 3.4 Bundle leak check
-- [x] 3.5 Robots meta present in built HTML
-- [x] 3.6 Cloudflare SPA fallback present in build output
-- [x] 3.7 Vite demo assets are gone
+- [x] 3.1 TypeScript compiles — e441348
+- [x] 3.2 Lint passes — e441348
+- [x] 3.3 Build succeeds — e441348
+- [x] 3.4 Bundle leak check — e441348
+- [x] 3.5 Robots meta present in built HTML — e441348
+- [x] 3.6 Cloudflare SPA fallback present in build output — e441348
+- [x] 3.7 Vite demo assets are gone — e441348
 
 #### Manual
 
-- [x] 3.8 Deep-link redirect preserves intended URL in router state
-- [x] 3.9 Sign-out flow clears session and lands on `/login`
-- [x] 3.10 Locked / pending screens render correct Polish copy with no app chrome
-- [x] 3.11 Polish 404 renders for unknown paths
-- [x] 3.12 3-click NFR audit: four capabilities reachable in one click from `/app/dashboard`
+- [x] 3.8 Deep-link redirect preserves intended URL in router state — e441348
+- [x] 3.9 Sign-out flow clears session and lands on `/login` — e441348
+- [x] 3.10 Locked / pending screens render correct Polish copy with no app chrome — e441348
+- [x] 3.11 Polish 404 renders for unknown paths — e441348
+- [x] 3.12 3-click NFR audit: four capabilities reachable in one click from `/app/dashboard` — e441348
