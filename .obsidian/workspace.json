@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "context/foundation/shape-notes.md",
+                "file": "context/foundation/prd.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "shape-notes"
+              "title": "prd"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "context/foundation/shape-notes.md",
+                "file": "context/foundation/prd.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for shape-notes"
+              "title": "Backlinks for prd"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "context/foundation/shape-notes.md",
+                "file": "context/foundation/prd.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from shape-notes"
+              "title": "Outgoing links from prd"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "context/foundation/shape-notes.md",
+                "file": "context/foundation/prd.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of shape-notes"
+              "title": "Outline of prd"
             }
           }
         ]
@@ -184,5 +184,10 @@
     }
   },
   "active": "69756dce20dddc35",
-  "lastOpenFiles": []
+  "lastOpenFiles": [
+    "context/foundation/cost-analysis.md",
+    "context/foundation/tech-stack.md",
+    "context/foundation/shape-notes.md",
+    "context/foundation/prd.md"
+  ]
 }

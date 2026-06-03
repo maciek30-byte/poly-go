@@ -176,6 +176,10 @@
       "bases:Create new base": false
     }
   },
-  "active": "09d962629cbf56a7",
-  "lastOpenFiles": []
+  "active": "ce8d21ba6bdbd3c4",
+  "lastOpenFiles": [
+    "foundation/cost-analysis.md",
+    "foundation/tech-stack.md",
+    "foundation/prd.md"
+  ]
 }
