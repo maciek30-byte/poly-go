@@ -1,6 +1,6 @@
 ---
 starter_id: vite-react
-package_manager: npm
+package_manager: pnpm
 project_name: poly-go
 hints:
   language_family: js
@@ -18,7 +18,7 @@ hints:
     docs_current: true
     can_judge_agent: true
   has_auth: true
-  has_payments: true
+  has_payments: false
   has_realtime: true
   has_ai: false
   has_background_jobs: true

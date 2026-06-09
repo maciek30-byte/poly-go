@@ -1,185 +1,144 @@
 ---
 project: PolyGo
-version: 1
-status: draft
 context_type: greenfield
+created: 2026-06-08
+updated: 2026-06-08
+version: 2
 product_type: web-app
 target_scale:
-  users: small
+  users: medium
   qps: low
   data_volume: small
-created: 2026-06-03
-updated: 2026-06-03
+timeline_budget:
+  mvp_weeks: 3
+  hard_deadline: null
+  after_hours_only: true
 checkpoint:
   current_phase: 7
-  phases_completed:
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
-    - 6
+  phases_completed: [1, 2, 3, 4, 5, 6]
   gray_areas_resolved:
-    - topic: Zakres narracji produktowej
-      decision: Pomijamy bóle/insighty/narrację — założenia biznesowe są już domknięte. Sekcje narracyjne PRD trzymane minimalistycznie.
-    - topic: Auth
-      decision: Email + hasło + opcjonalny OAuth Google/Microsoft.
-    - topic: Role w MVP
-      decision: "3 role: Administrator techniczny (operator platformy), Właściciel firmy (klient SaaS), Pracownik firmy. Bez działów i custom RBAC w MVP."
-    - topic: Tryby widoczności firmy w MVP
-      decision: "MVP zawiera: Pełna widoczność / Brak widoczności + system zaproszeń (kluczowe dla wartości produktu)."
-    - topic: Zakres MVP — moduły
-      decision: "IN: onboarding+weryfikacja, role, widoczność+zaproszenia, marketplace, alarmy na polimery, komunikator z plikami, transakcje (ręczne zatwierdzanie), moduł Kontrahenci. OUT (v2): Magazyn, działy/custom RBAC, automatyzacja transakcji."
-    - topic: Timeline
-      decision: "Brak deadline'u. Priorytet = dowieźć MVP w pełnej jakości. Szacunek roboczy: ~12 tygodni (do korekty po /10x-prd)."
-    - topic: Język i i18n
-      decision: MVP w języku polskim. Architektura przygotowana pod i18n od początku — dodawanie języków = dodawanie plików tłumaczeń.
-    - topic: Platforma
-      decision: Web app desktop-only w MVP. Osobny panel admina. Mobile poza MVP.
-    - topic: NFR bezpieczeństwa
-      decision: RODO + szyfrowanie wiadomości/plików w spoczynku. E2E poza MVP.
-    - topic: Skala i tech-stack preference (forward note)
-      decision: "Skala startowa ~10 firm (small). Preferencja Supabase (free tier) — zapisane w `## Forward: tech-stack` dla downstream stack selector."
-    - topic: Zaproszenia — kto może wysyłać
-      decision: Zarówno Właściciel firmy jak i Pracownik. Zaproszenie jest deklaracją relacji na poziomie firmy, ale każdy pracownik może je zainicjować.
-    - topic: Wgląd Właściciela w komunikator
-      decision: Właściciel firmy widzi WSZYSTKIE rozmowy pracowników swojej firmy (lista + treść). Pracownicy nawzajem NIE widzą swoich wątków. Pracownik dostaje ostrzeżenie o wglądzie.
-    - topic: Weryfikacja firmy
-      decision: Manualna decyzja Administratora technicznego, brak ustalonych kryteriów w MVP. Reguły wyklarują się empirycznie z pierwszymi firmami.
-    - topic: Timeline budget — pola nieokreślone
-      decision: mvp_weeks i after_hours_only ustawione na null (nie określone) — user nie chce się do nich wiązać.
-  user_stories_drafted: 11
+    - topic: pain_segment
+      decision: Cały proces składania zamówienia jest rozproszony — nie ma jednego dominującego segmentu; ból ciągnie się od znalezienia kontrahenta przez negocjację po domknięcie.
+    - topic: market_insight
+      decision: OTWARTE — użytkownik świadomie nie zna jeszcze odpowiedzi "dlaczego ten problem nie jest rozwiązany". Do dopracowania w fazie 6 (challenge round) lub w trakcie pilotu z firmami.
+    - topic: geography
+      decision: Polska — firmy polskie obracające polimerami między sobą. PLN, język polski, polskie realia (NIP, VAT, JPK). Architektura przygotowana pod i18n od początku — dodanie kolejnego języka w przyszłości sprowadza się do dostarczenia tłumaczeń, bez refaktoru.
+    - topic: auth_method
+      decision: Email + hasło, plus OAuth Google/Microsoft. Konta tworzone ręcznie (seeding) — brak self-registration w MVP.
+    - topic: role_model
+      decision: BRAK RÓL w MVP. Wszyscy zalogowani użytkownicy mają te same uprawnienia. Trzy-rolowy model (super-admin / właściciel / pracownik) wcześniej rozważany został wycofany na rzecz prostoty pilota. Wraca jako potencjalna decyzja v2.
+    - topic: company_onboarding
+      decision: Firmy seedowane RĘCZNIE do bazy danych — operator (autor projektu) wprowadza firmy przed pilotem na podstawie wcześniej zebranej listy. Brak self-onboardingu, brak formularza rejestracji firmy, brak gatekeepingu w aplikacji. Gatekeeping zaufania dzieje się offline.
+    - topic: user_onboarding
+      decision: Konta użytkowników też seedowane ręcznie — operator dostaje od pilotowych firm listę osób, tworzy im konta i przekazuje login/hasło lub link aktywacyjny. Pilot 10 firm × ~5–15 osób = ~50–150 kont do seeda.
+    - topic: matchmaking_vs_marketplace
+      decision: Brak publicznej tablicy ogłoszeń (Kupię/Sprzedam). Zamiast tego — wyszukiwarka po wizytówkach firm z filtrami branżowymi (typ polimeru, frakcja, region, profil działalności). Inicjacja kontaktu odbywa się przez wyszukanie firmy → otwarcie czatu.
+    - topic: messenger_scope_v1
+      decision: Smart Messenger w MVP = ZWYKŁY CZAT 1:1 między firmami z historią. Actionable Messages (RFQ, draft zamówienia, dokument podsumowujący PDF) świadomie odłożone — kształt strukturyzacji wyklaruje się po obserwacji pilotu. Konsekwencja: w MVP "transakcyjność" komunikatora jest aspiracyjna, nie zaimplementowana.
+    - topic: favorites_in_mvp
+      decision: Ulubieni Kontrahenci w MVP — prosta lista, użytkownik może oznaczyć firmę jako ulubioną i mieć szybki dostęp.
+    - topic: v2_offload
+      decision: Świadomie poza MVP — moduł magazynu i produkcji, alarmy/powiadomienia mailowe, płatności Stripe, role i uprawnienia, gatekeeping firm w aplikacji, actionable messages (RFQ/draft/PDF).
+    - topic: mvp_timeline
+      decision: 3 tygodnie, solo, po godzinach. Bardzo lean MVP — przyjęte świadomie po pokazaniu trade-offu.
+    - topic: domain_rule
+      decision: BRAK REGUŁY DOMENOWEJ w MVP. PolyGo v1 to świadomie tooling layer (wyszukiwarka + czat + ulubieni) — aplikacja niczego sama nie decyduje. Logika domenowa (matchmaking, scoring, ranking, klasyfikacja firm) odłożona na v2 po obserwacji jak realne firmy używają narzędzia w pilocie. Operator akceptuje, że "empty-tooling-layer" jest ryzykiem PMF — pilot ma to zweryfikować.
+    - topic: nfr_scope
+      decision: Tylko dwa twarde NFR-y w MVP — RODO compliance i izolacja danych między firmami. Reszta (polski UI, responsywność mobile, accessibility WCAG, realtime <2s, browser support, uptime) świadomie NIE jest twardo wymagana. Operator akceptuje, że pomimo iż w praktyce większość z nich i tak będzie obecna, formalnie zobowiązanie ogranicza się do dwóch krytycznych.
+    - topic: challenge_operator_persona
+      decision: Operator PolyGo usunięty z User & Persona — działa POZA aplikacją (direct DB / skrypt seedingowy), nie jest użytkownikiem UI. Zostaje jedna primary persona (Handlowiec).
+    - topic: challenge_chat_value
+      decision: Czat bez strukturyzacji ŚWIADOMIE zostawiony jako baseline learning-MVP. Operator akceptuje ryzyko, że pilot pokaże niepełną wartość — celem pilotu jest uczenie się, JAK firmy chcą strukturyzować komunikację, żeby v2 (actionable messages) odpowiadało realnym potrzebom, a nie założeniom a priori. Dodana wzmianka o tym ryzyku w Vision.
+    - topic: challenge_search_at_pilot_scale
+      decision: Wyszukiwarka z filtrami zachowana w MVP mimo skali 10 firm. Architektura gotowa na skalowanie (200–500 polskich firm polimerowych docelowo). W pilocie filtry zwracają 1–3 wyniki, ale design jest skończony. Marginalny dodatkowy koszt vs build "tylko lista" — uznany za uzasadniony.
+  user_stories_drafted: 7
   quality_check_status: accepted
 ---
 
 ## Vision & Problem Statement
 
-PolyGo to zamknięta platforma B2B SaaS dla branży tworzyw sztucznych (polimerów), łącząca w jednym miejscu giełdę ogłoszeniową, zarządzanie magazynem oraz wewnętrzny komunikator biznesowy między zweryfikowanymi firmami.
+Handlowiec w polskiej firmie obracającej polimerami (kupno-sprzedaż surowca pierwotnego, regranulatu, frakcji odpadowych) prowadzi proces składania zamówienia rozproszony pomiędzy mailem, WhatsAppem i telefonem. Cały ciąg — od zapytania o dostępność, przez negocjację specyfikacji (typ polimeru, frakcja, ilość, cena, termin), aż po potwierdzenie — żyje w kilku kanałach naraz. Wątki się gubią, specyfikacje krzyżują (zła frakcja, zła ilość, zły termin), na pytanie "co właściwie ustaliliśmy" nie ma jednego źródła prawdy, a gdy coś się sypnie — nie ma śladu kto co powiedział.
 
-Trzy fundamenty produktu, które odróżniają go od ogólnych narzędzi (LinkedIn / WhatsApp / horyzontalne marketplace'y B2B):
-- **Zweryfikowane firmy** — onboarding firmowy z danymi rejestrowymi i deklaracją profilu działalności (producent surowca / recykler / dostawca maszyn / trader).
-- **Marketplace ogłoszeniowy** — firmy wystawiają oferty (sprzedaż / kup / usługa), inne widzą i nawiązują kontakt bezpośrednio na platformie.
-- **Wbudowany komunikator** — rozmowy biznesowe nie wychodzą poza platformę (brak handoffu na maile/telefon).
+Insight, który uzasadnia "dlaczego teraz" i "dlaczego nikt jeszcze tego nie zrobił dobrze", jest świadomie pozostawiony jako otwarte pytanie — autor projektu rozpoznaje ból, ale nie ma jeszcze gotowej teorii rynku. Otwarta hipoteza to: branża jest hermetyczna, generyczne narzędzia (CRM-y, komunikatory) nie znają języka polimerów, a istniejące platformy B2B w tej branży są katalogami ogłoszeniowymi, nie operacyjnymi środowiskami obsługującymi cały proces transakcyjny. Hipoteza wymaga weryfikacji na pilocie.
+
+**Świadome ryzyko learning-MVP:** rozpoznany ból dotyczy *rozproszenia komunikacji i braku audyt-trailu ustaleń*, ale MVP dostarcza zwykły czat bez strukturyzacji (actionable messages odłożone na v2). Możliwe, że pilot ze zwykłym czatem nie udowodni pełnej wartości — bo problemem była właśnie strukturyzacja. Operator akceptuje to ryzyko: pilot służy do nauczenia się, jaką strukturyzację firmy chcą w komunikatorze (RFQ? draft zamówienia? podsumowanie PDF? coś innego?), żeby v2 trafiło w realną potrzebę, a nie w założenie a priori.
 
 ## User & Persona
 
-**Klient (kupujący SaaS):** właściciel firmy z branży polimerów. Kupuje plan z określoną liczbą kont dla pracowników.
+**Primary persona:** Handlowiec / trader w polskiej firmie obracającej polimerami. Codziennie składa lub przyjmuje wiele zamówień od/do różnych kontrahentów. Operuje na konkretnym słowniku branżowym (PE-LD, PE-HD, PP, PET, frakcje, MFI, kolor, czystość), zna swoich kontrahentów po imieniu, pracuje z telefonu i z biurka, ufa relacjom i podpisom — nie ufa generycznym narzędziom.
 
-**Główny użytkownik (codzienna aktywność):** pracownik firmy (handlowiec / trader / magazynier / administrator) — to oni operują na platformie na co dzień: wystawiają ogłoszenia, rozmawiają z kontrahentami, zarządzają magazynem.
-
-**Typy profili działalności firm obsługiwane przez platformę:**
-- Producenci i dostawcy surowców pierwotnych
-- Firmy zajmujące się recyklingiem i zarządzaniem odpadami
-- Dostawcy maszyn, komponentów i technologii (IT)
-- Handlowcy (Traderzy)
+Jedyna persona aplikacji. Operator PolyGo (autor projektu / zespół) wykonuje seeding firm i kont bezpośrednio na bazie danych poza aplikacją i nie ma konta użytkownika w UI; nie jest personą produktu.
 
 ## Access Control
 
-**Trzy role w MVP:**
+Aplikacja webowa, jedna powierzchnia (responsywny web). W MVP:
 
-1. **Administrator techniczny** (operator platformy PolyGo) — weryfikuje zgłaszające się firmy, zarządza spornymi sprawami, ma wgląd w stan platformy. To NIE jest klient SaaS — to my, jako zespół PolyGo.
-2. **Właściciel firmy** (klient SaaS) — kupuje plan z określoną liczbą kont. Konfiguruje firmę (dane rejestrowe, profil działalności, tryb widoczności). Dodaje pracowników. Płaci.
-3. **Pracownik firmy** — codzienna aktywność operacyjna: wystawia ogłoszenia, prowadzi rozmowy w komunikatorze, zarządza magazynem, buduje listę kontrahentów.
+**Uwierzytelnianie:** Email + hasło, plus OAuth Google i Microsoft (Microsoft 365 jest popularny w polskim B2B). Każde konto użytkownika należy do dokładnie jednej firmy (przypisanie ustawiane podczas seedingu, nie przez użytkownika).
 
-**Logowanie:** email + hasło, z opcjonalnym OAuth Google / Microsoft (wygodne dla firm na Workspace / 365).
+**Tworzenie kont:** w MVP brak self-registration. Konta firm i konta użytkowników są seedowane ręcznie przez Operatora PolyGo na podstawie wcześniej zebranej listy pilotowych firm. Użytkownik otrzymuje dane logowania (login/hasło lub link aktywacyjny) z zewnątrz aplikacji.
 
-**Onboarding firmy:**
-- Pierwszy użytkownik firmy zakłada konto → automatycznie zostaje Właścicielem firmy.
-- Wprowadza dane rejestrowe firmy, dane kontaktowe, profil działalności i główne polimery którymi operuje, lub inne dane specyficzne dla swojego biznesu
-- Zgłoszenie trafia do weryfikacji Administratora technicznego.
-- Po pozytywnej weryfikacji firma staje się aktywna na platformie.
+**Role:** brak. Wszyscy zalogowani użytkownicy mają te same uprawnienia operacyjne w obrębie swojej firmy: edycja wizytówki firmy, wyszukiwanie kontrahentów, komunikator, dodawanie do ulubionych. Trzy-rolowy model (super-admin / właściciel / pracownik) świadomie wycofany na rzecz prostoty MVP. Wraca jako otwarta decyzja v2.
 
-**Tryby widoczności firmy** (decyduje Właściciel):
-- **Pełna widoczność** — firma i jej dane kontaktowe widoczne dla wszystkich zweryfikowanych użytkowników platformy.
-- **Brak widoczności** — firma ukryta; kontakt nawiązywany wyłącznie przez dedykowane zaproszenia od innych firm lub przez zaproszenie kontrahenta przez Właściciela.
+**Widoczność firm:** każda zaseedowana firma jest widoczna w wyszukiwarce dla wszystkich zalogowanych użytkowników. Brak trybu "firma ukryta / tylko zaproszeni" w MVP — kontrola widoczności wraca na v2.
 
-**Zaproszenia międzyfirmowe:** zarówno Właściciel firmy jak i Pracownik firmy może wysłać zaproszenie do innej firmy (po nazwie / NIP) niezależnie od ich trybu widoczności. Po akceptacji obie firmy widzą się nawzajem mimo trybu "Brak widoczności".
+## MVP Scope (zakres pierwszej wersji)
 
-**Wgląd Właściciela w komunikator firmy:** Właściciel firmy ma wgląd w każdą rozmowę prowadzoną przez pracowników jego firmy (zarówno listę wątków — tytuł i ID — jak i ich zawartość). Komunikator NIE jest narzędziem do rozmów prywatnych pracowników — przy logowaniu i w samym komunikatorze widoczne jest ostrzeżenie dla pracowników o tym wglądzie. Pozostali pracownicy tej samej firmy NIE widzą wątków innych pracowników (tylko Właściciel).
-Jesli widzimy potrzebe prywatnej komunikacji, mozemy stworzyc 2 rodzaje komunikatora i wtedy uzytkownicy beda sobie mogli wybrac, pozostawiam jako pytanie otwarte, do dalszej decyzji.
-**Kryteria weryfikacji firmy przez Administratora technicznego:** w MVP brak ustalonych kryteriów. Administrator techniczny ocenia każde zgłoszenie case-by-case na podstawie własnego osądu. Reguły weryfikacji wyklarują się w trakcie pracy z pierwszymi firmami i mogą zostać sformalizowane w v2.
+W MVP dostarczamy CZTERY moduły, każdy w wersji minimalnej:
 
-## MVP Flow (najmniejszy end-to-end)
+**1. Baza Danych firm i Wizytówki**
+- Centralne repozytorium zweryfikowanych firm polimerowych zasilane ręcznie (seeding przez Operatora).
+- Każda firma ma wizytówkę zawierającą: dane podstawowe (nazwa, NIP, adres), profil działalności (producent / dostawca surowca / recykler / dostawca maszyn / trader), główne polimery z jakimi operuje, możliwości technologiczne i operacyjne.
 
-1. Firma A rejestruje się → wprowadza dane rejestrowe + profil działalności + polimery, którymi operuje.
-2. Administrator techniczny weryfikuje firmę A → firma A staje się aktywna.
-3. Właściciel firmy A dodaje pracowników (do limitu z planu).
-4. Pracownicy firmy A ustawiają alarmy na polimery, którymi handlują (np. "PE-LD").
-5. Firma B (kupujący, po analogicznej rejestracji+weryfikacji) wystawia ogłoszenie "Kupię 5t PE-LD".
-6. Firmy z aktywnym alarmem na PE-LD (w tym A) dostają powiadomienie o ogłoszeniu.
-7. Pracownik firmy A pisze do pracownika firmy B przez wewnętrzny komunikator.
-8. Wymieniają wiadomości i pliki (specyfikacja, faktura proforma, etc.) ustalając warunki.
-9. Po dogadaniu warunków — jedna ze stron tworzy rekord transakcji w PolyGo.
-10. Druga strona ręcznie potwierdza rekord.
-11. Transakcja widnieje jako "zatwierdzona" w obu firmach. PolyGo NIE pośredniczy w płatności ani dostawie — jest tylko zapisem.
+**2. Wyszukiwarka i Matchmaking**
+- Filtrowanie wizytówek firm po branżowych kryteriach: typ polimeru (PE-LD, PE-HD, PP, PET, ...), profil działalności, region, ewentualnie wolumeny / możliwości operacyjne.
+- Wyniki listowane jako wizytówki; klik wchodzi w pełny profil; z profilu można otworzyć czat.
 
-## Flow Manualne
-- mozliwe jest tez wyszukiwanie reczne, bez marketplace i alarmow, po stronach ofertowych firmy.
+**3. Smart Messenger — w MVP "zwykły" czat 1:1 między firmami**
+- Komunikacja w czasie rzeczywistym między przedstawicielami firm.
+- Historia rozmów per kontrahent.
+- **Actionable Messages odłożone na v2** — kształt strukturyzacji (RFQ, draft zamówienia, dokument podsumowujący PDF) wyklaruje się po obserwacji pilotu. W MVP komunikator obsługuje tekst i ewentualne załączniki, bez sformalizowanych typów wiadomości.
 
-## Zakres MVP
+**4. Ulubieni Kontrahenci**
+- Prosta lista — użytkownik oznacza firmę jako ulubioną i ma do niej szybki dostęp z głównego widoku.
 
-**IN MVP:**
-- Onboarding firmy + weryfikacja przez Administratora technicznego
-- Trzy role (Administrator techniczny / Właściciel firmy / Pracownik firmy)
-- Tryby widoczności firmy + system zaproszeń międzyfirmowych
-- Marketplace ogłoszeń (sekcje: kupię / sprzedam / usługa)
-- Alarmy na polimery — powiadomienia push/in-app/mail przy nowych ogłoszeniach pasujących
-- Komunikator wewnętrzny + wymiana plików (specyfikacje, faktury, dokumenty)
-- Transakcje — rekord transakcji + ręczne zatwierdzanie obu stron (PolyGo NIE pośredniczy)
-- Moduł Kontrahenci — własna baza kontaktów, ulubione, obserwowanie
+### Świadomie poza MVP (odkładamy na v2 lub później)
 
-**OUT MVP (v2):**
-- Moduł Magazyn (zarządzanie zapasami + udostępnianie kontrahentom)
-- Działy w firmie i custom RBAC
-- Automatyzacja transakcji (płatności, escrow, dokumenty)
+- Moduł magazynu i produkcji.
+- Alarmy / powiadomienia mailowe o pasujących firmach lub ogłoszeniach.
+- Płatności i abonamenty (Stripe).
+- Role i uprawnienia w obrębie firmy.
+- Gatekeeping firm wbudowany w aplikację (na pilot — gatekeeping offline przez Operatora).
+- Actionable Messages w komunikatorze (RFQ, draft zamówienia, dokument podsumowujący).
+- Publiczna tablica ogłoszeń (Kupię/Sprzedam).
+- Tryb "firma ukryta / tylko zaproszeni".
 
+### Timeline
+
+3 tygodnie, solo, po godzinach. Przyjęte świadomie. Operator wie, że zakres jest agresywnie scope-downowany — gatekeeping, role, actionable messages, alarmy, magazyn, płatności wszystkie poza MVP.
+
+## Timeline acknowledgment
+
+Acknowledged on 2026-06-08: 3-tygodniowy MVP wymaga utrzymania świadomie zwężonego zakresu (tylko 4 minimalne moduły wymienione powyżej). Wszelkie dodatki — actionable messages, role, alarmy, gatekeeping w aplikacji — muszą być odrzucone w trakcie buildu, nawet jeśli pojawi się pokusa. Operator akceptuje ten koszt.
 
 ## User Stories
 
-US-01: Właściciel firmy może zarejestrować firmę (dane rejestrowe, profil działalności, polimery) i wysłać do weryfikacji.
-US-02: Administrator techniczny może weryfikować zgłoszenia firm — aktywować lub odrzucać.
-US-03: Właściciel firmy może zarządzać pracownikami (dodawać, usuwać, do limitu z planu).
-US-04: Właściciel firmy może ustawić tryb widoczności firmy (Pełna widoczność / Brak widoczności).
-US-05: Pracownik firmy (Właściciel lub Pracownik) może wysyłać i przyjmować zaproszenia od innych firm — nawiązuje relację mimo trybu "Brak widoczności".
-US-06: Pracownik firmy może wystawić ogłoszenie (kupię / sprzedam / usługa) z polimerem, ilością i warunkami.
-US-07: Pracownik firmy może przeszukiwać i filtrować ogłoszenia innych firm.
-US-08: Pracownik firmy może ustawiać alarmy na polimery i otrzymywać powiadomienia o nowych pasujących ogłoszeniach.
-US-09: Pracownik firmy może prowadzić rozmowę w wewnętrznym komunikatorze z pracownikiem innej firmy — wiadomości tekstowe i wymiana plików.
-US-10: Pracownicy mogą stworzyć rekord transakcji między firmami i zatwierdzić go obustronnie (PolyGo nie pośredniczy w płatności ani dostawie).
-US-11: Pracownik firmy może budować bazę Kontrahentów — dodawać firmy, oznaczać ulubione, obserwować (powiadomienia o ich nowych ogłoszeniach).
+US-01: User loguje się do aplikacji (email+hasło lub OAuth Google/Microsoft).
+US-02: User wyszukuje firmy z bazy po kryteriach branżowych (typ polimeru, profil działalności, region).
+US-03: User przegląda pełną wizytówkę wybranej firmy.
+US-04: User otwiera czat z wybraną firmą i prowadzi rozmowę w czasie rzeczywistym.
+US-05: User widzi historię rozmów z każdym kontrahentem.
+US-06: User oznacza firmę jako ulubioną i ma do niej szybki dostęp.
+US-07: User edytuje wizytówkę własnej firmy (opis, profil polimerowy, możliwości technologiczne i operacyjne).
 
 ## Business Logic
 
-**Reguła domeny:** PolyGo decyduje, kto i co widzi w ekosystemie — poprzez (1) **kontrolę widoczności**: na podstawie weryfikacji firmy, wybranego trybu widoczności (Pełna / Brak) oraz relacji wynikających z zaproszeń — system dla każdej pary firm ustala, czy widzą się nawzajem; oraz (2) **dopasowanie ofert**: na podstawie alarmów na polimery, profili działalności firm i obserwowanych kontrahentów — system kieruje powiadomienia o nowych ogłoszeniach do właściwych pracowników właściwych firm.
+**Brak reguły domenowej w MVP.** PolyGo v1 jest świadomie warstwą narzędziową (tooling layer): wyszukiwarka + komunikator + ulubieni kontrahenci. Aplikacja niczego sama nie decyduje — udostępnia użytkownikowi narzędzia, a wszystkie decyzje (kogo wyszukać, z kim rozmawiać, kogo dodać do ulubionych) podejmuje człowiek.
 
-**Reguła 1: Kontrola widoczności (Trust gate)**
-
-- Wejścia: status weryfikacji firmy (zatwierdzona / oczekująca / odrzucona), tryb widoczności (Pełna / Brak), aktywne relacje (zaakceptowane zaproszenia między firmami).
-- Wyjście: dla pary (firma A, firma B) decyzja czy A widzi B (i odwrotnie) w wyszukiwarce firm, ogłoszeniach, komunikatorze.
-- Doświadczenie użytkownika: pracownik widzi w wynikach wyszukiwania tylko te firmy, do których ma dostęp; ogłoszenia firm "Brak widoczności" są niewidoczne dla niezwiązanych firm; zaproszenie otwiera relację mimo ukrycia.
-
-**Reguła 2: Dopasowanie ofert (Matching/Recommendation)**
-
-- Wejścia: nowe ogłoszenie (polimer, typ kupię/sprzedam/usługa, parametry), alarmy ustawione przez pracowników (polimer + filtry), lista obserwowanych kontrahentów, profile działalności firm.
-- Wyjście: lista pracowników (z firm, które widzą ogłoszenie wg Reguły 1), do których trafia powiadomienie o nowym ogłoszeniu.
-- Doświadczenie użytkownika: handlowiec dostaje powiadomienie "nowe ogłoszenie pasujące do Twojego alarmu PE-LD" tylko wtedy, gdy: (a) firma wystawiająca jest widoczna dla jego firmy, (b) ogłoszenie pasuje do jego alarmu lub jest od obserwowanego kontrahenta.
-
-**Dlaczego to NIE jest empty-CRUD:** bez Reguły 1 PolyGo byłoby publicznym katalogiem firm (jak Panorama Firm). Bez Reguły 2 byłoby tablicą ogłoszeń, którą trzeba odświeżać ręcznie (jak grupa na WhatsAppie). Razem te reguły dają wartość, której żaden pojedynczy istniejący kanał nie daje.
+Operator świadomie akceptuje znaną pułapkę: produkt bez reguły domenowej jest podatny na ocenę "to mógł być spreadsheet + Messenger". Pilot ma odpowiedzieć na pytanie, **gdzie pojawia się największa wartość, w której aplikacja powinna zacząć decydować za użytkownika** — kandydaci na v2 to matchmaking (dopasowanie firm do zapytania), ranking wyników wyszukiwania, klasyfikacja wiarygodności firm, lub strukturyzacja komunikatora (actionable messages: RFQ → draft → potwierdzenie). Decyzja, którą z tych reguł wprowadzić jako pierwszą, ma być oparta na obserwacji realnych firm w pilocie, nie na założeniach a priori.
 
 ## Non-Functional Requirements
 
-- **Język:** interfejs w języku polskim w MVP, architektura przygotowana pod wielojęzyczność (i18n) — dodanie kolejnych języków sprowadza się do dodania plików tłumaczeń.
-- **Platforma:** aplikacja webowa działająca na desktopie. Wspierane ostatnie 2 wersje głównych przeglądarek (Chrome, Firefox, Safari, Edge). Wsparcie mobile poza zakresem MVP.
-- **Architektura dostępu:** osobny panel administratora technicznego (operator platformy PolyGo) oddzielony od web app klienta.
-- **Zgodność prawna:** zgodność z RODO (przetwarzanie danych firm i pracowników z UE). ?????????
-- **Bezpieczeństwo komunikatora:** wiadomości i pliki w komunikatorze szyfrowane w spoczynku (storage). E2E nie jest wymagane w MVP.
-- **Widoczność wewnętrzna:** ogłoszenia i dane firm w trybie "Brak widoczności" niedostępne dla niezweryfikowanych użytkowników i niewidoczne poza relacją.
-- **Transparentność wglądu Właściciela:** każdy pracownik widzi przy logowaniu i w komunikatorze ostrzeżenie, że Właściciel firmy ma wgląd we wszystkie jego rozmowy biznesowe na platformie.
+- Aplikacja musi przetwarzać dane firm i użytkowników zgodnie z RODO (Rozporządzenie 2016/679) — zgody, prawo do bycia zapomnianym, audyt dostępu do danych osobowych.
+- Dane jednej firmy muszą być całkowicie odizolowane od innych firm. Wyjątkiem są wyłącznie pola jawnie zdefiniowane jako publiczne na wizytówce firmy. Jakikolwiek wyciek danych poza tę granicę jest krytycznym incydentem.
 
-## Forward: tech-stack
-
-Notatki przekazywane do `/10x-tech-stack-selector` (NIE są częścią PRD):
-
-- **Preferencja backend/db:** Supabase (free tier na start). User chce się zmieścić w darmowym planie dla pierwszych ~10 firm pilotażowych.
-- **i18n:** wymóg techniczny — biblioteka i18n od początku, nawet jeśli MVP uruchamia tylko PL.
-- **Skala startowa:** ~10 firm × kilku-kilkunastu pracowników (dziesiątki użytkowników w MVP).
+Pozostałe jakości (polski UI, responsywność mobile, accessibility WCAG, czas pojawienia się wiadomości w czacie, wsparcie przeglądarek, uptime) NIE są twardo wymagane w MVP. W praktyce większość z nich i tak będzie obecna (Vite+React = nowoczesne przeglądarki, Supabase Realtime = sub-secundowy delivery, persona PL = UI po polsku), ale formalne zobowiązanie ograniczone jest do RODO i izolacji danych.
