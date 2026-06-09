@@ -28,13 +28,13 @@ VITE_SUPABASE_URL=https://<project>.supabase.co
 VITE_SUPABASE_ANON_KEY=sb_publishable_...
 ```
 
-> **Single Supabase environment**: local dev, preview deploys, and production all hit `polygo-prod`. See `AGENTS.md` and `context/foundation/deployment-plan-v2.md` ("Świadomie odroczone ryzyka") for why and the trigger to add staging.
+> **Single Supabase environment**: local dev and production both hit `polygo-prod`. See `AGENTS.md` and `context/foundation/deployment-plan-v2.md` ("Świadomie odroczone ryzyka") for why and the trigger to add staging.
 
 ## Deployment
 
 Push to `main` → GitHub Actions runs `pnpm build` → `wrangler pages deploy` to Cloudflare Pages production scope. Production URL: <https://polygo.pages.dev>.
 
-PRs to `main` get preview deploys at `https://<branch>.polygo.pages.dev` (same Supabase as prod — do not share with non-developers).
+PR-based preview deploys are disabled — solo workflow pushes directly to `main`. If you want to test a code change without affecting prod, run an ad-hoc deploy to a throwaway branch name (see manual deploy below) or, better, run `pnpm dev` locally.
 
 Emergency manual deploy:
 

@@ -5,14 +5,15 @@ Operating rules for AI agents (Claude Code, others) working in this repo. Read b
 ## Stan środowisk
 
 - **Jedno środowisko Supabase**: `polygo-prod` (project ID `yaejbsodwhixywjpqhau`, region eu-central-1).
-- Local dev, preview deploys (`<branch>.polygo.pages.dev`), and production (`polygo.pages.dev`) **all use the same Supabase credentials**.
+- **Brak preview deploys**. GitHub Actions deploy odpala się WYŁĄCZNIE na push do `main`; PR-y nie tworzą `<branch>.polygo.pages.dev`. Solo dev → push-to-main, lokalny `pnpm dev` zastępuje preview.
+- Local dev i production (`polygo.pages.dev`) **używają tych samych Supabase credentials**.
 - Świadoma decyzja, udokumentowana w `context/foundation/deployment-plan-v2.md` sekcja "Świadomie odroczone ryzyka". Trigger dodania staging: pierwszy pilot z zewnętrznym userem, schema migration wymagająca testu, lub incident.
 
 ## Deployment / Infrastructure DO NOTs
 
-- **NEVER** udostępniaj preview URL (`*.polygo.pages.dev` non-prod) osobom spoza developera — preview hituje prod Supabase, każda interakcja zostaje w realnej bazie.
-- **NEVER** rób destrukcyjnych testów (`delete from`, `truncate`, etc.) przez UI na preview deploy — to są realne dane prod.
-- **NEVER** twórz tabel bez RLS — każda nowa tabela musi mieć `enable row level security` w migracji + przynajmniej jedną polisę. Przy współdzielonym Supabase RLS jest jedyną obroną między userami.
+- **NEVER** dodawaj `pull_request:` event do `.github/workflows/deploy.yml` — preview deploys są celowo wyłączone, każdy PR build = zużyte build minutes i ad-hoc URL który i tak hituje prod Supabase. Test code change przez `pnpm dev` lokalnie.
+- **NEVER** deployuj ręcznie z brancha innego niż `main` bez świadomej potrzeby — `wrangler pages deploy --branch=<inny>` utworzy ad-hoc preview URL który hituje prod Supabase. Jeśli MUSISZ (np. demo dla siebie), usuń ten deployment po teście: `wrangler pages deployment list --project-name=polygo` + delete via dashboard.
+- **NEVER** twórz tabel bez RLS — każda nowa tabela musi mieć `enable row level security` w migracji + przynajmniej jedną polisę. Przy jedynym Supabase RLS jest jedyną obroną między userami.
 - **NEVER** create `public/404.html` — Cloudflare Pages auto-fallback do `index.html` jest jedyną SPA routing strategy. Dodanie `404.html` SILENTLY breaks SPA routing on prod.
 - **NEVER** write `_redirects` z `/* /index.html 200` — silently ignored przez CF Pages, fake security blanket.
 - **NEVER** inline `redirectTo` w `signInWithOAuth` — używaj helpera `getAuthRedirect()` z `src/lib/auth.ts` (gdy zostanie utworzony). Inline string = fallback na preview URL = OAuth callback hijacking.

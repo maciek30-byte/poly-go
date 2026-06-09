@@ -7,17 +7,10 @@ on:
       - '**.md'
       - 'context/**'
       - '.idea/**'
-  pull_request:
-    branches: [main]
-    paths-ignore:
-      - '**.md'
-      - 'context/**'
-      - '.idea/**'
 
 permissions:
   contents: read
   deployments: write
-  pull-requests: write
 
 jobs:
   deploy:
@@ -43,4 +36,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./dist --project-name=polygo --branch=${{ github.head_ref || github.ref_name }}
+          command: pages deploy ./dist --project-name=polygo --branch=main
