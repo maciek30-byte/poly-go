@@ -1,73 +1,62 @@
-# React + TypeScript + Vite
+# PolyGo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Closed B2B SaaS marketplace for the polymer industry. SPA on Cloudflare Pages, Supabase backend.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Frontend**: Vite + React 19 + TypeScript, React Router DOM (SPA)
+- **Backend**: Supabase (Postgres + Auth + Realtime + Storage + Edge Functions)
+- **Hosting**: Cloudflare Pages (Direct Upload)
+- **CI/CD**: GitHub Actions → `wrangler pages deploy`
+- **Package manager**: pnpm
 
-## React Compiler
+See `context/foundation/tech-stack.md` and `context/foundation/infrastructure.md` for rationale.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Development
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
+pnpm dev          # http://localhost:5173
+pnpm build        # tsc -b && vite build → dist/
+pnpm lint
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Local dev requires `.env.local` (gitignored):
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+VITE_SUPABASE_URL=https://<project>.supabase.co
+VITE_SUPABASE_ANON_KEY=sb_publishable_...
+```
+
+> **Single Supabase environment**: local dev, preview deploys, and production all hit `polygo-prod`. See `AGENTS.md` and `context/foundation/deployment-plan-v2.md` ("Świadomie odroczone ryzyka") for why and the trigger to add staging.
+
+## Deployment
+
+Push to `main` → GitHub Actions runs `pnpm build` → `wrangler pages deploy` to Cloudflare Pages production scope. Production URL: <https://polygo.pages.dev>.
+
+PRs to `main` get preview deploys at `https://<branch>.polygo.pages.dev` (same Supabase as prod — do not share with non-developers).
+
+Emergency manual deploy:
+
+```bash
+pnpm build
+pnpm exec wrangler pages deploy ./dist --project-name=polygo --branch=main --commit-dirty=true
+```
+
+Rollback:
+
+```bash
+pnpm exec wrangler pages deployment list --project-name=polygo
+pnpm exec wrangler rollback <deployment-id> --project-name=polygo
+```
+
+See `context/foundation/deployment-plan-v2.md` for full deployment runbook.
+
+## Documentation map
+
+- `context/foundation/shape-notes.md` — initial shaping conversation
+- `context/foundation/prd.md` — product requirements
+- `context/foundation/tech-stack.md` — stack rationale
+- `context/foundation/infrastructure.md` — platform research (CF Pages choice)
+- `context/foundation/deployment-plan-v2.md` — execution plan (active)
+- `AGENTS.md` — rules for AI agents working in this repo
