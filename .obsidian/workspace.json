@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "context/foundation/prd.md",
-                "mode": "preview",
+                "file": "context/foundation/roadmap.md",
+                "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "prd"
+              "title": "roadmap"
             }
           }
         ]
@@ -185,9 +185,21 @@
   },
   "active": "69756dce20dddc35",
   "lastOpenFiles": [
+    "dist/assets/index-51cRTZQU.css",
+    "dist/assets/index-CyADzAJ-.js",
+    "src/styles/tokens.css",
+    "src/styles",
+    "dist/assets/index-QO-yA_-q.css",
+    "dist/assets/index-BVMndNgJ.js",
+    "dist/assets/index-Duv8IX3Q.css",
+    "dist/assets/index-BSj7WVj4.js",
+    "context/foundation/prd.md",
+    "dist/assets/index-DQJhV4eq.css",
+    "dist/assets/index-R75sD-71.js",
+    "src/index.css.tmp.44643.f0bab6b57c93",
+    "CLAUDE.md",
     "context/foundation/cost-analysis.md",
     "context/foundation/tech-stack.md",
-    "context/foundation/shape-notes.md",
-    "context/foundation/prd.md"
+    "context/foundation/shape-notes.md"
   ]
 }

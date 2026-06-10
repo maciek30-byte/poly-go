@@ -1,13 +1,7 @@
-import './App.css'
+import CompanyProfile from './components/CompanyProfile'
 
 function App() {
-
-  return (
-      <section id="center">
-        <h1>SOON</h1>
-      <section id="spacer"></section>
-      </section>
-  )
+  return <CompanyProfile />
 }
 
 export default App

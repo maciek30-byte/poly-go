@@ -1,0 +1,131 @@
+/* =============================================================
+   PolyGo — Design Tokens
+   Single source of truth for colors, type, spacing, radii, shadow.
+   Locked palette: zielony butelkowy akcent + neutralne szarości.
+   ============================================================= */
+
+:root {
+  /* ---------- Color: surfaces ---------- */
+  --color-bg: #ffffff;
+  --color-surface: #f7f8f9;
+  --color-surface-hover: #f0f2f4;
+  --color-border: #e6e8eb;
+  --color-border-strong: #d4d7db;
+
+  /* ---------- Color: text (3 poziomy hierarchii) ---------- */
+  --color-text-strong: #0d1117;     /* nagłówki, nazwy, kluczowe wartości */
+  --color-text: #424950;            /* body, opisy */
+  --color-text-muted: #6b7480;      /* labels, captions, meta */
+  --color-text-subtle: #98a0a8;     /* disabled, separatory tekstowe */
+
+  /* ---------- Color: accent (zielony butelkowy) ---------- */
+  --color-accent: #2f6f4e;
+  --color-accent-hover: #245840;
+  --color-accent-bg: rgba(47, 111, 78, 0.08);
+  --color-accent-border: rgba(47, 111, 78, 0.35);
+  --color-accent-on: #ffffff;       /* tekst na akcencie */
+
+  /* ---------- Color: kropki kategorii ---------- */
+  --color-dot-producer: #3b6ea5;
+  --color-dot-recycler: #4a8a64;
+  --color-dot-distributor: #b5763a;
+  --color-dot-service: #8a6db1;
+
+  /* ---------- Color: gradients (logo, awatary, fotki) ---------- */
+  --gradient-brand: linear-gradient(140deg, #34795a 0%, #1f4a37 100%);
+  --gradient-avatar: linear-gradient(140deg, #4a8a6d 0%, #2d5a45 100%);
+  --gradient-photo-1: linear-gradient(140deg, #3b6e54 0%, #1f4234 100%);
+  --gradient-photo-2: linear-gradient(140deg, #5a6e7a 0%, #3a4651 100%);
+  --gradient-photo-3: linear-gradient(140deg, #4a7a66 0%, #2c4d40 100%);
+  --gradient-photo-4: linear-gradient(140deg, #6b7a8a 0%, #424c58 100%);
+  --gradient-photo-5: linear-gradient(140deg, #557066 0%, #354842 100%);
+
+  /* ---------- Typography: family ---------- */
+  --font-sans: 'Manrope', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'JetBrains Mono', Consolas, monospace;
+
+  /* ---------- Typography: scale (Stripe-like, szeroki rozstaw) ----------
+     28 — display (nazwa firmy)
+     18 — heading (h2 sekcji)
+     14 — body (default)
+     13 — value (wartości w listach, body w cards)
+     12 — label / caption (eyebrows, meta, mała ikona)
+     11 — micro (uppercase eyebrows) */
+  --type-display-size: 28px;
+  --type-display-lh: 1.2;
+  --type-display-tracking: -0.02em;
+  --type-display-weight: 600;
+
+  --type-heading-size: 18px;
+  --type-heading-lh: 1.35;
+  --type-heading-tracking: -0.015em;
+  --type-heading-weight: 600;
+
+  --type-body-size: 14px;
+  --type-body-lh: 1.55;
+  --type-body-tracking: -0.003em;
+  --type-body-weight: 400;
+
+  --type-value-size: 13px;
+  --type-value-lh: 1.45;
+  --type-value-tracking: -0.003em;
+  --type-value-weight: 500;
+
+  --type-label-size: 12px;
+  --type-label-lh: 1.4;
+  --type-label-tracking: 0;
+  --type-label-weight: 500;
+
+  --type-eyebrow-size: 11px;
+  --type-eyebrow-lh: 1.2;
+  --type-eyebrow-tracking: 0.06em;
+  --type-eyebrow-weight: 600;
+
+  /* ---------- Spacing (rytm pionowy) ---------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 56px;
+  --space-10: 72px;
+
+  /* ---------- Radii ---------- */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+  --radius-full: 999px;
+
+  /* ---------- Shadow ---------- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 14px rgba(13, 17, 23, 0.08);
+  --shadow-brand: 0 4px 14px rgba(31, 74, 55, 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #15171a;
+    --color-surface: #1c1e22;
+    --color-surface-hover: #23262b;
+    --color-border: #2a2d33;
+    --color-border-strong: #383c42;
+
+    --color-text-strong: #f0f2f4;
+    --color-text: #c4cad1;
+    --color-text-muted: #8a929b;
+    --color-text-subtle: #5a6068;
+
+    --color-accent: #7cc196;
+    --color-accent-hover: #6db585;
+    --color-accent-bg: rgba(124, 193, 150, 0.12);
+    --color-accent-border: rgba(124, 193, 150, 0.4);
+    --color-accent-on: #0f1a14;
+
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.3);
+    --shadow-brand: 0 4px 14px rgba(0, 0, 0, 0.4);
+  }
+}
