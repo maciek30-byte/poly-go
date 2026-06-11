@@ -1,14 +1,24 @@
 ---
 project: PolyGo
 researched_at: 2026-06-08
+updated: 2026-06-11
 recommended_platform: Cloudflare Pages
 runner_up: Netlify
 context_type: mvp
+environments: localhost + prod (preview/staging świadomie wyłączone do momentu wpuszczenia userów)
 ---
 
 ## Recommendation
 
 **Deploy on Cloudflare Pages.** Koszt $0 indefinitely (unlimited bandwidth + requests dla statycznych assetów) i PoP w Warszawie + Frankfurt + Amsterdam = najlepsza latencja dla użytkowników w PL/EU.
+
+## Environment model (aktualny stan — solo dev, pre-pilot)
+
+**Świadomie tylko dwa środowiska: `localhost` + `prod`.** Preview deploys są wyłączone (`paths-ignore` + `ci(deploy): disable PR preview deploys (solo workflow)`); staging Supabase nie istnieje.
+
+**Dlaczego to jest OK teraz**: prod nie ma jeszcze realnych userów ani danych firm pilotowych — jest pusty / zawiera tylko dane testowe Operatora. Weryfikacja zmian odbywa się lokalnie (`npm run dev` + lokalny lub współdzielony Supabase) i bezpośrednio na prod po merge na `main`. Brak ryzyka wycieku danych firm, bo nie ma jeszcze cudzych danych do wycieku.
+
+**Kiedy to przestaje być OK**: zanim pierwszy realny user pilotowy dostanie zaproszenie. Wtedy prod przestaje być pusty i przestaje być bezpiecznym poligonem — dopiero w tym momencie wprowadzamy środowisko pośrednie (staging Supabase + włączone preview deploys w Cloudflare Pages). Jest to udokumentowane w `roadmap.md` (Parked: "Środowisko pośrednie").
 
 ## Shortlisted Platforms
 
@@ -36,8 +46,9 @@ context_type: mvp
 
 ## Deployment
 
-- **Preview deploys**: Cloudflare Pages tworzy unique URL `<branch>.<project>.pages.dev` automatycznie na każdy push do brancha (przez `cloudflare/wrangler-action@v3` w GitHub Actions). **Wymóg**: osobny Supabase project dla staging (env vars `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` ustawione w Pages dashboard pod scope "Preview", inne wartości niż "Production"). Fork PRs: preview wymaga zatwierdzenia maintainera w Actions (brak auto-deploy dla untrusted forks).
-- **Secrets**: `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` jako GitHub Secrets (scoped token: Account → Cloudflare Pages → Edit). Supabase keys jako Environment Variables w Pages dashboard, osobno dla Production i Preview. Rotacja: regenerate API token w Cloudflare dashboard → update GH Secrets → re-run failed deploy. Brak automatic rotation; ręczna co 6 miesięcy.
+- **Preview deploys**: **wyłączone** w workflow (`ci(deploy): disable PR preview deploys (solo workflow)` + `paths-ignore` na push events). Powód: solo dev, brak realnych userów na prod, weryfikacja na prod jest tańsza i wystarczająca. Wracają zanim wpuścimy pierwszego pilotowego usera (wtedy konieczny też osobny Supabase staging — patrz Risk Register #2).
+- **Verification flow (pre-pilot)**: `npm run dev` lokalnie → przegląd zmian na localhost → merge do `main` → auto-deploy na prod (`deploy.yml`) → weryfikacja na prod. Prod jest pusty / zawiera dane testowe Operatora, więc "verify on prod" nie naraża cudzych danych.
+- **Secrets**: `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` jako GitHub Secrets (scoped token: Account → Cloudflare Pages → Edit). Supabase keys jako Environment Variables w Pages dashboard, scope **Production** (Preview scope nieaktywny do momentu wpuszczenia userów). Rotacja: regenerate API token w Cloudflare dashboard → update GH Secrets → re-run failed deploy. Brak automatic rotation; ręczna co 6 miesięcy.
 - **Rollback**: `wrangler rollback <deployment-id>` lub Cloudflare dashboard ("Rollback" button na deployment). Time-to-revert: ~30s do propagacji edge. **Caveat**: rollback nie cofa migracji Supabase — schema changes wymagają osobnego rollback w Supabase CLI (`supabase db reset` lub manualny migration revert). Po rollbacku `wrangler pages deployment tail` ma znany bug (#2262) — debugowanie wymaga pobierania logów z dashboard.
 - **Logs**: dla statycznego SPA brak runtime logs — `wrangler pages deployment list` (lista deploymentów), Cloudflare Web Analytics (traffic, free, no cookie banner). Jeśli dodasz Pages Function: `wrangler pages deployment tail` live tail. Read-only przez MCP: `observability.mcp.cloudflare.com/mcp` (runtime logs/analytics) i `builds.mcp.cloudflare.com/mcp` (build logs).
 
@@ -46,8 +57,8 @@ context_type: mvp
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
 | Cloudflare Pages strategic sunset (EOL ogłoszony w 6-18mc) | M | M | Trzymać deployment script w `wrangler` (Pages i Workers Static Assets dzielą CLI). Audytować Cloudflare changelog co kwartał. Migracja Pages → Workers Static Assets jest 1 zmianą w `wrangler.toml` + DNS swap; trzymać projekt w stanie gotowym do migracji (nie używać Pages-only feature'ów). |
-| Preview deploys hitują ten sam Supabase project co prod (naruszenie NFR izolacji firm) | H | **CRITICAL** | **W tygodniu 1**: utworzyć osobny projekt Supabase "staging" → set `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` jako Pages env vars pod scope "Preview". Nigdy nie udostępniać preview URL klientom pilotowym. Udokumentować zakaz w AGENTS.md. |
-| Supabase Auth OAuth callback fallback na preview URLs | M | H | We wszystkich `signInWithOAuth({ options: { redirectTo } })` wymóg explicit `redirectTo: window.location.origin + '/auth/callback'`. Helper function `getAuthRedirect()` w `lib/auth.ts` — agent musi używać helpera, nie inline string. Dodać reguły linta (custom ESLint rule lub grep w pre-commit). |
+| Wpuszczenie pilotowego usera bez wcześniejszego dodania środowiska pośredniego (staging Supabase + włączone preview deploys) | M | **CRITICAL** | Aktualny model "weryfikacja na prod" działa TYLKO dopóki prod jest pusty. Trigger do reaktywacji preview + utworzenia staging Supabase: zanim pierwszy realny user dostanie zaproszenie pilotowe. Checklist: (1) utworzyć osobny projekt Supabase "staging", (2) ustawić `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` w Pages env vars pod scope "Preview", (3) włączyć preview deploys w `deploy.yml`, (4) zaktualizować ten dokument. Udokumentować zakaz "weryfikujemy na prod" w AGENTS.md od momentu wpuszczenia userów. |
+| Supabase Auth OAuth callback fallback na nieprawidłowy URL | M | H | We wszystkich `signInWithOAuth({ options: { redirectTo } })` wymóg explicit `redirectTo: window.location.origin + '/auth/callback'`. Helper function `getAuthRedirect()` w `lib/auth.ts` — agent musi używać helpera, nie inline string. Weryfikacja na localhost (dev) i prod (po merge). Dodać reguły linta (custom ESLint rule lub grep w pre-commit). |
 | SPA routing silent breakage przy dodaniu `404.html` | L | H | Nie dodawać `public/404.html` — polegać na auto-fallback do `index.html`. Nie pisać `_redirects` z `/* /index.html 200`. Udokumentować w AGENTS.md jako "DO NOT". |
 | Direct Upload vs Git-integration lock-in przy create | M | L | Wybrać **Direct Upload** przy `wrangler pages project create polygo` (kompatybilne z GitHub Actions, headless CI/CD). Udokumentować w README że konwersja niemożliwa — nowy projekt jeśli kiedyś chcesz Git-integration. |
 | `wrangler pages deployment tail` bug po rollback | M | L | Po rollback pobierać logi przez Cloudflare dashboard albo MCP `observability.mcp.cloudflare.com/mcp`. Issue tracking: cloudflare/workers-sdk#2262. |
@@ -78,9 +89,17 @@ context_type: mvp
   - Secrets: `CLOUDFLARE_API_TOKEN` (Account → Cloudflare Pages → Edit scope) i `CLOUDFLARE_ACCOUNT_ID`
   - Build: `npm ci && npm run build`
   - Deploy: `wrangler pages deploy ./dist --project-name=polygo`
-  - Branches: `main` → production; każdy inny → preview deployment
+  - Branches: `main` → production. Preview deploys świadomie wyłączone do momentu wpuszczenia pilotowych userów.
 
 - [ ] Skonfiguruj Supabase env vars w Pages dashboard (Settings → Environment Variables)
   - Scope **Production**: `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` → projekt **prod** Supabase
-  - Scope **Preview**: te same klucze → **osobny projekt staging Supabase** (critical: izolacja danych firm, patrz Risk Register)
-  - Lokalny dev: `.env.local` z Supabase staging credentials (NIGDY prod w lokalnym `.env`)
+  - Scope **Preview**: nieaktywne (brak preview deploys). Wraca przy reaktywacji preview — patrz Risk Register.
+  - Lokalny dev: `.env.local` z prod Supabase credentials (akceptowalne, bo prod jest pusty pre-pilot; **zmienić** zanim wpuścimy pierwszego usera).
+
+- [ ] **Pre-pilot trigger checklist** (wykonać zanim pierwszy realny user dostanie zaproszenie):
+  - [ ] Utworzyć osobny projekt Supabase "staging"
+  - [ ] Wpisać staging credentials do scope "Preview" w Pages env vars
+  - [ ] Włączyć preview deploys w `deploy.yml` (usunąć disable + przywrócić preview branches)
+  - [ ] Przepiąć lokalny `.env.local` na staging credentials
+  - [ ] Zaktualizować ten dokument: usunąć "świadomie wyłączone", zaktualizować Risk Register
+  - [ ] Dodać do AGENTS.md regułę: "nie weryfikujemy na prod od dziś"

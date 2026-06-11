@@ -24,7 +24,7 @@ checkpoint:
     - topic: geography
       decision: Polska — firmy polskie obracające polimerami między sobą. PLN, język polski, polskie realia (NIP, VAT, JPK). Architektura przygotowana pod i18n od początku — dodanie kolejnego języka w przyszłości sprowadza się do dostarczenia tłumaczeń, bez refaktoru.
     - topic: auth_method
-      decision: Email + hasło, plus OAuth Google/Microsoft. Konta tworzone ręcznie (seeding) — brak self-registration w MVP.
+      decision: Email + hasło, plus OAuth Google. Microsoft OAuth odłożony do v2. Konta tworzone ręcznie (seeding) — brak self-registration w MVP.
     - topic: role_model
       decision: BRAK RÓL w MVP. Wszyscy zalogowani użytkownicy mają te same uprawnienia. Trzy-rolowy model (super-admin / właściciel / pracownik) wcześniej rozważany został wycofany na rzecz prostoty pilota. Wraca jako potencjalna decyzja v2.
     - topic: company_onboarding
@@ -73,7 +73,7 @@ Jedyna persona aplikacji. Operator PolyGo (autor projektu / zespół) wykonuje s
 
 Aplikacja webowa, jedna powierzchnia (responsywny web). W MVP:
 
-**Uwierzytelnianie:** Email + hasło, plus OAuth Google i Microsoft (Microsoft 365 jest popularny w polskim B2B). Każde konto użytkownika należy do dokładnie jednej firmy (przypisanie ustawiane podczas seedingu, nie przez użytkownika).
+**Uwierzytelnianie:** Email + hasło, plus OAuth Google. Microsoft OAuth (popularny w polskim B2B przez Microsoft 365) świadomie odłożony do v2 — koszt Azure AD app registration vs realna wartość dla MVP nie uzasadnia setupu na pilota. Każde konto użytkownika należy do dokładnie jednej firmy (przypisanie ustawiane podczas seedingu, nie przez użytkownika).
 
 **Tworzenie kont:** w MVP brak self-registration. Konta firm i konta użytkowników są seedowane ręcznie przez Operatora PolyGo na podstawie wcześniej zebranej listy pilotowych firm. Użytkownik otrzymuje dane logowania (login/hasło lub link aktywacyjny) z zewnątrz aplikacji.
 
@@ -122,7 +122,7 @@ Acknowledged on 2026-06-08: 3-tygodniowy MVP wymaga utrzymania świadomie zwęż
 
 ## User Stories
 
-US-01: User loguje się do aplikacji (email+hasło lub OAuth Google/Microsoft).
+US-01: User loguje się do aplikacji (email+hasło lub OAuth Google).
 US-02: User wyszukuje firmy z bazy po kryteriach branżowych (typ polimeru, profil działalności, region).
 US-03: User przegląda pełną wizytówkę wybranej firmy.
 US-04: User otwiera czat z wybraną firmą i prowadzi rozmowę w czasie rzeczywistym.

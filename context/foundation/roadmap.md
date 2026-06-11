@@ -29,9 +29,8 @@ Gwiazda przewodnia — najmniejszy end-to-end (`login → ulubieni → klik → 
 
 | ID   | Change ID                  | Outcome (user can …)                                            | Prerequisites | PRD refs                                | Status   |
 | ---- | -------------------------- | --------------------------------------------------------------- | ------------- | --------------------------------------- | -------- |
-| F-01 | auth-scaffold              | (foundation) logowanie e-mail/hasło + OAuth Google/Microsoft    | —             | Access Control, NFR RODO                | ready    |
+| F-01 | auth-scaffold              | (foundation) logowanie e-mail/hasło + OAuth Google              | —             | Access Control, NFR RODO                | ready    |
 | F-02 | multi-tenant-data-rls      | (foundation) schemat firm/użytkowników z RLS izolacji per-firma | —             | NFR izolacji                            | ready    |
-| F-03 | staging-supabase-isolation | (foundation) osobny Supabase staging dla preview deploys        | —             | NFR izolacji, infrastructure.md Risk #2 | ready    |
 | F-04 | routing-and-auth-shell     | (foundation) router + auth-protected app shell                  | F-01          | Access Control                          | proposed |
 | S-01 | login-and-signout          | zalogować się i wylogować                                       | F-01, F-04    | US-01                                   | proposed |
 | S-02 | edit-own-company-profile   | edytować wizytówkę własnej firmy                                | F-02, S-01    | US-07                                   | proposed |
@@ -48,7 +47,6 @@ Pomocnik nawigacyjny — grupuje plastry współdzielące łańcuch Prerequisite
 | A      | Auth + Pętla do gwiazdy      | `F-01` → `F-04` → `S-01` → `S-03` → `S-04`           | Główny tor do north star; każdy krok bezpośrednio przybliża do `S-04`. |
 | B      | Profil własnej firmy         | `F-02` → `S-02`                                      | `S-02` dołącza do Streamu A przy `S-01` (wymaga zalogowania). `F-02` zasila też `S-03`/`S-05`. |
 | C      | Discovery druga fala         | `S-05`                                               | Wyszukiwarka po pilocie pierwszej fali — gdy ulubieni już zwalidowali pętlę czatu. |
-| D      | Bezpieczne preview           | `F-03`                                               | Standalone — odblokowuje weryfikację F-01/F-02 na preview bez naruszania NFR izolacji firm. |
 
 ## Baseline
 
@@ -59,14 +57,14 @@ Foundations poniżej zakładają obecność tych warstw i NIE re-scaffoldują ic
 - **Backend / API:** absent — naturalne dla architektury SPA + Supabase BaaS; brak Pages Functions / `/functions/` (zgodne z tech-stack).
 - **Data:** partial — klient Supabase w `src/lib/supabase.ts`, env vars `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` wpięte; **brak migracji, schematu, seedów lokalnie**.
 - **Auth:** absent — klient Supabase istnieje, ale brak logowania, kontekstu auth, hooków, redirectu OAuth.
-- **Deploy / infra:** present — `.github/workflows/deploy.yml` + `wrangler.jsonc` skonfigurowane, auto-deploy na main; **luka**: brak osobnego Supabase staging dla preview env (`infrastructure.md` Risk Register #2, CRITICAL).
+- **Deploy / infra:** present — `.github/workflows/deploy.yml` + `wrangler.jsonc` skonfigurowane, auto-deploy z main na prod. **Świadomie tylko dwa środowiska: localhost + prod** — preview deploys są wyłączone (`ci(deploy): disable PR preview deploys (solo workflow)`), wszystkie zmiany weryfikujemy lokalnie i lecą na prod. Środowisko pośrednie (staging) zostanie dodane dopiero po wpuszczeniu realnych userów pilotowych — przed tym momentem prod jest pusty i nie ma ryzyka wycieku danych firm.
 - **Observability:** absent — brak Sentry/Datadog/OTel/analytics. Świadomie poza MVP (NFR nie wymaga).
 
 ## Foundations
 
-### F-01: Auth scaffold (Supabase Auth: email/hasło + OAuth Google/Microsoft)
+### F-01: Auth scaffold (Supabase Auth: email/hasło + OAuth Google)
 
-- **Outcome:** (foundation) Supabase Auth skonfigurowane z email/hasło i OAuth Google + Microsoft; redirect callback działa; helper `getAuthRedirect()` w `lib/auth.ts` używany jednolicie (per Risk #3 w `infrastructure.md`).
+- **Outcome:** (foundation) Supabase Auth skonfigurowane z email/hasło i OAuth Google; redirect callback działa; helper `getAuthRedirect()` w `lib/auth.ts` używany jednolicie (per Risk #3 w `infrastructure.md`). Microsoft OAuth odłożony do v2 — koszt Azure AD app registration vs realna wartość dla MVP nie uzasadnia setupu na pilota.
 - **Change ID:** auth-scaffold
 - **PRD refs:** Access Control (Uwierzytelnianie), NFR RODO (zgody, audyt dostępu)
 - **Unlocks:** `S-01` (login UI), `F-04` (router potrzebuje session do guardów), pośrednio każdą `S-NN` (każda US wymaga zalogowanego usera)
@@ -74,7 +72,7 @@ Foundations poniżej zakładają obecność tych warstw i NIE re-scaffoldują ic
 - **Parallel with:** F-02, F-03
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** OAuth callback fallback na preview URLs to udokumentowane ryzyko (Risk #3) — obowiązkowy helper `getAuthRedirect()` zamiast inline string; weryfikacja na staging Supabase (F-03) zanim wejdzie na prod.
+- **Risk:** OAuth callback fallback to udokumentowane ryzyko (Risk #3) — obowiązkowy helper `getAuthRedirect()` zamiast inline string. Weryfikacja na localhoście (jedyne środowisko poza prod do momentu wpuszczenia pilotowych userów); na prod redirect URLs ustawione w Supabase Auth config.
 - **Status:** ready
 
 ### F-02: Multi-tenant data layer + RLS
@@ -84,24 +82,11 @@ Foundations poniżej zakładają obecność tych warstw i NIE re-scaffoldują ic
 - **PRD refs:** NFR izolacji ("dane jednej firmy całkowicie odizolowane od innych — wyciek = krytyczny incydent"), Access Control (każde konto należy do dokładnie jednej firmy)
 - **Unlocks:** `S-02`, `S-03`, `S-04`, `S-05` — każdy plaster operuje na danych firmowych i musi przejść przez RLS
 - **Prerequisites:** —
-- **Parallel with:** F-01, F-03
+- **Parallel with:** F-01
 - **Blockers:** —
 - **Unknowns:**
   - Jakie pola wizytówki firmy są jawnie publiczne (widoczne dla wszystkich zalogowanych), a jakie tylko dla "swoich"? — Owner: user. Block: no (decyzja może być podjęta w S-02; rozsądny default: wszystko z wizytówki w MVP jest publiczne dla zalogowanych, bo cały sens pilotu = firmy widzą się nawzajem).
-- **Risk:** Najbardziej obciążająca warstwa MVP — wyciek przez błędną politykę RLS = krytyczny incydent (NFR). Sequenced przed wszelkimi user-visible slice'ami, żeby każda kolejna slice testowała izolację na realnym schemacie. Świadomie nie odkładamy schematu pod plaster.
-- **Status:** ready
-
-### F-03: Staging Supabase + preview env isolation
-
-- **Outcome:** (foundation) osobny projekt Supabase "staging" wpięty do Cloudflare Pages env vars pod scope "Preview"; preview deploys nigdy nie hitują prod Supabase.
-- **Change ID:** staging-supabase-isolation
-- **PRD refs:** NFR izolacji firm (preview deploys to publiczne URLs — naruszają NFR jeśli używają prod data)
-- **Unlocks:** bezpieczna weryfikacja `F-01` (OAuth callbacks na preview) i `F-02` (RLS regression testing) zanim trafią na prod; verification path dla każdego kolejnego PR-a.
-- **Prerequisites:** —
-- **Parallel with:** F-01, F-02
-- **Blockers:** —
-- **Unknowns:** —
-- **Risk:** `infrastructure.md` Risk Register #2 flaguje to jako CRITICAL; jeśli pominięte, preview URL z prod kontami pilotowych firm = wyciek. Łatwa robota (utworzenie projektu + ustawienie env vars), ale ignorowana bywa "do v2" — explicit foundation żeby tego nie odłożyć.
+- **Risk:** Najbardziej obciążająca warstwa MVP — wyciek przez błędną politykę RLS = krytyczny incydent (NFR). Sequenced przed wszelkimi user-visible slice'ami, żeby każda kolejna slice testowała izolację na realnym schemacie. Świadomie nie odkładamy schematu pod plaster. Weryfikacja polityk RLS odbywa się na localhoście z lokalną instancją Supabase / na prod przed wpuszczeniem userów (prod jest pusty do momentu pilotu).
 - **Status:** ready
 
 ### F-04: Routing + auth-protected app shell
@@ -111,7 +96,7 @@ Foundations poniżej zakładają obecność tych warstw i NIE re-scaffoldują ic
 - **PRD refs:** Access Control (cała aplikacja za loginem); brak konkretnego US, bo jest cross-cutting
 - **Unlocks:** `S-01` i każdy kolejny user-visible plaster — bez routera nie ma nawigacji
 - **Prerequisites:** F-01
-- **Parallel with:** F-02, F-03 (sam routing) — pełna integracja guarda po F-01
+- **Parallel with:** F-02 (sam routing) — pełna integracja guarda po F-01
 - **Blockers:** —
 - **Unknowns:**
   - Czy mobile nav używa drawer/bottom tabs czy klasycznego responsive layoutu? — Owner: user. Block: no (kosmetyczne, decyzja w trakcie).
@@ -122,14 +107,14 @@ Foundations poniżej zakładają obecność tych warstw i NIE re-scaffoldują ic
 
 ### S-01: Login i wylogowanie
 
-- **Outcome:** User loguje się email+hasłem lub OAuth Google/Microsoft; widzi swoją tożsamość w app shellu; wylogowuje się.
+- **Outcome:** User loguje się email+hasłem lub OAuth Google; widzi swoją tożsamość w app shellu; wylogowuje się.
 - **Change ID:** login-and-signout
 - **PRD refs:** US-01, Access Control (Uwierzytelnianie)
 - **Prerequisites:** F-01, F-04
 - **Parallel with:** —
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Trzecia z trzech metod (email+hasło, Google, Microsoft) musi działać — Microsoft popularny w PL B2B (shape-notes auth_method). Pominięcie któregokolwiek to ryzyko że pilotowa firma nie wejdzie do aplikacji wcale.
+- **Risk:** Obie metody (email+hasło, Google) muszą działać — pominięcie któregokolwiek to ryzyko że pilotowa firma nie wejdzie do aplikacji wcale. Microsoft OAuth odłożony do v2: świadome zawężenie, akceptowalne dopóki żaden pilot nie zażąda M365 SSO jako blokera wejścia.
 - **Status:** proposed
 
 ### S-02: Edycja wizytówki własnej firmy
@@ -189,9 +174,8 @@ Foundations poniżej zakładają obecność tych warstw i NIE re-scaffoldują ic
 
 | Roadmap ID | Change ID                     | Suggested issue title                                              | Ready for `/10x-plan` | Notes                                  |
 | ---------- | ----------------------------- | ------------------------------------------------------------------ | --------------------- | -------------------------------------- |
-| F-01       | auth-scaffold                 | Supabase Auth: email/hasło + OAuth Google/Microsoft                | yes                   | Niezbędne dla każdego user-visible slice. |
+| F-01       | auth-scaffold                 | Supabase Auth: email/hasło + OAuth Google                          | yes                   | Niezbędne dla każdego user-visible slice. |
 | F-02       | multi-tenant-data-rls         | Schemat firm/users/favorites/messages z RLS izolacji per-firma     | yes                   | CRITICAL — NFR izolacji.               |
-| F-03       | staging-supabase-isolation    | Osobny Supabase staging dla preview deploys                        | yes                   | Małe scope, krytyczne dla NFR.         |
 | F-04       | routing-and-auth-shell        | React-router + auth-protected app shell + layout                   | no                    | Czeka na F-01.                         |
 | S-01       | login-and-signout             | UI logowania i wylogowania                                         | no                    | Czeka na F-01 + F-04. Pierwszy user-visible. |
 | S-02       | edit-own-company-profile      | Edycja wizytówki własnej firmy ze słownikiem polimerów             | no                    | Czeka na F-02 + S-01.                  |
@@ -217,6 +201,7 @@ Foundations poniżej zakładają obecność tych warstw i NIE re-scaffoldują ic
 - **Tryb "firma ukryta / tylko zaproszeni"** — Why parked: PRD §Access Control / Widoczność firm; kontrola widoczności wraca na v2.
 - **Observability (Sentry/Datadog/OTel)** — Why parked: PRD §NFR — tylko RODO i izolacja są formalnie wymagane; observability nie blokuje pilotu.
 - **i18n (drugi język UI)** — Why parked: shape-notes geography: "architektura przygotowana pod i18n od początku, ale dodanie drugiego języka po pilocie".
+- **Środowisko pośrednie (staging Supabase + preview deploys)** — Why parked: do momentu wpuszczenia realnych userów pilotowych pracujemy na localhost + pustym prod, brak ryzyka wycieku danych firm. Staging + preview deploys wracają zanim pierwszy realny user dostanie zaproszenie — wtedy prod przestaje być pusty i przestaje być bezpiecznym poligonem.
 
 ## Done
 

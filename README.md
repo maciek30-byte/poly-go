@@ -32,7 +32,7 @@ VITE_SUPABASE_ANON_KEY=sb_publishable_...
 
 ## Deployment
 
-Push to `main` → GitHub Actions runs `pnpm build` → `wrangler pages deploy` to Cloudflare Pages production scope. Production URL: <https://polygo.pages.dev>.
+Push to `main` → GitHub Actions runs `pnpm build` → `wrangler pages deploy` to Cloudflare Pages production scope. Production URL: <https://da9d2456.polygo.pages.dev>.
 
 PR-based preview deploys are disabled — solo workflow pushes directly to `main`. If you want to test a code change without affecting prod, run an ad-hoc deploy to a throwaway branch name (see manual deploy below) or, better, run `pnpm dev` locally.
 

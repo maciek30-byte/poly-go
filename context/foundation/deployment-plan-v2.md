@@ -249,7 +249,7 @@ Wtedy: utwórz `polygo-staging`, dodaj scope Preview w CF Pages, zmień lokalny 
 ## Etap 6 — Weryfikacja end-to-end (~5 min)
 
 - [ ] **Production deploy verify**:
-  - Otwórz `https://polygo.pages.dev` (lub custom domain jeśli skonfigurowany później).
+  - Otwórz `https://da9d2456.polygo.pages.dev` (lub custom domain jeśli skonfigurowany później).
   - Devtools → Network → `index.html` powinien zwrócić **200**, nie 404.
   - Devtools console: `console.log(import.meta.env.VITE_SUPABASE_URL)` zwraca URL `polygo-prod`.
 - [ ] **Preview deploy verify** (smoke, nie izolacja):
@@ -281,7 +281,7 @@ Wtedy: utwórz `polygo-staging`, dodaj scope Preview w CF Pages, zmień lokalny 
 
 Plan uważa się za wykonany gdy WSZYSTKIE z poniższych są spełnione:
 
-1. `https://polygo.pages.dev` zwraca 200 i ładuje React app.
+1. `https://da9d2456.polygo.pages.dev` zwraca 200 i ładuje React app.
 2. Preview deploy na nowym branchu działa (preview używa prod Supabase — zgodne z planem).
 3. `git push` do `main` triggeruje workflow → deploy do production scope CF Pages bez ręcznej interwencji.
 4. `pnpm exec wrangler pages deployment list` zwraca poprawną historic listę.

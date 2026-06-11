@@ -1,0 +1,196 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: PM
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - generic [ref=e10]: Profil zweryfikowany
+          - generic [ref=e11]: ·
+          - generic [ref=e12]: założono 1998
+          - generic [ref=e13]: ·
+          - generic [ref=e14]: Tarnów, Małopolska
+        - heading "PolyMer Industries Sp. z o.o." [level=1] [ref=e15]
+        - generic [ref=e16]:
+          - generic [ref=e17]: Producent
+          - generic [ref=e18]: Wtryskownia
+          - generic [ref=e19]: Recykler PE/PP
+          - generic [ref=e20]: Eksport UE
+        - generic [ref=e21]:
+          - generic [ref=e22]:
+            - img [ref=e23]
+            - text: ISO 9001
+          - generic [ref=e25]:
+            - img [ref=e26]
+            - text: ISO 14001
+          - generic [ref=e28]:
+            - img [ref=e29]
+            - text: IATF 16949
+          - generic [ref=e31]:
+            - img [ref=e32]
+            - text: EuCertPlast
+      - generic [ref=e34]:
+        - button "Napisz" [ref=e35] [cursor=pointer]:
+          - img [ref=e36]
+          - text: Napisz
+        - button "Dodaj do ulubionych" [ref=e38] [cursor=pointer]:
+          - img [ref=e39]
+          - text: Dodaj do ulubionych
+    - navigation "Sekcje profilu" [ref=e41]:
+      - link "Oferta" [ref=e42] [cursor=pointer]:
+        - /url: "#oferta"
+      - link "O firmie" [ref=e43] [cursor=pointer]:
+        - /url: "#opis"
+      - link "Parametry" [ref=e44] [cursor=pointer]:
+        - /url: "#parametry"
+      - link "Galeria" [ref=e45] [cursor=pointer]:
+        - /url: "#galeria"
+      - link "Dokumenty" [ref=e46] [cursor=pointer]:
+        - /url: "#dokumenty"
+  - generic [ref=e47]:
+    - tablist "Widoki profilu firmy" [ref=e48]:
+      - tab "Profil" [selected] [ref=e49] [cursor=pointer]
+      - tab "Dane rejestrowe" [ref=e50] [cursor=pointer]
+      - tab "Lista pracowników 5" [ref=e51] [cursor=pointer]:
+        - text: Lista pracowników
+        - generic [ref=e52]: "5"
+    - tabpanel "Profil" [ref=e53]:
+      - generic [ref=e54]:
+        - generic [ref=e55]:
+          - heading "Top 5 z oferty" [level=2] [ref=e56]
+          - paragraph [ref=e57]: Najważniejsze rzeczy, które firma chce pokazać partnerom.
+        - list [ref=e58]:
+          - listitem [ref=e59]:
+            - generic [ref=e60]: "01"
+            - generic [ref=e61]:
+              - heading "Wtrysk techniczny detali do 1.8 kg" [level=3] [ref=e62]
+              - paragraph [ref=e63]: Komponenty konstrukcyjne dla automotive i AGD, tolerancje ±0.05 mm
+          - listitem [ref=e64]:
+            - generic [ref=e65]: "02"
+            - generic [ref=e66]:
+              - heading "Regranulat PE-HD i PP post-industrial" [level=3] [ref=e67]
+              - paragraph [ref=e68]: Materiał o powtarzalnym MFI, świadectwo jakości do każdej partii
+          - listitem [ref=e69]:
+            - generic [ref=e70]: "03"
+            - generic [ref=e71]:
+              - heading "Projektowanie i wykonanie form" [level=3] [ref=e72]
+              - paragraph [ref=e73]: Własna narzędziownia, formy 1-16 gniazdowe, serwis i modyfikacje
+          - listitem [ref=e74]:
+            - generic [ref=e75]: "04"
+            - generic [ref=e76]:
+              - heading "Konfekcjonowanie i montaż" [level=3] [ref=e77]
+              - paragraph [ref=e78]: Linia montażu z kontrolą wizyjną, pakowanie w opakowania klienta
+          - listitem [ref=e79]:
+            - generic [ref=e80]: "05"
+            - generic [ref=e81]:
+              - heading "Magazynowanie i logistyka UE" [level=3] [ref=e82]
+              - paragraph [ref=e83]: Konsygnacja, dostawy JIT do 1500 km, własny transport
+      - generic [ref=e84]:
+        - heading "O firmie" [level=2] [ref=e86]
+        - paragraph [ref=e87]: Działamy od 1998 roku jako producent komponentów z tworzyw sztucznych dla branży motoryzacyjnej, AGD i opakowaniowej. Posiadamy 18 wtryskarek o sile zwarcia od 80 do 1300 ton oraz własną linię regranulacji PE/PP. Specjalizujemy się w krótkich i średnich seriach z gwarancją powtarzalności partii. Realizujemy projekty od koncepcji formy aż po seryjną produkcję — z własnym działem konstrukcyjnym i narzędziownią.
+      - generic [ref=e88]:
+        - generic [ref=e89]:
+          - heading "Parametry techniczne" [level=2] [ref=e90]
+          - paragraph [ref=e91]: Pola strukturyzowane zależne od kategorii działalności.
+        - generic [ref=e92]:
+          - generic [ref=e93]:
+            - heading "Produkcja" [level=3] [ref=e94]
+            - generic [ref=e95]:
+              - generic [ref=e96]:
+                - term [ref=e97]: Liczba wtryskarek
+                - definition [ref=e98]: 18 sztuk
+              - generic [ref=e99]:
+                - term [ref=e100]: Siła zwarcia
+                - definition [ref=e101]: 80 – 1300 ton
+              - generic [ref=e102]:
+                - term [ref=e103]: Detal max
+                - definition [ref=e104]: 1.8 kg
+              - generic [ref=e105]:
+                - term [ref=e106]: Technologie
+                - definition [ref=e107]: Wtrysk standard, wtrysk gazowy, wkładkowanie
+          - generic [ref=e108]:
+            - heading "Recykling" [level=3] [ref=e109]
+            - generic [ref=e110]:
+              - generic [ref=e111]:
+                - term [ref=e112]: Frakcje przyjmowane
+                - definition [ref=e113]: PE-HD, PE-LD, PP, mix poliolefin
+              - generic [ref=e114]:
+                - term [ref=e115]: Forma wsadu
+                - definition [ref=e116]: Regrind, bele, big bag
+              - generic [ref=e117]:
+                - term [ref=e118]: Przepustowość
+                - definition [ref=e119]: 450 t / miesiąc
+              - generic [ref=e120]:
+                - term [ref=e121]: Forma produktu
+                - definition [ref=e122]: Regranulat (MFI na żądanie)
+          - generic [ref=e123]:
+            - heading "Rynki" [level=3] [ref=e124]
+            - generic [ref=e125]:
+              - generic [ref=e126]:
+                - term [ref=e127]: Segmenty
+                - definition [ref=e128]: Automotive (Tier 2), AGD, opakowania techniczne
+              - generic [ref=e129]:
+                - term [ref=e130]: Eksport
+                - definition [ref=e131]: DE, CZ, SK, AT, HU — ~38% obrotu
+              - generic [ref=e132]:
+                - term [ref=e133]: MOQ
+                - definition [ref=e134]: od 500 sztuk / 200 kg regranulatu
+      - generic [ref=e135]:
+        - generic [ref=e136]:
+          - heading "Galeria" [level=2] [ref=e137]
+          - paragraph [ref=e138]: Hala produkcyjna, maszyny, magazyn.
+        - generic [ref=e139]:
+          - figure [ref=e140] [cursor=pointer]:
+            - generic [ref=e141]: Hala produkcyjna
+          - figure [ref=e142] [cursor=pointer]:
+            - generic [ref=e143]: Linia wtryskarek
+          - figure [ref=e144] [cursor=pointer]:
+            - generic [ref=e145]: Magazyn surowca
+          - figure [ref=e146] [cursor=pointer]:
+            - generic [ref=e147]: Narzędziownia
+          - figure [ref=e148] [cursor=pointer]:
+            - generic [ref=e149]: Linia regranulacji
+      - generic [ref=e150]:
+        - generic [ref=e151]:
+          - heading "Dokumenty do pobrania" [level=2] [ref=e152]
+          - paragraph [ref=e153]: PDF, do 10 MB każdy.
+        - list [ref=e154]:
+          - listitem [ref=e155]:
+            - generic [ref=e156]: PDF
+            - generic [ref=e157]:
+              - generic [ref=e158]: Certyfikat ISO 9001:2015
+              - generic [ref=e159]: 1.2 MB
+            - button "Pobierz" [ref=e160] [cursor=pointer]:
+              - img [ref=e161]
+              - text: Pobierz
+          - listitem [ref=e164]:
+            - generic [ref=e165]: PDF
+            - generic [ref=e166]:
+              - generic [ref=e167]: Certyfikat IATF 16949
+              - generic [ref=e168]: 2.4 MB
+            - button "Pobierz" [ref=e169] [cursor=pointer]:
+              - img [ref=e170]
+              - text: Pobierz
+          - listitem [ref=e173]:
+            - generic [ref=e174]: PDF
+            - generic [ref=e175]:
+              - generic [ref=e176]: Prezentacja firmy 2026
+              - generic [ref=e177]: 6.8 MB
+            - button "Pobierz" [ref=e178] [cursor=pointer]:
+              - img [ref=e179]
+              - text: Pobierz
+          - listitem [ref=e182]:
+            - generic [ref=e183]: PDF
+            - generic [ref=e184]:
+              - generic [ref=e185]: Karta technologiczna — wtrysk
+              - generic [ref=e186]: 840 KB
+            - button "Pobierz" [ref=e187] [cursor=pointer]:
+              - img [ref=e188]
+              - text: Pobierz
+          - listitem [ref=e191]:
+            - generic [ref=e192]: PDF
+            - generic [ref=e193]:
+              - generic [ref=e194]: Świadectwo regranulatu PE-HD
+              - generic [ref=e195]: 320 KB
+            - button "Pobierz" [ref=e196] [cursor=pointer]:
+              - img [ref=e197]
+              - text: Pobierz

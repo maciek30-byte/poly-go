@@ -29,7 +29,7 @@ Stan na 2026-06.
 - 1 GB storage (pliki w komunikatorze: specyfikacje, faktury proforma — patrz US-09)
 - 5 GB egress / miesiąc
 - **Realtime: 200 jednoczesnych połączeń, 2 mln messages / miesiąc** — komunikator + alarmy (US-08, US-09)
-- **Auth: 50k Monthly Active Users**, włącznie z OAuth Google / Microsoft (PRD § Access Control)
+- **Auth: 50k Monthly Active Users**, włącznie z OAuth Google (PRD § Access Control). Microsoft OAuth odłożony do v2.
 - 500k wywołań Edge Functions / miesiąc — kanał do wysyłki powiadomień mailowych (US-08)
 - `pg_cron` natywnie w Postgres — harmonogramowanie po stronie bazy bez dodatkowego serwisu
 - Row Level Security (RLS) jako mechanizm autoryzacji — **kluczowe dla Reguły 1 z PRD**

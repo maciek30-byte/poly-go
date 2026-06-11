@@ -6,12 +6,13 @@ Operating rules for AI agents (Claude Code, others) working in this repo. Read b
 
 - **Jedno środowisko Supabase**: `polygo-prod` (project ID `yaejbsodwhixywjpqhau`, region eu-central-1).
 - **Brak preview deploys**. GitHub Actions deploy odpala się WYŁĄCZNIE na push do `main`; PR-y nie tworzą `<branch>.polygo.pages.dev`. Solo dev → push-to-main, lokalny `pnpm dev` zastępuje preview.
-- Local dev i production (`polygo.pages.dev`) **używają tych samych Supabase credentials**.
-- Świadoma decyzja, udokumentowana w `context/foundation/deployment-plan-v2.md` sekcja "Świadomie odroczone ryzyka". Trigger dodania staging: pierwszy pilot z zewnętrznym userem, schema migration wymagająca testu, lub incident.
+- Local dev i production (`da9d2456.polygo.pages.dev`) **używają tych samych Supabase credentials**.
+- **Weryfikujemy zmiany bezpośrednio na prod**. To jest OK, dopóki prod jest pusty / zawiera tylko dane testowe Operatora — brak realnych userów = brak cudzych danych do wycieku. Flow: `pnpm dev` lokalnie → merge do `main` → auto-deploy → weryfikacja na `da9d2456.polygo.pages.dev`.
+- Świadoma decyzja, udokumentowana w `context/foundation/infrastructure.md` (sekcje "Environment model" + Risk Register #2) i `context/foundation/deployment-plan-v2.md` ("Świadomie odroczone ryzyka"). **Trigger reaktywacji preview + dodania staging Supabase**: zanim pierwszy realny user pilotowy dostanie zaproszenie. Od tego momentu "verify on prod" przestaje być dozwolone — pełna checklista w `infrastructure.md` → "Pre-pilot trigger checklist".
 
 ## Deployment / Infrastructure DO NOTs
 
-- **NEVER** dodawaj `pull_request:` event do `.github/workflows/deploy.yml` — preview deploys są celowo wyłączone, każdy PR build = zużyte build minutes i ad-hoc URL który i tak hituje prod Supabase. Test code change przez `pnpm dev` lokalnie.
+- **NEVER** dodawaj `pull_request:` event do `.github/workflows/deploy.yml` — preview deploys są celowo wyłączone do momentu wpuszczenia pierwszego usera. Każdy PR build = zużyte build minutes i ad-hoc URL bez wartości dodanej (i tak weryfikujemy na prod). Test code change przez `pnpm dev` lokalnie → merge do `main` → weryfikacja na `da9d2456.polygo.pages.dev`.
 - **NEVER** deployuj ręcznie z brancha innego niż `main` bez świadomej potrzeby — `wrangler pages deploy --branch=<inny>` utworzy ad-hoc preview URL który hituje prod Supabase. Jeśli MUSISZ (np. demo dla siebie), usuń ten deployment po teście: `wrangler pages deployment list --project-name=polygo` + delete via dashboard.
 - **NEVER** twórz tabel bez RLS — każda nowa tabela musi mieć `enable row level security` w migracji + przynajmniej jedną polisę. Przy jedynym Supabase RLS jest jedyną obroną między userami.
 - **NEVER** create `public/404.html` — Cloudflare Pages auto-fallback do `index.html` jest jedyną SPA routing strategy. Dodanie `404.html` SILENTLY breaks SPA routing on prod.

@@ -182,6 +182,11 @@
   },
   "active": "09d962629cbf56a7",
   "lastOpenFiles": [
+    "changes/auth-scaffold/plan-brief_feedback.html",
+    "changes/auth-scaffold/plan-brief.md",
+    "changes/auth-scaffold/plan.md",
+    "changes/auth-scaffold/change.md",
+    "changes/auth-scaffold",
     "foundation/cost-analysis.md",
     "foundation/tech-stack.md",
     "foundation/prd.md"

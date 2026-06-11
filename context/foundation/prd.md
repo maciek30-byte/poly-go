@@ -29,7 +29,7 @@ Jedyna persona aplikacji. Operator PolyGo (autor projektu / zespół) wykonuje s
 
 ## User Stories
 
-US-01: User loguje się do aplikacji (email i hasło lub OAuth Google/Microsoft).
+US-01: User loguje się do aplikacji (email i hasło lub OAuth Google).
 US-02: User wyszukuje firmy z bazy po kryteriach branżowych (typ polimeru, profil działalności, region).
 US-03: User przegląda pełną wizytówkę wybranej firmy.
 US-04: User otwiera czat z wybraną firmą i prowadzi rozmowę w czasie rzeczywistym.
@@ -56,7 +56,7 @@ Pozostałe jakości (polski UI, responsywność mobile, accessibility WCAG, czas
 
 Aplikacja webowa, jedna powierzchnia (responsywny web). Każde konto użytkownika należy do dokładnie jednej firmy (przypisanie ustawiane podczas seedingu, nie przez użytkownika).
 
-**Uwierzytelnianie:** email i hasło, plus OAuth Google i Microsoft. W MVP brak self-registration — konta firm i konta użytkowników są seedowane ręcznie przez Operatora PolyGo poza aplikacją na podstawie wcześniej zebranej listy pilotowych firm. Użytkownik otrzymuje dane logowania (login/hasło lub link aktywacyjny) z zewnątrz aplikacji.
+**Uwierzytelnianie:** email i hasło, plus OAuth Google. Microsoft OAuth świadomie odłożony do v2 (zbyt mała wartość vs koszt setupu Azure AD app rejestracji dla MVP). W MVP brak self-registration — konta firm i konta użytkowników są seedowane ręcznie przez Operatora PolyGo poza aplikacją na podstawie wcześniej zebranej listy pilotowych firm. Użytkownik otrzymuje dane logowania (login/hasło lub link aktywacyjny) z zewnątrz aplikacji.
 
 **Role:** brak. Wszyscy zalogowani użytkownicy mają te same uprawnienia operacyjne w obrębie swojej firmy: edycja wizytówki firmy, wyszukiwanie kontrahentów, komunikator, dodawanie do ulubionych. Trzy-rolowy model (super-admin / właściciel / pracownik) świadomie wycofany na rzecz prostoty MVP. Wraca jako otwarta decyzja v2.
 
