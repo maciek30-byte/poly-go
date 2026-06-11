@@ -1,7 +1,7 @@
 ---
 change_id: auth-scaffold
 title: Fundament uwierzytelniania — Supabase Auth (email/hasło + OAuth Google/Microsoft)
-status: implementing
+status: implemented
 created: 2026-06-11
 updated: 2026-06-11
 archived_at: null

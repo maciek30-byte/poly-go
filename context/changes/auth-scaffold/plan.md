@@ -318,8 +318,8 @@ Brak migracji danych. Pierwsze rekordy w `auth.users` powstają dopiero w fazie 
 
 #### Manual
 
-- [x] 3.1 Email/hasło: `signUp` zwraca usera, Supabase dashboard pokazuje rekord
-- [x] 3.2 Google OAuth: pełny flow bez błędu, `getSession()` zwraca sesję z provider `google`
+- [x] 3.1 Email/hasło: `signUp` zwraca usera, Supabase dashboard pokazuje rekord — 3ea0c13
+- [x] 3.2 Google OAuth: pełny flow bez błędu, `getSession()` zwraca sesję z provider `google` — 3ea0c13
 - [~] 3.3 Microsoft OAuth — ODROCZONE razem z 1.4 (follow-up change)
-- [x] 3.4 `getAuthRedirect()` w prod zwraca `https://da9d2456.polygo.pages.dev/auth/callback`
-- [x] 3.5 Stan `auth.users` po smoke testach jest świadomy (udokumentowany w commit message lub change.md)
+- [x] 3.4 `getAuthRedirect()` w prod zwraca `https://da9d2456.polygo.pages.dev/auth/callback` — 3ea0c13
+- [x] 3.5 Stan `auth.users` po smoke testach jest świadomy (udokumentowany w commit message lub change.md) — 3ea0c13
