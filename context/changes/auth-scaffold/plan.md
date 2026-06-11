@@ -305,21 +305,21 @@ Brak migracji danych. Pierwsze rekordy w `auth.users` powstają dopiero w fazie 
 
 #### Automated
 
-- [x] 2.1 TypeScript typecheck przechodzi: `pnpm build`
-- [x] 2.2 ESLint przechodzi: `pnpm lint`
-- [x] 2.3 Plik `src/lib/auth.ts` zawiera dokładnie jeden export `getAuthRedirect`
-- [x] 2.4 `git grep "redirectTo:" src/` jest puste (brak inline stringów)
+- [x] 2.1 TypeScript typecheck przechodzi: `pnpm build` — 881a518
+- [x] 2.2 ESLint przechodzi: `pnpm lint` — 881a518
+- [x] 2.3 Plik `src/lib/auth.ts` zawiera dokładnie jeden export `getAuthRedirect` — 881a518
+- [x] 2.4 `git grep "redirectTo:" src/` jest puste (brak inline stringów) — 881a518
 
 #### Manual
 
-- [x] 2.5 `pnpm dev` startuje bez błędów; DevTools console zwraca `http://localhost:<port>/auth/callback` z helpera (port 5175 — Vite fallback z 5173)
+- [x] 2.5 `pnpm dev` startuje bez błędów; DevTools console zwraca `http://localhost:<port>/auth/callback` z helpera (port 5175 — Vite fallback z 5173) — 881a518
 
 ### Phase 3: Weryfikacja end-to-end na prod
 
 #### Manual
 
-- [ ] 3.1 Email/hasło: `signUp` zwraca usera, Supabase dashboard pokazuje rekord
-- [ ] 3.2 Google OAuth: pełny flow bez błędu, `getSession()` zwraca sesję z provider `google`
+- [x] 3.1 Email/hasło: `signUp` zwraca usera, Supabase dashboard pokazuje rekord
+- [x] 3.2 Google OAuth: pełny flow bez błędu, `getSession()` zwraca sesję z provider `google`
 - [~] 3.3 Microsoft OAuth — ODROCZONE razem z 1.4 (follow-up change)
-- [ ] 3.4 `getAuthRedirect()` w prod zwraca `https://da9d2456.polygo.pages.dev/auth/callback`
-- [ ] 3.5 Stan `auth.users` po smoke testach jest świadomy (udokumentowany w commit message lub change.md)
+- [x] 3.4 `getAuthRedirect()` w prod zwraca `https://da9d2456.polygo.pages.dev/auth/callback`
+- [x] 3.5 Stan `auth.users` po smoke testach jest świadomy (udokumentowany w commit message lub change.md)
