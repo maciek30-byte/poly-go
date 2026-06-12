@@ -30,6 +30,26 @@ VITE_SUPABASE_ANON_KEY=sb_publishable_...
 
 > **Single Supabase environment**: local dev and production both hit `polygo-prod`. See `AGENTS.md` and `context/foundation/deployment-plan-v2.md` ("Świadomie odroczone ryzyka") for why and the trigger to add staging.
 
+## Database (Supabase)
+
+Schema, migrations and RLS policies live in `supabase/`. Migrations are versioned (`supabase/migrations/`) and applied via the Supabase CLI. Local dev runs a full Supabase stack in Docker (`supabase start`); prod is the linked `polygo-prod` project.
+
+Typical workflow:
+
+```bash
+pnpm db:start      # boot local stack (Postgres + Auth + Storage + Studio)
+pnpm db:reset      # drop + replay all migrations + seed.sql
+pnpm db:types      # regenerate src/lib/database.types.ts from local schema
+pnpm db:test:rls   # run supabase/tests/rls.sql isolation suite
+pnpm db:diff       # sanity-check pending changes against linked prod
+pnpm db:push       # apply pending migrations to linked prod
+pnpm db:stop       # tear down local stack
+```
+
+After every migration in `supabase/migrations/`, regenerate TS types (`pnpm db:types`) and commit `src/lib/database.types.ts` together with the migration.
+
+Studio is available at <http://127.0.0.1:54323> while the local stack is running.
+
 ## Deployment
 
 Push to `main` → GitHub Actions runs `pnpm build` → `wrangler pages deploy` to Cloudflare Pages production scope. Production URL: <https://da9d2456.polygo.pages.dev>.
