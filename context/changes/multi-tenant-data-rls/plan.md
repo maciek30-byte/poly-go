@@ -430,27 +430,27 @@ export const supabase = createClient<Database>(url, anonKey)
 
 #### Automated
 
-- [x] 3.1 pnpm db:reset aplikuje obie migracje bez błędów
-- [x] 3.2 \d+ companies pokazuje Policies companies_select_all i companies_update_own
-- [x] 3.3 SELECT polname FROM pg_policy zwraca 12+ wpisów
-- [x] 3.4 pg_proc zawiera current_user_company_id i mark_message_read
+- [x] 3.1 pnpm db:reset aplikuje obie migracje bez błędów — 555e781
+- [x] 3.2 \d+ companies pokazuje Policies companies_select_all i companies_update_own — 555e781
+- [x] 3.3 SELECT polname FROM pg_policy zwraca 12+ wpisów — 555e781
+- [x] 3.4 pg_proc zawiera current_user_company_id i mark_message_read — 555e781
 
 #### Manual
 
-- [x] 3.5 Studio Policies pokazuje RLS enabled dla tabel z danymi firmowymi
-- [x] 3.6 categories i certificates bez RLS ale z GRANT SELECT na authenticated
+- [x] 3.5 Studio Policies pokazuje RLS enabled dla tabel z danymi firmowymi — 555e781
+- [x] 3.6 categories i certificates bez RLS ale z GRANT SELECT na authenticated — 555e781
 
 ### Phase 4: Weryfikacja izolacji RLS
 
 #### Automated
 
-- [ ] 4.1 pnpm db:reset && pnpm db:test:rls przechodzi z NOTICE: RLS isolation OK
-- [ ] 4.2 Każdy z 8 testów ma osobny RAISE NOTICE z opisem
+- [x] 4.1 pnpm db:reset && pnpm db:test:rls przechodzi z NOTICE: RLS isolation OK
+- [x] 4.2 Każdy z 8 testów ma osobny RAISE NOTICE z opisem
 
 #### Manual
 
-- [ ] 4.3 Manualna checklista (5/5) w Supabase Studio przechodzi
-- [ ] 4.4 service_role bypass potwierdzony ad-hoc
+- [x] 4.3 Manualna checklista (5/5) w Supabase Studio przechodzi
+- [x] 4.4 service_role bypass potwierdzony ad-hoc
 
 ### Phase 5: Typy TS i wpięcie do klienta
 
