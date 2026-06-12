@@ -444,27 +444,27 @@ export const supabase = createClient<Database>(url, anonKey)
 
 #### Automated
 
-- [x] 4.1 pnpm db:reset && pnpm db:test:rls przechodzi z NOTICE: RLS isolation OK
-- [x] 4.2 Każdy z 8 testów ma osobny RAISE NOTICE z opisem
+- [x] 4.1 pnpm db:reset && pnpm db:test:rls przechodzi z NOTICE: RLS isolation OK — 53fca58
+- [x] 4.2 Każdy z 8 testów ma osobny RAISE NOTICE z opisem — 53fca58
 
 #### Manual
 
-- [x] 4.3 Manualna checklista (5/5) w Supabase Studio przechodzi
-- [x] 4.4 service_role bypass potwierdzony ad-hoc
+- [x] 4.3 Manualna checklista (5/5) w Supabase Studio przechodzi — 53fca58
+- [x] 4.4 service_role bypass potwierdzony ad-hoc — 53fca58
 
 ### Phase 5: Typy TS i wpięcie do klienta
 
 #### Automated
 
-- [ ] 5.1 pnpm db:types generuje plik bez błędów
-- [ ] 5.2 pnpm typecheck przechodzi
-- [ ] 5.3 pnpm build przechodzi
-- [ ] 5.4 pnpm lint przechodzi
-- [ ] 5.5 supabase db diff --linked zwraca pustą listę po db push
+- [x] 5.1 pnpm db:types generuje plik bez błędów
+- [x] 5.2 pnpm typecheck przechodzi
+- [x] 5.3 pnpm build przechodzi
+- [x] 5.4 pnpm lint przechodzi
+- [x] 5.5 supabase db diff --linked zwraca pustą listę po db push
 
 #### Manual
 
-- [ ] 5.6 Autocomplete na supabase.from('companies').select() działa
-- [ ] 5.7 Supabase Dashboard prod pokazuje wszystkie 10 tabel i polityki RLS
-- [ ] 5.8 seed.sql ręcznie puszczony na prod (5 categories + 4 certificates)
-- [ ] 5.9 CLAUDE.md ma sekcję Database workflow
+- [x] 5.6 Autocomplete na supabase.from('companies').select() działa
+- [x] 5.7 Supabase Dashboard prod pokazuje wszystkie 10 tabel i polityki RLS
+- [x] 5.8 seed.sql ręcznie puszczony na prod (5 categories + 4 certificates)
+- [x] 5.9 CLAUDE.md ma sekcję Database workflow

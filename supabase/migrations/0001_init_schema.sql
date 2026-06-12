@@ -3,7 +3,10 @@
 --  RLS arrives in 0002_enable_rls.sql.
 -- ============================================================
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- Using gen_random_uuid() from pg_catalog (built-in in PG 13+) instead of
+-- uuid-ossp extension. Supabase keeps installed extensions in the `extensions`
+-- schema, which is not on the default search_path, so uuid_generate_v4() would
+-- need a schema prefix on prod. gen_random_uuid() avoids the issue entirely.
 
 -- ============================================================
 -- DICTIONARIES
@@ -33,7 +36,7 @@ COMMENT ON COLUMN certificates.icon_url IS 'Opcjonalna ikona tagu w Supabase Sto
 -- ============================================================
 
 CREATE TABLE companies (
-    id                   UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                   UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
     name                 TEXT        NOT NULL,
     logo_url             TEXT,
     founding_year        INTEGER     CHECK (founding_year >= 1800 AND founding_year <= EXTRACT(YEAR FROM NOW())),
@@ -116,7 +119,7 @@ CREATE INDEX idx_company_certificates_cert ON company_certificates(certificate_i
 CREATE TYPE media_type_enum AS ENUM ('PHOTO', 'DOCUMENT');
 
 CREATE TABLE company_media (
-    id         UUID            PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id         UUID            PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID            NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     media_type media_type_enum NOT NULL,
     file_url   TEXT            NOT NULL,
@@ -158,7 +161,7 @@ CREATE INDEX idx_company_media_company ON company_media(company_id, media_type);
 -- ============================================================
 
 CREATE TABLE favorites (
-    id         UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id         UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id    UUID        NOT NULL REFERENCES users(id)     ON DELETE CASCADE,
     company_id UUID        NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -178,7 +181,7 @@ CREATE INDEX idx_favorites_company ON favorites(company_id);
 -- ============================================================
 
 CREATE TABLE conversations (
-    id               UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id               UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
     participant_1_id UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     participant_2_id UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -207,7 +210,7 @@ CREATE UNIQUE INDEX uniq_conversation_pair
 -- ============================================================
 
 CREATE TABLE messages (
-    id              UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
     conversation_id UUID        NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
     sender_id       UUID        NOT NULL REFERENCES users(id)         ON DELETE CASCADE,
     content         TEXT        NOT NULL CHECK (char_length(content) > 0),

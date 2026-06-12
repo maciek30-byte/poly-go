@@ -52,3 +52,7 @@ Turn one roadmap item into the first implementation cycle with the **change plan
 Skills must not write to `context/archive/`. Archived changes are immutable; if a resolved target path starts with `context/archive/`, abort with: "This change is archived. Open a new change with `/10x-new` instead."
 
 <!-- END @przeprogramowani/10x-cli -->
+
+## Database workflow
+
+Schema changes go through versioned migrations in `supabase/migrations/` (Supabase CLI). After every new migration, regenerate TypeScript types with `pnpm db:types` and commit `src/lib/database.types.ts` in the same commit as the migration — the client (`src/lib/supabase.ts`) uses `createClient<Database>` so out-of-sync types will surface as `tsc` errors immediately. RLS policy changes are exercised by `supabase/tests/rls.sql` (run with `pnpm db:test:rls`); add a new assertion when you introduce a new policy.
