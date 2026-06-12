@@ -407,7 +407,7 @@ export const supabase = createClient<Database>(url, anonKey)
 
 - [x] 1.5 Studio dostępne pod http://127.0.0.1:54323 — d9e60e2
 - [x] 1.6 Projekt jest zlinkowany z prod — d9e60e2
-- [ ] 1.7 pnpm db:stop czysto zamyka stack
+- [x] 1.7 pnpm db:stop czysto zamyka stack — d9e60e2
 
 ### Phase 2: Schemat tabel (bez RLS) + seed słowników
 
@@ -456,15 +456,15 @@ export const supabase = createClient<Database>(url, anonKey)
 
 #### Automated
 
-- [x] 5.1 pnpm db:types generuje plik bez błędów
-- [x] 5.2 pnpm typecheck przechodzi
-- [x] 5.3 pnpm build przechodzi
-- [x] 5.4 pnpm lint przechodzi
-- [x] 5.5 supabase db diff --linked zwraca pustą listę po db push
+- [x] 5.1 pnpm db:types generuje plik bez błędów — 11d4e9b
+- [x] 5.2 pnpm typecheck przechodzi — 11d4e9b
+- [x] 5.3 pnpm build przechodzi — 11d4e9b
+- [x] 5.4 pnpm lint przechodzi — 11d4e9b
+- [x] 5.5 supabase db diff --linked zwraca pustą listę po db push — 11d4e9b
 
 #### Manual
 
-- [x] 5.6 Autocomplete na supabase.from('companies').select() działa
-- [x] 5.7 Supabase Dashboard prod pokazuje wszystkie 10 tabel i polityki RLS
-- [x] 5.8 seed.sql ręcznie puszczony na prod (5 categories + 4 certificates)
-- [x] 5.9 CLAUDE.md ma sekcję Database workflow
+- [x] 5.6 Autocomplete na supabase.from('companies').select() działa — 11d4e9b
+- [x] 5.7 Supabase Dashboard prod pokazuje wszystkie 10 tabel i polityki RLS — 11d4e9b
+- [x] 5.8 seed.sql ręcznie puszczony na prod (5 categories + 4 certificates) — 11d4e9b
+- [x] 5.9 CLAUDE.md ma sekcję Database workflow — 11d4e9b
