@@ -3,7 +3,7 @@ change_id: multi-tenant-data-rls
 title: Multi-tenant data layer + RLS izolacji per-firma
 status: implementing
 created: 2026-06-11
-updated: 2026-06-11
+updated: 2026-06-12
 archived_at: null
 ---
 

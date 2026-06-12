@@ -398,33 +398,33 @@ export const supabase = createClient<Database>(url, anonKey)
 
 #### Automated
 
-- [x] 1.1 supabase --version zwraca 2.58.5+
-- [x] 1.2 pnpm db:start startuje stack lokalnie bez błędów
-- [x] 1.3 pnpm db:reset przechodzi bez błędów
-- [x] 1.4 git diff pokazuje tylko supabase/, .gitignore, package.json, README.md
+- [x] 1.1 supabase --version zwraca 2.58.5+ — d9e60e2
+- [x] 1.2 pnpm db:start startuje stack lokalnie bez błędów — d9e60e2
+- [x] 1.3 pnpm db:reset przechodzi bez błędów — d9e60e2
+- [x] 1.4 git diff pokazuje tylko supabase/, .gitignore, package.json, README.md — d9e60e2
 
 #### Manual
 
-- [x] 1.5 Studio dostępne pod http://127.0.0.1:54323
-- [x] 1.6 Projekt jest zlinkowany z prod
+- [x] 1.5 Studio dostępne pod http://127.0.0.1:54323 — d9e60e2
+- [x] 1.6 Projekt jest zlinkowany z prod — d9e60e2
 - [ ] 1.7 pnpm db:stop czysto zamyka stack
 
 ### Phase 2: Schemat tabel (bez RLS) + seed słowników
 
 #### Automated
 
-- [ ] 2.1 pnpm db:reset aplikuje migrację bez błędów
-- [ ] 2.2 psql \dt pokazuje 10 tabel
-- [ ] 2.3 SELECT count(*) FROM categories zwraca 5
-- [ ] 2.4 SELECT count(*) FROM certificates zwraca 4
-- [ ] 2.5 \d companies pokazuje kolumnę region typu text
-- [ ] 2.6 \di uniq_conversation_pair pokazuje UNIQUE indeks
+- [x] 2.1 pnpm db:reset aplikuje migrację bez błędów
+- [x] 2.2 psql \dt pokazuje 10 tabel
+- [x] 2.3 SELECT count(*) FROM categories zwraca 5
+- [x] 2.4 SELECT count(*) FROM certificates zwraca 4
+- [x] 2.5 \d companies pokazuje kolumnę region typu text
+- [x] 2.6 \di uniq_conversation_pair pokazuje UNIQUE indeks
 
 #### Manual
 
-- [ ] 2.7 Studio pokazuje wszystkie tabele w schemacie public
-- [ ] 2.8 Komentarze tabel/kolumn są widoczne w Studio
-- [ ] 2.9 EXPLAIN na SELECT z messages WHERE read_at IS NULL używa idx_messages_unread
+- [x] 2.7 Studio pokazuje wszystkie tabele w schemacie public
+- [x] 2.8 Komentarze tabel/kolumn są widoczne w Studio
+- [x] 2.9 EXPLAIN na SELECT z messages WHERE read_at IS NULL używa idx_messages_unread
 
 ### Phase 3: Włączenie RLS i polityki dostępu
 
