@@ -413,32 +413,32 @@ export const supabase = createClient<Database>(url, anonKey)
 
 #### Automated
 
-- [x] 2.1 pnpm db:reset aplikuje migrację bez błędów
-- [x] 2.2 psql \dt pokazuje 10 tabel
-- [x] 2.3 SELECT count(*) FROM categories zwraca 5
-- [x] 2.4 SELECT count(*) FROM certificates zwraca 4
-- [x] 2.5 \d companies pokazuje kolumnę region typu text
-- [x] 2.6 \di uniq_conversation_pair pokazuje UNIQUE indeks
+- [x] 2.1 pnpm db:reset aplikuje migrację bez błędów — 638d948
+- [x] 2.2 psql \dt pokazuje 10 tabel — 638d948
+- [x] 2.3 SELECT count(*) FROM categories zwraca 5 — 638d948
+- [x] 2.4 SELECT count(*) FROM certificates zwraca 4 — 638d948
+- [x] 2.5 \d companies pokazuje kolumnę region typu text — 638d948
+- [x] 2.6 \di uniq_conversation_pair pokazuje UNIQUE indeks — 638d948
 
 #### Manual
 
-- [x] 2.7 Studio pokazuje wszystkie tabele w schemacie public
-- [x] 2.8 Komentarze tabel/kolumn są widoczne w Studio
-- [x] 2.9 EXPLAIN na SELECT z messages WHERE read_at IS NULL używa idx_messages_unread
+- [x] 2.7 Studio pokazuje wszystkie tabele w schemacie public — 638d948
+- [x] 2.8 Komentarze tabel/kolumn są widoczne w Studio — 638d948
+- [x] 2.9 EXPLAIN na SELECT z messages WHERE read_at IS NULL używa idx_messages_unread — 638d948
 
 ### Phase 3: Włączenie RLS i polityki dostępu
 
 #### Automated
 
-- [ ] 3.1 pnpm db:reset aplikuje obie migracje bez błędów
-- [ ] 3.2 \d+ companies pokazuje Policies companies_select_all i companies_update_own
-- [ ] 3.3 SELECT polname FROM pg_policy zwraca 12+ wpisów
-- [ ] 3.4 pg_proc zawiera current_user_company_id i mark_message_read
+- [x] 3.1 pnpm db:reset aplikuje obie migracje bez błędów
+- [x] 3.2 \d+ companies pokazuje Policies companies_select_all i companies_update_own
+- [x] 3.3 SELECT polname FROM pg_policy zwraca 12+ wpisów
+- [x] 3.4 pg_proc zawiera current_user_company_id i mark_message_read
 
 #### Manual
 
-- [ ] 3.5 Studio Policies pokazuje RLS enabled dla tabel z danymi firmowymi
-- [ ] 3.6 categories i certificates bez RLS ale z GRANT SELECT na authenticated
+- [x] 3.5 Studio Policies pokazuje RLS enabled dla tabel z danymi firmowymi
+- [x] 3.6 categories i certificates bez RLS ale z GRANT SELECT na authenticated
 
 ### Phase 4: Weryfikacja izolacji RLS
 

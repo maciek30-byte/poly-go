@@ -50,6 +50,10 @@ After every migration in `supabase/migrations/`, regenerate TS types (`pnpm db:t
 
 Studio is available at <http://127.0.0.1:54323> while the local stack is running.
 
+### Service role and RLS
+
+The browser client uses **only** `VITE_SUPABASE_ANON_KEY`; every query goes through Row Level Security policies. The `SUPABASE_SERVICE_ROLE_KEY` automatically bypasses RLS and is reserved for offline seeding (companies, pilot users) and future background jobs. It lives in `.env.local` (gitignored) and, when a Worker eventually needs it, in Cloudflare Pages secrets — **never in the browser bundle**.
+
 ## Deployment
 
 Push to `main` → GitHub Actions runs `pnpm build` → `wrangler pages deploy` to Cloudflare Pages production scope. Production URL: <https://da9d2456.polygo.pages.dev>.
