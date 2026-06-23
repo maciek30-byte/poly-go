@@ -1,0 +1,132 @@
+.logo {
+  --logo-gradient-start: #34795a;
+  --logo-gradient-end: #1f4a37;
+  --logo-mark-fg: #ffffff;
+  --logo-accent-dot: #c8e8d4;
+  --logo-shadow: 0 6px 18px rgba(31, 74, 55, 0.22);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--logo-gap, var(--space-3));
+  font-family: var(--font-sans);
+  color: var(--color-text-strong);
+  line-height: 1;
+}
+
+.logo--full {
+  flex-direction: row;
+}
+
+.logo--mark {
+  gap: 0;
+}
+
+.logo__mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--logo-mark-size, 40px);
+  height: var(--logo-mark-size, 40px);
+  border-radius: var(--radius-full);
+  box-shadow: var(--logo-shadow);
+  isolation: isolate;
+}
+
+.logo__mark::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: var(--radius-full);
+  background: radial-gradient(
+    closest-side,
+    rgba(124, 193, 150, 0.35),
+    transparent 70%
+  );
+  z-index: -1;
+  opacity: 0.85;
+  filter: blur(2px);
+}
+
+.logo__mark-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.logo__wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  font-weight: 700;
+  font-size: var(--logo-wordmark-size, 22px);
+  letter-spacing: -0.025em;
+  background: linear-gradient(
+    135deg,
+    var(--color-text-strong) 0%,
+    var(--color-accent) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo__wordmark-poly {
+  font-weight: 700;
+}
+
+.logo__wordmark-go {
+  font-weight: 700;
+  background: linear-gradient(
+    135deg,
+    var(--color-accent) 0%,
+    var(--color-accent-hover) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  margin-left: 1px;
+}
+
+/* ---------- Sizes ---------- */
+
+.logo--sm {
+  --logo-mark-size: 24px;
+  --logo-wordmark-size: 14px;
+  --logo-gap: var(--space-2);
+  --logo-shadow: 0 2px 6px rgba(31, 74, 55, 0.18);
+}
+
+.logo--md {
+  --logo-mark-size: 40px;
+  --logo-wordmark-size: 22px;
+  --logo-gap: var(--space-3);
+}
+
+.logo--lg {
+  --logo-mark-size: 64px;
+  --logo-wordmark-size: 32px;
+  --logo-gap: var(--space-4);
+  --logo-shadow: 0 10px 28px rgba(31, 74, 55, 0.28);
+}
+
+/* ---------- Dark mode tweaks ---------- */
+@media (prefers-color-scheme: dark) {
+  .logo {
+    --logo-gradient-start: #4a8a6d;
+    --logo-gradient-end: #1f4a37;
+    --logo-mark-fg: #f0f7f3;
+    --logo-accent-dot: #7cc196;
+    --logo-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+  }
+
+  .logo__mark::after {
+    background: radial-gradient(
+      closest-side,
+      rgba(124, 193, 150, 0.28),
+      transparent 70%
+    );
+    opacity: 0.7;
+  }
+}

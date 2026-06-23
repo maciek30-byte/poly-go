@@ -25,6 +25,11 @@
   --color-accent-border: rgba(47, 111, 78, 0.35);
   --color-accent-on: #ffffff;       /* tekst na akcencie */
 
+  /* ---------- Color: error (form alerts) ---------- */
+  --color-error: #b3261e;
+  --color-error-bg: #fdecea;
+  --color-error-border: rgba(179, 38, 30, 0.35);
+
   /* ---------- Color: kropki kategorii ---------- */
   --color-dot-producer: #3b6ea5;
   --color-dot-recycler: #4a8a64;
@@ -124,6 +129,10 @@
     --color-accent-bg: rgba(124, 193, 150, 0.12);
     --color-accent-border: rgba(124, 193, 150, 0.4);
     --color-accent-on: #0f1a14;
+
+    --color-error: #f28b82;
+    --color-error-bg: rgba(242, 139, 130, 0.14);
+    --color-error-border: rgba(242, 139, 130, 0.4);
 
     --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.3);
     --shadow-brand: 0 4px 14px rgba(0, 0, 0, 0.4);
