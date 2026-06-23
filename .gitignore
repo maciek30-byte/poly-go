@@ -39,3 +39,6 @@ feedback.json
 *.njsproj
 *.sln
 *.sw?
+
+.obsidian
+.playwright-mcp
