@@ -1,9 +1,9 @@
 ---
 change_id: login-and-signout
 title: Login (email/hasło + Google OAuth) i wylogowanie (S-01)
-status: implementing
+status: implemented
 created: 2026-06-22
-updated: 2026-06-22
+updated: 2026-06-23
 archived_at: null
 ---
 

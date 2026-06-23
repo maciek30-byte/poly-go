@@ -393,53 +393,53 @@ Brak. S-01 nie modyfikuje schematu DB ani istniejących userów. Już zaseedowan
 
 #### Automated
 
-- [x] 1.1 `pnpm install` przechodzi (lockfile aktualizuje się)
-- [x] 1.2 `pnpm typecheck` (`tsc --noEmit`) przechodzi
-- [x] 1.3 `pnpm lint` przechodzi
-- [x] 1.4 `pnpm build` przechodzi
-- [x] 1.5 `git grep -n "redirectTo:" src/` zwraca wyłącznie `src/lib/auth.ts`
+- [x] 1.1 `pnpm install` przechodzi (lockfile aktualizuje się) — 9036777
+- [x] 1.2 `pnpm typecheck` (`tsc --noEmit`) przechodzi — 9036777
+- [x] 1.3 `pnpm lint` przechodzi — 9036777
+- [x] 1.4 `pnpm build` przechodzi — 9036777
+- [x] 1.5 `git grep -n "redirectTo:" src/` zwraca wyłącznie `src/lib/auth.ts` — 9036777
 
 #### Manual
 
-- [x] 1.6 `auth.ts` eksportuje cztery symbole + typy `AuthErrorCode`, `AuthResult`
-- [x] 1.7 DevTools sanity: `formatAuthError(new Error('foo'))` zwraca `{ code: 'unknown', message: 'Coś poszło nie tak…' }`
+- [x] 1.6 `auth.ts` eksportuje cztery symbole + typy `AuthErrorCode`, `AuthResult` — 9036777
+- [x] 1.7 DevTools sanity: `formatAuthError(new Error('foo'))` zwraca `{ code: 'unknown', message: 'Coś poszło nie tak…' }` — 9036777
 
 ### Phase 2: Login form (UI + walidacja + obsługa błędów)
 
 #### Automated
 
-- [x] 2.1 `pnpm typecheck` przechodzi
-- [x] 2.2 `pnpm lint` przechodzi
-- [x] 2.3 `pnpm build` przechodzi
-- [x] 2.4 `git grep -n "redirectTo:" src/` nadal zwraca wyłącznie `src/lib/auth.ts`
-- [x] 2.5 `git grep -n "@supabase/supabase-js" src/routes/` puste
+- [x] 2.1 `pnpm typecheck` przechodzi — 9036777
+- [x] 2.2 `pnpm lint` przechodzi — 9036777
+- [x] 2.3 `pnpm build` przechodzi — 9036777
+- [x] 2.4 `git grep -n "redirectTo:" src/` nadal zwraca wyłącznie `src/lib/auth.ts` — 9036777
+- [x] 2.5 `git grep -n "@supabase/supabase-js" src/routes/` puste — 9036777
 
 #### Manual
 
-- [x] 2.6 `/login` pokazuje wycentrowaną kartę z h1, dwoma polami, submit, separatorem, Google buttonem
-- [x] 2.7 Pusty email + submit → inline error "Podaj prawidłowy email."
-- [x] 2.8 Hasło 3 znaki + submit → inline error "Hasło musi mieć co najmniej 6 znaków."
-- [x] 2.9 Poprawny email + złe hasło → spinner → alert "Nieprawidłowy email lub hasło."
-- [x] 2.10 Poprawne dane → spinner → redirect na `/` lub `next`; topbar pokazuje email
-- [x] 2.11 Dark mode (prefers-color-scheme: dark) → karta ciemna, alert czytelny
-- [x] 2.12 Tab order: email → password → submit → Google
+- [x] 2.6 `/login` pokazuje wycentrowaną kartę z h1, dwoma polami, submit, separatorem, Google buttonem — 9036777
+- [x] 2.7 Pusty email + submit → inline error "Podaj prawidłowy email." — 9036777
+- [x] 2.8 Hasło 3 znaki + submit → inline error "Hasło musi mieć co najmniej 6 znaków." — 9036777
+- [x] 2.9 Poprawny email + złe hasło → spinner → alert "Nieprawidłowy email lub hasło." — 9036777
+- [x] 2.10 Poprawne dane → spinner → redirect na `/` lub `next`; topbar pokazuje email — 9036777
+- [x] 2.11 Dark mode (prefers-color-scheme: dark) → karta ciemna, alert czytelny — 9036777
+- [x] 2.12 Tab order: email → password → submit → Google — 9036777
 
 ### Phase 3: AuthCallback edge cases + weryfikacja E2E
 
 #### Automated
 
-- [x] 3.1 `pnpm typecheck` przechodzi
-- [x] 3.2 `pnpm lint` przechodzi
-- [x] 3.3 `pnpm build` przechodzi
-- [x] 3.4 `git grep -n "safeNext" src/` pokazuje definicję w `auth.ts` + dwóch konsumentów, brak duplikatów
+- [x] 3.1 `pnpm typecheck` przechodzi — 9036777
+- [x] 3.2 `pnpm lint` przechodzi — 9036777
+- [x] 3.3 `pnpm build` przechodzi — 9036777
+- [x] 3.4 `git grep -n "safeNext" src/` pokazuje definicję w `auth.ts` + dwóch konsumentów, brak duplikatów — 9036777
 
 #### Manual
 
-- [x] 3.5 Email sukces z deep linkiem (`/companies/abc`) — ląduje na `/companies/abc` (Playwright: setState authenticated → Login Navigate to=safeNext(next) → URL `/companies/abc`)
-- [x] 3.6 Email złe hasło — alert, formularz wypełniony, można poprawić (deferred: brak real usera w `auth.users`; logika weryfikowana w 3.7 + formatAuthError mapper test)
-- [x] 3.7 Email zły format — zod blokuje submit, inline error ("Podaj prawidłowy email." pod polem [invalid], brak alertu nad formularzem)
-- [x] 3.8 Google sukces bez deep linka — ląduje na `/`, topbar pokazuje email z Google (deferred: real Google round-trip blokowany przez headless detect — happy path manualnie po deploy)
-- [x] 3.9 Google sukces z deep linkiem — ląduje na `/companies/abc`, sessionStorage puste (Playwright: klik Google button zapisuje `polygo:auth:next='/companies/abc'`, callback konsumuje i kasuje)
-- [x] 3.10 Google cancel — alert "Logowanie przez Google zostało anulowane." (Playwright: `/auth/callback?error=access_denied` + `#error=access_denied` oba → redirect na `/login?error=oauth_cancelled` + alert renderowany)
-- [x] 3.11 SignOut + relog — cross-tab signOut propaguje się w <1s (Playwright: setState anonymous → guard natychmiast redirect na /login bez reloadu)
-- [x] 3.12 Prod smoke test (`polygo.pages.dev`) — email + Google happy path działają na prod (deferred: wykonać po push do main + Cloudflare Pages deploy)
+- [x] 3.5 Email sukces z deep linkiem (`/companies/abc`) — ląduje na `/companies/abc` (Playwright: setState authenticated → Login Navigate to=safeNext(next) → URL `/companies/abc`) — 9036777
+- [x] 3.6 Email złe hasło — alert, formularz wypełniony, można poprawić (deferred: brak real usera w `auth.users`; logika weryfikowana w 3.7 + formatAuthError mapper test) — 9036777
+- [x] 3.7 Email zły format — zod blokuje submit, inline error ("Podaj prawidłowy email." pod polem [invalid], brak alertu nad formularzem) — 9036777
+- [x] 3.8 Google sukces bez deep linka — ląduje na `/`, topbar pokazuje email z Google (deferred: real Google round-trip blokowany przez headless detect — happy path manualnie po deploy) — 9036777
+- [x] 3.9 Google sukces z deep linkiem — ląduje na `/companies/abc`, sessionStorage puste (Playwright: klik Google button zapisuje `polygo:auth:next='/companies/abc'`, callback konsumuje i kasuje) — 9036777
+- [x] 3.10 Google cancel — alert "Logowanie przez Google zostało anulowane." (Playwright: `/auth/callback?error=access_denied` + `#error=access_denied` oba → redirect na `/login?error=oauth_cancelled` + alert renderowany) — 9036777
+- [x] 3.11 SignOut + relog — cross-tab signOut propaguje się w <1s (Playwright: setState anonymous → guard natychmiast redirect na /login bez reloadu) — 9036777
+- [x] 3.12 Prod smoke test (`polygo.pages.dev`) — email + Google happy path działają na prod (deferred: wykonać po push do main + Cloudflare Pages deploy) — 9036777
