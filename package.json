@@ -7,7 +7,14 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:push": "supabase db push",
+    "db:diff": "supabase db diff",
+    "db:types": "supabase gen types typescript --local > src/lib/database.types.ts",
+    "db:test:rls": "psql postgresql://postgres:postgres@localhost:54322/postgres -f supabase/tests/rls.sql"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.12",
@@ -16,7 +23,11 @@
     "@radix-ui/react-tooltip": "^1.2.9",
     "@supabase/supabase-js": "2.107.0",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "react-hook-form": "^7.80.0",
+    "react-router-dom": "^7",
+    "zod": "^4.4.3",
+    "zustand": "^5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

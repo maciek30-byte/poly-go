@@ -155,6 +155,7 @@ Foundations poniżej zakładają obecność tych warstw i NIE re-scaffoldują ic
   - Czy MVP obsługuje załączniki (zdjęcie specyfikacji, PDF) czy tylko tekst? — Owner: user. Block: no (PRD shape-notes mówi "obsługuje tekst i ewentualne załączniki" — "ewentualne" = decyzja do podjęcia w plan stage; default: tylko tekst).
   - Jak obsługujemy presence / "online now" / typing indicators? — Owner: user. Block: no (nie w NFR; default: pominięte w MVP, dorzucenie w v2 po pilocie).
 - **Risk:** **Najwyższe ryzyko produktowe MVP.** Operator wprost akceptuje (shape-notes challenge_chat_value): "czat bez strukturyzacji świadomie zostawiony jako baseline learning-MVP". Możliwe że pilot pokaże niepełną wartość, bo pilotowe firmy oczekują RFQ/draft/PDF (actionable messages w v2). Mitigation: ten plaster JEST eksperymentem; obserwacja jak firmy go używają to główny output pilotu.
+- **Suggested research:** `/10x-research` zalecany przed `/10x-plan` — wybór wzorca Supabase Realtime (Postgres Changes vs Broadcast vs Presence) dla 1:1 chatu z historią to jedyna decyzja techniczna w roadmapie, której odpowiedź nie jest oczywista z docs przy pierwszym czytaniu. Research powinien rozstrzygnąć: który kanał dla nowych wiadomości, jak zaprojektować tabele `conversations` / `messages` żeby subscription był wydajny, jak łączyć realtime stream z initial history load (race conditions), jaki wzorzec optimistic UI.
 - **Status:** proposed
 
 ### S-05: Wyszukiwarka firm po kryteriach branżowych

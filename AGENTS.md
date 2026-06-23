@@ -29,6 +29,19 @@ Operating rules for AI agents (Claude Code, others) working in this repo. Read b
 - Logi po rollback: pobieraj z CF dashboard, NIE `wrangler pages deployment tail` (broken na ostatnim deploy po rollback — issue cloudflare/workers-sdk#2262).
 - Rotacja `CLOUDFLARE_API_TOKEN`: ręcznie co 6 miesięcy, regenerate w CF dashboard → `gh secret set CLOUDFLARE_API_TOKEN` → re-run failed deploy jeśli stary token był aktywny w workflow.
 
+## Operacje wykonywane ręcznie przez właściciela projektu
+
+Niektóre operacje **zawsze wykonuje user, nie agent**. Agent przygotowuje precyzyjną listę poleceń / kroków, ale ich nie odpala ani nie edytuje plików, które są ich efektem.
+
+- **Instalacje i aktualizacje pakietów npm** — `pnpm add`, `pnpm remove`, `pnpm update`, bezpośrednia edycja `package.json` / `pnpm-lock.yaml`. Agent dostarcza listę paczek (z wersjami i flagą `-D` jeśli devDep) — user uruchamia `pnpm add ...` ręcznie i commituje wynik.
+- **Operacje w panelach Supabase** (Authentication, Database settings, Storage, Edge Functions config, project settings, RLS Force toggle) — agent opisuje co kliknąć i gdzie, user wykonuje w dashboardzie.
+- **Operacje w Google Cloud Console / OAuth provider panels** (Google OAuth client config, Microsoft Azure AD app registration, redirect URIs, scopes) — j.w., agent dostarcza dokładną instrukcję, user klika.
+- **Operacje w Cloudflare dashboard** (Pages project settings, custom domains, environment variables, API tokens, deployment delete/rollback przez UI) — j.w. Wyjątek: `wrangler` CLI calls jeśli user explicit poprosi.
+- **Operacje w GitHub UI** (secrets, branch protection rules, repo settings) — j.w. `gh` CLI dozwolone tylko jeśli user explicit poprosi.
+- **Jakiekolwiek panele admin / billing / quota** dowolnego dostawcy (Stripe, Sentry, itd.) — zawsze user.
+
+Reguła: jeśli operacja wymaga zalogowania do zewnętrznego panelu UI albo zmienia stan poza repo / lokalnym środowiskiem deweloperskim — agent nie wykonuje, tylko spisuje precyzyjną instrukcję.
+
 ## Code conventions (compensating for vite-react not being convention-based)
 
 `tech-stack.md` flagged vite-react as failing the convention-based gate. Until codified, defaults:
@@ -36,10 +49,10 @@ Operating rules for AI agents (Claude Code, others) working in this repo. Read b
 - **Path aliases**: relative imports `./` and `../` only (no `@/` alias) until tsconfig path mapping is set up explicitly.
 - **Folder layout**:
   - `src/lib/` — pure modules, no React (e.g., `supabase.ts`, future `auth.ts`).
-  - `src/components/` — reusable React components.
+  - `src/components/` — reusable React components shared across slices.
   - `src/routes/` — page-level components, one file per route.
-  - `src/hooks/` — custom React hooks.
-- **Filenames**: `kebab-case.ts` for `lib`/`hooks`, `PascalCase.tsx` for components and routes.
+  - **Hooks live with the slice that owns them**, not in a global `src/hooks/`. Auth hooks → koło `auth-store.ts` w `src/lib/` (lub w katalogu auth slice'a). Hooki specyficzne dla jednej feature (np. wyszukiwarka, czat) → katalog tej feature (np. `src/routes/search/use-search.ts`). Tylko hooki naprawdę cross-cutting i bez ownera trafiają do `src/lib/`.
+- **Filenames**: `kebab-case.ts` for `lib` / hooks, `PascalCase.tsx` for components and routes.
 - **State**: React Router DOM for routing; no Redux/Zustand until concrete need.
 
 ## Known follow-ups (not blocking, but track)

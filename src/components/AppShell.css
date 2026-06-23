@@ -1,0 +1,116 @@
+.app-shell__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-shell__brand {
+  font-size: var(--type-heading-size);
+  font-weight: var(--type-heading-weight);
+  letter-spacing: var(--type-heading-tracking);
+  color: var(--color-text-strong);
+  text-decoration: none;
+}
+
+.app-shell__nav {
+  display: flex;
+  gap: var(--space-5);
+  margin-left: var(--space-6);
+  flex: 1;
+}
+
+.app-shell__nav a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: var(--type-body-size);
+  font-weight: var(--type-value-weight);
+  padding: var(--space-2) 0;
+}
+
+.app-shell__nav a[aria-current='page'] {
+  color: var(--color-text-strong);
+  border-bottom: 2px solid var(--color-accent);
+}
+
+.app-shell__user-menu {
+  position: relative;
+}
+
+.app-shell__user-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.app-shell__user-trigger:hover {
+  background: var(--color-surface-hover);
+}
+
+.app-shell__user-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--gradient-avatar);
+  color: var(--color-accent-on);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--type-label-size);
+  font-weight: 600;
+}
+
+.app-shell__user-popover {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  min-width: 220px;
+  padding: var(--space-3);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.app-shell__user-email {
+  font-size: var(--type-label-size);
+  color: var(--color-text-muted);
+  word-break: break-all;
+}
+
+.app-shell__signout {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text-strong);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.app-shell__signout:hover {
+  background: var(--color-surface-hover);
+}
+
+.app-shell__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
