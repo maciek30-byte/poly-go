@@ -39,6 +39,7 @@ BEGIN
     DELETE FROM messages       WHERE id IN (msg_a);
     DELETE FROM conversations  WHERE id = conv_ab;
     DELETE FROM favorites      WHERE user_id IN (user_a, user_b);
+    DELETE FROM user_roles     WHERE user_id IN (user_a, user_b);
     DELETE FROM users          WHERE id IN (user_a, user_b);
     DELETE FROM auth.users     WHERE id IN (user_a, user_b);
     DELETE FROM companies      WHERE id IN (company_a, company_b);
@@ -63,6 +64,11 @@ BEGIN
     INSERT INTO favorites (user_id, company_id) VALUES
         (user_a, company_b),
         (user_b, company_a);
+
+    -- Roles: A is super_admin, B is a plain user (RBAC isolation test).
+    INSERT INTO user_roles (user_id, role) VALUES
+        (user_a, 'super_admin'),
+        (user_b, 'user');
 
     -- Conversation A <-> B + one message from A.
     INSERT INTO conversations (id, participant_1_id, participant_2_id) VALUES
@@ -308,12 +314,58 @@ $test8$;
 
 
 -- ============================================================
+-- TEST 9: user_roles SELECT-self — A sees their own role row
+-- ============================================================
+DO $test9$
+DECLARE
+    own_count INTEGER;
+BEGIN
+    SET LOCAL ROLE authenticated;
+    SET LOCAL "request.jwt.claims" = '{"sub":"33333333-3333-3333-3333-3333333333aa","role":"authenticated"}';
+
+    SELECT count(*) INTO own_count
+    FROM user_roles WHERE user_id = '33333333-3333-3333-3333-3333333333aa';
+
+    IF own_count <> 1 THEN
+        RAISE EXCEPTION 'TEST 9 FAILED: user A should see 1 own role row (got %)', own_count;
+    END IF;
+    RAISE NOTICE 'TEST 9 OK: user A sees their own role (SELECT-self).';
+
+    RESET ROLE;
+END
+$test9$;
+
+
+-- ============================================================
+-- TEST 10: user_roles is private — A does NOT see B's role row
+-- ============================================================
+DO $test10$
+DECLARE
+    other_count INTEGER;
+BEGIN
+    SET LOCAL ROLE authenticated;
+    SET LOCAL "request.jwt.claims" = '{"sub":"33333333-3333-3333-3333-3333333333aa","role":"authenticated"}';
+
+    SELECT count(*) INTO other_count
+    FROM user_roles WHERE user_id = '44444444-4444-4444-4444-4444444444bb';
+
+    IF other_count <> 0 THEN
+        RAISE EXCEPTION 'TEST 10 FAILED: user A leaked B''s role row (got %)', other_count;
+    END IF;
+    RAISE NOTICE 'TEST 10 OK: user A cannot see B''s role (SELECT-self isolation).';
+
+    RESET ROLE;
+END
+$test10$;
+
+
+-- ============================================================
 -- Final banner (inside a DO block — psql can't RAISE NOTICE bare)
 -- ============================================================
 DO $banner$
 BEGIN
     RAISE NOTICE '----------------------------------------';
-    RAISE NOTICE 'RLS isolation OK — 8/8 assertions passed';
+    RAISE NOTICE 'RLS isolation OK — 10/10 assertions passed';
     RAISE NOTICE '----------------------------------------';
 END
 $banner$;

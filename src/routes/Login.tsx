@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Navigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { useAuth } from '../lib/use-auth'
 import {
@@ -96,7 +97,9 @@ export default function Login() {
     const result = await signInWithPassword(email, password)
     if (!result.ok) {
       setSubmitError(result.message)
+      return
     }
+    toast.success('Zalogowano pomyślnie')
   }
 
   const handleGoogle = async () => {

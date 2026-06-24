@@ -312,6 +312,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: number
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           company_id: string
@@ -350,6 +371,7 @@ export type Database = {
     }
     Functions: {
       current_user_company_id: { Args: never; Returns: string }
+      current_user_role: { Args: never; Returns: string }
       mark_message_read: {
         Args: { message_id: string }
         Returns: {

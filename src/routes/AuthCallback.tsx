@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import { useAuth } from '../lib/use-auth'
 import { safeNext } from '../lib/auth'
 
@@ -46,6 +47,7 @@ export default function AuthCallback() {
       return
     }
     if (status === 'authenticated') {
+      toast.success('Zalogowano pomyślnie')
       navigate(consumeStoredNext(), { replace: true })
     } else if (status === 'anonymous') {
       clearStoredNext()
