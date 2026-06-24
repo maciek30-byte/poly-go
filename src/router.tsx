@@ -1,6 +1,8 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { AppShell } from './components/AppShell'
 import { RequireAuth } from './components/RequireAuth'
+import { RequireRole } from './components/RequireRole'
+import { ComingSoon } from './components/ComingSoon'
 import Login from './routes/Login'
 import AuthCallback from './routes/AuthCallback'
 import Home from './routes/Home'
@@ -25,6 +27,14 @@ export const router = createBrowserRouter([
       { path: 'companies/:id', element: <CompanyDetail /> },
       { path: 'chat/:companyId', element: <Chat /> },
       { path: 'profile', element: <Profile /> },
+      {
+        path: 'admin',
+        element: (
+          <RequireRole allowedRoles={['super_admin']}>
+            <ComingSoon title="Panel administratora" />
+          </RequireRole>
+        ),
+      },
     ],
   },
   { path: '*', element: <NotFound /> },
