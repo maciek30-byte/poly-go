@@ -630,23 +630,23 @@ Seed jest idempotentny i bezpieczny do wielokrotnego `db:reset`.
 
 #### Automated
 
-- [x] 3.1 `pnpm build` (tsc) zielony
-- [x] 3.2 `pnpm lint` czysty
+- [x] 3.1 `pnpm build` (tsc) zielony — 45e42f3
+- [x] 3.2 `pnpm lint` czysty — 45e42f3
 
 #### Manual
 
-- [x] 3.3 Profil firmy bogatej: pełny, single-page, sticky kotwice działają
-- [x] 3.4 Profil firmy chudej: puste sekcje ukryte (tylko wymagane)
-- [x] 3.5 Zły `:id` → "nie znaleziono"; ładowanie → skeleton
-- [x] 3.6 Parametry obu firm renderują się generycznie (różne branże, ten sam UI)
-- [x] 3.7 "Napisz" otwiera drawer-placeholder, pozycja scrolla zachowana
+- [x] 3.3 Profil firmy bogatej: pełny, single-page, sticky kotwice działają — 45e42f3
+- [x] 3.4 Profil firmy chudej: puste sekcje ukryte (tylko wymagane) — 45e42f3
+- [x] 3.5 Zły `:id` → "nie znaleziono"; ładowanie → skeleton — 45e42f3
+- [x] 3.6 Parametry obu firm renderują się generycznie (różne branże, ten sam UI) — 45e42f3
+- [x] 3.7 "Napisz" otwiera drawer-placeholder, pozycja scrolla zachowana — 45e42f3
 
 ### Phase 4: Ulubione
 
 #### Automated
 
-- [ ] 4.1 `pnpm build` zielony, `pnpm lint` czysty
-- [ ] 4.2 `pnpm db:test:rls` zielony (favorites prywatne per user)
+- [x] 4.1 `pnpm build` zielony, `pnpm lint` czysty
+- [x] 4.2 `pnpm db:test:rls` zielony (favorites prywatne per user)
 
 #### Manual
 

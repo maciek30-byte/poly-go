@@ -2,6 +2,7 @@ import { useMemo, useState, type JSX } from 'react'
 import * as Avatar from '@radix-ui/react-avatar'
 import * as Tooltip from '@radix-ui/react-tooltip'
 import type { CompanyProfileData } from '../lib/use-company-profile'
+import { useFavorite } from '../lib/use-favorite'
 import { MessageDrawerPlaceholder, type MessageTarget } from './MessageDrawerPlaceholder'
 import './CompanyProfile.css'
 
@@ -75,7 +76,7 @@ type CompanyProfileProps = {
 type ParamGroup = { categoryId: number; label: string; rows: { label: string; display: string }[] }
 
 export default function CompanyProfile({ data }: CompanyProfileProps): JSX.Element {
-  const [favorite, setFavorite] = useState(false)
+  const { isFavorite, toggle: toggleFavorite, pending: favoritePending } = useFavorite(data.id)
   const [messageTarget, setMessageTarget] = useState<MessageTarget | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -178,12 +179,13 @@ export default function CompanyProfile({ data }: CompanyProfileProps): JSX.Eleme
                 Napisz
               </button>
               <button
-                className={`cp-btn cp-btn-ghost ${favorite ? 'is-active' : ''}`}
-                onClick={() => setFavorite((v) => !v)}
-                aria-pressed={favorite}
+                className={`cp-btn cp-btn-ghost ${isFavorite ? 'is-active' : ''}`}
+                onClick={toggleFavorite}
+                disabled={favoritePending}
+                aria-pressed={isFavorite}
               >
-                <StarIcon filled={favorite} />
-                {favorite ? 'W ulubionych' : 'Dodaj do ulubionych'}
+                <StarIcon filled={isFavorite} />
+                {isFavorite ? 'W ulubionych' : 'Dodaj do ulubionych'}
               </button>
             </div>
           </div>
