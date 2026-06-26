@@ -71,35 +71,56 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          display_name: string | null
           founding_year: number | null
+          headquarters_address: string | null
           id: string
+          krs: string | null
           logo_url: string | null
           name: string
+          nip: string | null
+          plant_address: string | null
           region: string | null
+          regon: string | null
           technical_parameters: Json | null
           updated_at: string
+          website: string | null
         }
         Insert: {
           created_at?: string
           description?: string | null
+          display_name?: string | null
           founding_year?: number | null
+          headquarters_address?: string | null
           id?: string
+          krs?: string | null
           logo_url?: string | null
           name: string
+          nip?: string | null
+          plant_address?: string | null
           region?: string | null
+          regon?: string | null
           technical_parameters?: Json | null
           updated_at?: string
+          website?: string | null
         }
         Update: {
           created_at?: string
           description?: string | null
+          display_name?: string | null
           founding_year?: number | null
+          headquarters_address?: string | null
           id?: string
+          krs?: string | null
           logo_url?: string | null
           name?: string
+          nip?: string | null
+          plant_address?: string | null
           region?: string | null
+          regon?: string | null
           technical_parameters?: Json | null
           updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }
@@ -198,6 +219,39 @@ export type Database = {
           },
         ]
       }
+      company_parameter_values: {
+        Row: {
+          company_id: string
+          definition_id: number
+          value: string
+        }
+        Insert: {
+          company_id: string
+          definition_id: number
+          value: string
+        }
+        Update: {
+          company_id?: string
+          definition_id?: number
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_parameter_values_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_parameter_values_definition_id_fkey"
+            columns: ["definition_id"]
+            isOneToOne: false
+            referencedRelation: "parameter_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           created_at: string
@@ -270,6 +324,41 @@ export type Database = {
           },
         ]
       }
+      highlights: {
+        Row: {
+          company_id: string
+          created_at: string
+          description: string | null
+          id: string
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          sort_order?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "highlights_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           content: string
@@ -312,6 +401,44 @@ export type Database = {
           },
         ]
       }
+      parameter_definitions: {
+        Row: {
+          category_id: number
+          id: number
+          key: string
+          label: string
+          sort_order: number
+          unit: string | null
+          value_type: string
+        }
+        Insert: {
+          category_id: number
+          id?: number
+          key: string
+          label: string
+          sort_order?: number
+          unit?: string | null
+          value_type: string
+        }
+        Update: {
+          category_id?: number
+          id?: number
+          key?: string
+          label?: string
+          sort_order?: number
+          unit?: string | null
+          value_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parameter_definitions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -339,21 +466,27 @@ export type Database = {
           created_at: string
           full_name: string
           id: string
+          is_visible_on_profile: boolean
           job_title: string
+          phone: string | null
         }
         Insert: {
           company_id: string
           created_at?: string
           full_name: string
           id: string
+          is_visible_on_profile?: boolean
           job_title: string
+          phone?: string | null
         }
         Update: {
           company_id?: string
           created_at?: string
           full_name?: string
           id?: string
+          is_visible_on_profile?: boolean
           job_title?: string
+          phone?: string | null
         }
         Relationships: [
           {

@@ -18,5 +18,19 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      // Jawny typ zwracany obowiązkowy dla każdej nazwanej funkcji.
+      // Wyjątki na inline callbacki (map/filter/onClick/...) — inaczej
+      // każdy JSX handler wymagałby `: void` i config byłby nie do zniesienia.
+      '@typescript-eslint/explicit-function-return-type': [
+        'error',
+        {
+          allowExpressions: true,
+          allowTypedFunctionExpressions: true,
+          allowHigherOrderFunctions: true,
+          allowDirectConstAssertionInArrowFunctions: true,
+        },
+      ],
+    },
   },
 ])

@@ -1,7 +1,7 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { useAuth } from '../lib/use-auth'
+import { supabase } from '../lib/supabase'
 import { safeNext } from '../lib/auth'
 
 const NEXT_STORAGE_KEY = 'polygo:auth:next'
@@ -32,8 +32,9 @@ function clearStoredNext(): void {
 }
 
 export default function AuthCallback() {
-  const { status } = useAuth()
   const navigate = useNavigate()
+  const [exchanging, setExchanging] = useState(true)
+
 
   const oauthError = useMemo(() => {
     const queryError = new URLSearchParams(window.location.search).get('error')
@@ -41,23 +42,57 @@ export default function AuthCallback() {
   }, [])
 
   useEffect(() => {
-    if (oauthError) {
-      clearStoredNext()
-      navigate('/login?error=oauth_cancelled', { replace: true })
-      return
+    let cancelled = false
+
+    async function run() {
+      if (oauthError) {
+        clearStoredNext()
+        navigate('/login?error=oauth_cancelled', { replace: true })
+        return
+      }
+
+      const code = new URLSearchParams(window.location.search).get('code')
+
+
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code)
+        if (cancelled) return
+
+        if (error) {
+          clearStoredNext()
+          navigate('/login?error=oauth_cancelled', { replace: true })
+          return
+        }
+
+        toast.success('Zalogowano pomyślnie')
+        navigate(consumeStoredNext(), { replace: true })
+        return
+      }
+
+
+      const { data } = await supabase.auth.getSession()
+      if (cancelled) return
+
+      if (data.session) {
+        navigate(consumeStoredNext(), { replace: true })
+      } else {
+        clearStoredNext()
+        navigate('/login', { replace: true })
+      }
     }
-    if (status === 'authenticated') {
-      toast.success('Zalogowano pomyślnie')
-      navigate(consumeStoredNext(), { replace: true })
-    } else if (status === 'anonymous') {
-      clearStoredNext()
-      navigate('/login', { replace: true })
+
+    void run().finally(() => {
+      if (!cancelled) setExchanging(false)
+    })
+
+    return () => {
+      cancelled = true
     }
-  }, [oauthError, status, navigate])
+  }, [oauthError, navigate])
 
   return (
     <div style={{ padding: 'var(--space-6, 24px)', textAlign: 'center' }}>
-      Łączenie…
+      {exchanging ? 'Łączenie…' : 'Przekierowywanie…'}
     </div>
   )
 }

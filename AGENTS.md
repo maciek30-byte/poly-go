@@ -54,6 +54,7 @@ Reguła: jeśli operacja wymaga zalogowania do zewnętrznego panelu UI albo zmie
   - **Hooks live with the slice that owns them**, not in a global `src/hooks/`. Auth hooks → koło `auth-store.ts` w `src/lib/` (lub w katalogu auth slice'a). Hooki specyficzne dla jednej feature (np. wyszukiwarka, czat) → katalog tej feature (np. `src/routes/search/use-search.ts`). Tylko hooki naprawdę cross-cutting i bez ownera trafiają do `src/lib/`.
 - **Filenames**: `kebab-case.ts` for `lib` / hooks, `PascalCase.tsx` for components and routes.
 - **State**: React Router DOM for routing; no Redux/Zustand until concrete need.
+- **Cosmetics** Zawsze uzywaj arrow functions
 
 ## Known follow-ups (not blocking, but track)
 
