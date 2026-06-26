@@ -603,28 +603,28 @@ Seed jest idempotentny i bezpieczny do wielokrotnego `db:reset`.
 
 #### Automated
 
-- [x] 1.1 Migracja aplikuje się czysto: `pnpm db:reset`
-- [x] 1.2 Typy zregenerowane i bez błędów: `pnpm db:types` + `pnpm build`
-- [x] 1.3 RLS testy przechodzą: `pnpm db:test:rls`
-- [x] 1.4 Lint czysty: `pnpm lint` (28 błędów pre-existing `explicit-function-return-type` w nietkniętych plikach; nowy kod tej zmiany regułę spełnia — decyzja użytkownika)
+- [x] 1.1 Migracja aplikuje się czysto: `pnpm db:reset` — a7de292
+- [x] 1.2 Typy zregenerowane i bez błędów: `pnpm db:types` + `pnpm build` — a7de292
+- [x] 1.3 RLS testy przechodzą: `pnpm db:test:rls` — a7de292
+- [x] 1.4 Lint czysty: `pnpm lint` (28 błędów pre-existing `explicit-function-return-type` w nietkniętych plikach; nowy kod tej zmiany regułę spełnia — decyzja użytkownika) — a7de292
 
 #### Manual
 
-- [x] 1.5 Nowe kolumny/tabele i polityki RLS widoczne w Supabase Studio
-- [x] 1.6 `companies.nip` ma constraint UNIQUE
+- [x] 1.5 Nowe kolumny/tabele i polityki RLS widoczne w Supabase Studio — a7de292
+- [x] 1.6 `companies.nip` ma constraint UNIQUE — a7de292
 
 ### Phase 2: Seed
 
 #### Automated
 
-- [ ] 2.1 Seed wykonuje się bez błędu w `pnpm db:reset`
-- [ ] 2.2 `pnpm db:test:rls` nadal zielony
+- [x] 2.1 Seed wykonuje się bez błędu w `pnpm db:reset`
+- [x] 2.2 `pnpm db:test:rls` nadal zielony
 
 #### Manual
 
-- [ ] 2.3 Po resecie w bazie 2 firmy z ownerami (konta dowiązane po e-mailu)
-- [ ] 2.4 Logując się jako Ty/Grzegorz widać powiązanie z własną firmą
-- [ ] 2.5 Firma chuda ma puste sekcje (do testu ukrywania)
+- [x] 2.3 Po resecie w bazie 2 firmy z ownerami (konta dowiązane po e-mailu)
+- [x] 2.4 Logując się jako Ty/Grzegorz widać powiązanie z własną firmą
+- [x] 2.5 Firma chuda ma puste sekcje (do testu ukrywania)
 
 ### Phase 3: Strona profilu (read)
 
