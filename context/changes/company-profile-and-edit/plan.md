@@ -617,29 +617,29 @@ Seed jest idempotentny i bezpieczny do wielokrotnego `db:reset`.
 
 #### Automated
 
-- [x] 2.1 Seed wykonuje się bez błędu w `pnpm db:reset`
-- [x] 2.2 `pnpm db:test:rls` nadal zielony
+- [x] 2.1 Seed wykonuje się bez błędu w `pnpm db:reset` — 19eaae0
+- [x] 2.2 `pnpm db:test:rls` nadal zielony — 19eaae0
 
 #### Manual
 
-- [x] 2.3 Po resecie w bazie 2 firmy z ownerami (konta dowiązane po e-mailu)
-- [x] 2.4 Logując się jako Ty/Grzegorz widać powiązanie z własną firmą
-- [x] 2.5 Firma chuda ma puste sekcje (do testu ukrywania)
+- [x] 2.3 Po resecie w bazie 2 firmy z ownerami (konta dowiązane po e-mailu) — 19eaae0
+- [x] 2.4 Logując się jako Ty/Grzegorz widać powiązanie z własną firmą — 19eaae0
+- [x] 2.5 Firma chuda ma puste sekcje (do testu ukrywania) — 19eaae0
 
 ### Phase 3: Strona profilu (read)
 
 #### Automated
 
-- [ ] 3.1 `pnpm build` (tsc) zielony
-- [ ] 3.2 `pnpm lint` czysty
+- [x] 3.1 `pnpm build` (tsc) zielony
+- [x] 3.2 `pnpm lint` czysty
 
 #### Manual
 
-- [ ] 3.3 Profil firmy bogatej: pełny, single-page, sticky kotwice działają
-- [ ] 3.4 Profil firmy chudej: puste sekcje ukryte (tylko wymagane)
-- [ ] 3.5 Zły `:id` → "nie znaleziono"; ładowanie → skeleton
-- [ ] 3.6 Parametry obu firm renderują się generycznie (różne branże, ten sam UI)
-- [ ] 3.7 "Napisz" otwiera drawer-placeholder, pozycja scrolla zachowana
+- [x] 3.3 Profil firmy bogatej: pełny, single-page, sticky kotwice działają
+- [x] 3.4 Profil firmy chudej: puste sekcje ukryte (tylko wymagane)
+- [x] 3.5 Zły `:id` → "nie znaleziono"; ładowanie → skeleton
+- [x] 3.6 Parametry obu firm renderują się generycznie (różne branże, ten sam UI)
+- [x] 3.7 "Napisz" otwiera drawer-placeholder, pozycja scrolla zachowana
 
 ### Phase 4: Ulubione
 

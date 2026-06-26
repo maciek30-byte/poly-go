@@ -1,163 +1,39 @@
-import { useState } from 'react'
-import * as Tabs from '@radix-ui/react-tabs'
+import { useMemo, useState, type JSX } from 'react'
 import * as Avatar from '@radix-ui/react-avatar'
 import * as Tooltip from '@radix-ui/react-tooltip'
+import type { CompanyProfileData } from '../lib/use-company-profile'
+import { MessageDrawerPlaceholder, type MessageTarget } from './MessageDrawerPlaceholder'
 import './CompanyProfile.css'
 
-type Category = { label: string; tone: 'producer' | 'recycler' | 'distributor' | 'service' }
-type Certificate = { code: string; name: string }
-type Offering = { title: string; description: string }
-type TechParam = { label: string; value: string }
-type GalleryImage = { src: string; alt: string }
-type Document = { name: string; size: string; type: string }
-type Employee = {
-  name: string
-  role: string
-  email: string
-  phone: string
-  initials: string
-  online: boolean
+// Dane rejestrowe ukryte w demo (kolumny istnieją, integracja GUS/KRS poza zakresem).
+const SHOW_REGISTRY = false
+
+type CategoryTone = 'producer' | 'recycler' | 'distributor' | 'service'
+
+// Mapowanie nazwy kategorii (słownik) na ton wizualny. Słownik jest mały
+// i stabilny (Producent/Recykler/Dystrybutor/Trader/Serwis) — to prezentacja,
+// nie logika branżowa, więc nie łamie zasady "parametry data-driven".
+function toneForCategory(name: string): CategoryTone {
+  switch (name) {
+    case 'Producent':
+      return 'producer'
+    case 'Recykler':
+      return 'recycler'
+    case 'Dystrybutor':
+    case 'Trader':
+      return 'distributor'
+    case 'Serwis':
+    default:
+      return 'service'
+  }
 }
 
-const company = {
-  name: 'PolyMer Industries Sp. z o.o.',
-  logo: 'PM',
-  foundedYear: 1998,
-  city: 'Tarnów, Małopolska',
-  categories: [
-    { label: 'Producent', tone: 'producer' },
-    { label: 'Wtryskownia', tone: 'producer' },
-    { label: 'Recykler PE/PP', tone: 'recycler' },
-    { label: 'Eksport UE', tone: 'distributor' },
-  ] as Category[],
-  certificates: [
-    { code: 'ISO 9001', name: 'System zarządzania jakością' },
-    { code: 'ISO 14001', name: 'Zarządzanie środowiskowe' },
-    { code: 'IATF 16949', name: 'Standard motoryzacyjny' },
-    { code: 'EuCertPlast', name: 'Certyfikat recyklera' },
-  ] as Certificate[],
-  description:
-    'Działamy od 1998 roku jako producent komponentów z tworzyw sztucznych dla branży motoryzacyjnej, AGD i opakowaniowej. Posiadamy 18 wtryskarek o sile zwarcia od 80 do 1300 ton oraz własną linię regranulacji PE/PP. Specjalizujemy się w krótkich i średnich seriach z gwarancją powtarzalności partii. Realizujemy projekty od koncepcji formy aż po seryjną produkcję — z własnym działem konstrukcyjnym i narzędziownią.',
-  topOfferings: [
-    {
-      title: 'Wtrysk techniczny detali do 1.8 kg',
-      description: 'Komponenty konstrukcyjne dla automotive i AGD, tolerancje ±0.05 mm',
-    },
-    {
-      title: 'Regranulat PE-HD i PP post-industrial',
-      description: 'Materiał o powtarzalnym MFI, świadectwo jakości do każdej partii',
-    },
-    {
-      title: 'Projektowanie i wykonanie form',
-      description: 'Własna narzędziownia, formy 1-16 gniazdowe, serwis i modyfikacje',
-    },
-    {
-      title: 'Konfekcjonowanie i montaż',
-      description: 'Linia montażu z kontrolą wizyjną, pakowanie w opakowania klienta',
-    },
-    {
-      title: 'Magazynowanie i logistyka UE',
-      description: 'Konsygnacja, dostawy JIT do 1500 km, własny transport',
-    },
-  ] as Offering[],
-  techParams: {
-    Produkcja: [
-      { label: 'Liczba wtryskarek', value: '18 sztuk' },
-      { label: 'Siła zwarcia', value: '80 – 1300 ton' },
-      { label: 'Detal max', value: '1.8 kg' },
-      { label: 'Technologie', value: 'Wtrysk standard, wtrysk gazowy, wkładkowanie' },
-    ],
-    Recykling: [
-      { label: 'Frakcje przyjmowane', value: 'PE-HD, PE-LD, PP, mix poliolefin' },
-      { label: 'Forma wsadu', value: 'Regrind, bele, big bag' },
-      { label: 'Przepustowość', value: '450 t / miesiąc' },
-      { label: 'Forma produktu', value: 'Regranulat (MFI na żądanie)' },
-    ],
-    Rynki: [
-      { label: 'Segmenty', value: 'Automotive (Tier 2), AGD, opakowania techniczne' },
-      { label: 'Eksport', value: 'DE, CZ, SK, AT, HU — ~38% obrotu' },
-      { label: 'MOQ', value: 'od 500 sztuk / 200 kg regranulatu' },
-    ],
-  } as Record<string, TechParam[]>,
-  gallery: [
-    { src: 'gradient-1', alt: 'Hala produkcyjna' },
-    { src: 'gradient-2', alt: 'Linia wtryskarek' },
-    { src: 'gradient-3', alt: 'Magazyn surowca' },
-    { src: 'gradient-4', alt: 'Narzędziownia' },
-    { src: 'gradient-5', alt: 'Linia regranulacji' },
-  ] as GalleryImage[],
-  documents: [
-    { name: 'Certyfikat ISO 9001:2015', size: '1.2 MB', type: 'PDF' },
-    { name: 'Certyfikat IATF 16949', size: '2.4 MB', type: 'PDF' },
-    { name: 'Prezentacja firmy 2026', size: '6.8 MB', type: 'PDF' },
-    { name: 'Karta technologiczna — wtrysk', size: '840 KB', type: 'PDF' },
-    { name: 'Świadectwo regranulatu PE-HD', size: '320 KB', type: 'PDF' },
-  ] as Document[],
-  registry: {
-    legalName: 'PolyMer Industries Spółka z ograniczoną odpowiedzialnością',
-    nip: '873-101-22-44',
-    regon: '850412331',
-    krs: '0000123456',
-    headquarters: 'ul. Przemysłowa 14, 33-101 Tarnów',
-    productionAddress: 'ul. Fabryczna 8, 33-100 Tarnów',
-    capital: '4 800 000 PLN',
-    employees: '85 – 110',
-    revenue: '~ 62 mln PLN (2025)',
-    website: 'www.polymer-industries.pl',
-  },
-  employees: [
-    {
-      name: 'Anna Kowalczyk',
-      role: 'Dyrektor sprzedaży',
-      email: 'a.kowalczyk@polymer-industries.pl',
-      phone: '+48 600 100 200',
-      initials: 'AK',
-      online: true,
-    },
-    {
-      name: 'Marek Wójcik',
-      role: 'Kierownik produkcji',
-      email: 'm.wojcik@polymer-industries.pl',
-      phone: '+48 600 100 201',
-      initials: 'MW',
-      online: false,
-    },
-    {
-      name: 'Joanna Lewandowska',
-      role: 'Specjalista ds. recyklingu',
-      email: 'j.lewandowska@polymer-industries.pl',
-      phone: '+48 600 100 202',
-      initials: 'JL',
-      online: true,
-    },
-    {
-      name: 'Piotr Zieliński',
-      role: 'Konstruktor form',
-      email: 'p.zielinski@polymer-industries.pl',
-      phone: '+48 600 100 203',
-      initials: 'PZ',
-      online: false,
-    },
-    {
-      name: 'Katarzyna Nowak',
-      role: 'Eksport / Key Account',
-      email: 'k.nowak@polymer-industries.pl',
-      phone: '+48 600 100 204',
-      initials: 'KN',
-      online: true,
-    },
-  ] as Employee[],
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).slice(0, 2)
+  return parts.map((p) => p[0]?.toUpperCase() ?? '').join('') || '?'
 }
 
-const sectionAnchors = [
-  { id: 'oferta', label: 'Oferta' },
-  { id: 'opis', label: 'O firmie' },
-  { id: 'parametry', label: 'Parametry' },
-  { id: 'galeria', label: 'Galeria' },
-  { id: 'dokumenty', label: 'Dokumenty' },
-]
-
-function ChatIcon() {
+function ChatIcon(): JSX.Element {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -165,7 +41,7 @@ function ChatIcon() {
   )
 }
 
-function StarIcon({ filled }: { filled: boolean }) {
+function StarIcon({ filled }: { filled: boolean }): JSX.Element {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -173,7 +49,7 @@ function StarIcon({ filled }: { filled: boolean }) {
   )
 }
 
-function DownloadIcon() {
+function DownloadIcon(): JSX.Element {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -183,7 +59,7 @@ function DownloadIcon() {
   )
 }
 
-function CheckIcon() {
+function CheckIcon(): JSX.Element {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="20 6 9 17 4 12" />
@@ -191,11 +67,64 @@ function CheckIcon() {
   )
 }
 
-export default function CompanyProfile() {
-  const [favorite, setFavorite] = useState(false)
-  const [showAllOfferings, setShowAllOfferings] = useState(false)
+type CompanyProfileProps = {
+  data: CompanyProfileData
+}
 
-  const offerings = showAllOfferings ? company.topOfferings : company.topOfferings.slice(0, 5)
+// Grupa parametrów = jedna kategoria firmy. Render generyczny: label: value [unit].
+type ParamGroup = { categoryId: number; label: string; rows: { label: string; display: string }[] }
+
+export default function CompanyProfile({ data }: CompanyProfileProps): JSX.Element {
+  const [favorite, setFavorite] = useState(false)
+  const [messageTarget, setMessageTarget] = useState<MessageTarget | null>(null)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+
+  const heroName = data.display_name ?? data.name
+
+  const photos = useMemo(() => data.media.filter((m) => m.media_type === 'PHOTO'), [data.media])
+  const documents = useMemo(() => data.media.filter((m) => m.media_type === 'DOCUMENT'), [data.media])
+
+  // Parametry grupowane po kategorii definicji. Nazwa grupy z słownika kategorii
+  // firmy; definicje przyjeżdżają już posortowane wg sort_order z hooka.
+  const paramGroups = useMemo<ParamGroup[]>(() => {
+    const categoryName = new Map(data.categories.map((c) => [c.id, c.name]))
+    const byCategory = new Map<number, ParamGroup>()
+    for (const { value, definition } of data.parameters) {
+      const catId = definition.category_id
+      let group = byCategory.get(catId)
+      if (!group) {
+        group = { categoryId: catId, label: categoryName.get(catId) ?? 'Parametry', rows: [] }
+        byCategory.set(catId, group)
+      }
+      const display = definition.unit ? `${value} ${definition.unit}` : value
+      group.rows.push({ label: definition.label, display })
+    }
+    return [...byCategory.values()]
+  }, [data.categories, data.parameters])
+
+  const hasHighlights = data.highlights.length > 0
+  const hasDescription = Boolean(data.description)
+  const hasParams = paramGroups.length > 0
+  const hasPhotos = photos.length > 0
+  const hasDocuments = documents.length > 0
+  const hasEmployees = data.employees.length > 0
+
+  // Kotwice tylko dla realnych, niepustych sekcji.
+  const anchors = useMemo(() => {
+    const out: { id: string; label: string }[] = []
+    if (hasHighlights) out.push({ id: 'oferta', label: 'Oferta' })
+    if (hasDescription) out.push({ id: 'opis', label: 'O firmie' })
+    if (hasParams) out.push({ id: 'parametry', label: 'Parametry' })
+    if (hasPhotos) out.push({ id: 'galeria', label: 'Galeria' })
+    if (hasDocuments) out.push({ id: 'dokumenty', label: 'Dokumenty' })
+    if (hasEmployees) out.push({ id: 'pracownicy', label: 'Pracownicy' })
+    return out
+  }, [hasHighlights, hasDescription, hasParams, hasPhotos, hasDocuments, hasEmployees])
+
+  function openMessage(target: MessageTarget): void {
+    setMessageTarget(target)
+    setDrawerOpen(true)
+  }
 
   return (
     <Tooltip.Provider delayDuration={200}>
@@ -203,50 +132,48 @@ export default function CompanyProfile() {
         <header className="cp-hero">
           <div className="cp-hero-main">
             <Avatar.Root className="cp-logo">
-              <Avatar.Fallback className="cp-logo-fallback">{company.logo}</Avatar.Fallback>
+              {data.logo_url && <Avatar.Image className="cp-logo-img" src={data.logo_url} alt={heroName} />}
+              <Avatar.Fallback className="cp-logo-fallback">{initials(heroName)}</Avatar.Fallback>
             </Avatar.Root>
 
             <div className="cp-hero-body">
               <div className="cp-hero-meta">
-                <span className="cp-meta-chip">Profil zweryfikowany</span>
-                <span className="cp-meta-dot">·</span>
-                <span className="cp-meta-text">założono {company.foundedYear}</span>
-                <span className="cp-meta-dot">·</span>
-                <span className="cp-meta-text">{company.city}</span>
+                {data.founding_year != null && (
+                  <span className="cp-meta-text">założono {data.founding_year}</span>
+                )}
+                {data.founding_year != null && data.region && <span className="cp-meta-dot">·</span>}
+                {data.region && <span className="cp-meta-text">{data.region}</span>}
               </div>
 
-              <h1 className="cp-name">{company.name}</h1>
+              <h1 className="cp-name">{heroName}</h1>
 
-              <div className="cp-tags">
-                {company.categories.map((c) => (
-                  <span key={c.label} className={`cp-tag cp-tag-${c.tone}`}>
-                    {c.label}
-                  </span>
-                ))}
-              </div>
+              {data.categories.length > 0 && (
+                <div className="cp-tags">
+                  {data.categories.map((c) => (
+                    <span key={c.id} className={`cp-tag cp-tag-${toneForCategory(c.name)}`}>
+                      {c.name}
+                    </span>
+                  ))}
+                </div>
+              )}
 
-              <div className="cp-certs">
-                {company.certificates.map((cert) => (
-                  <Tooltip.Root key={cert.code}>
-                    <Tooltip.Trigger asChild>
-                      <span className="cp-cert">
-                        <CheckIcon />
-                        {cert.code}
-                      </span>
-                    </Tooltip.Trigger>
-                    <Tooltip.Portal>
-                      <Tooltip.Content className="cp-tooltip" sideOffset={6}>
-                        {cert.name}
-                        <Tooltip.Arrow className="cp-tooltip-arrow" />
-                      </Tooltip.Content>
-                    </Tooltip.Portal>
-                  </Tooltip.Root>
-                ))}
-              </div>
+              {data.certificates.length > 0 && (
+                <div className="cp-certs">
+                  {data.certificates.map((cert) => (
+                    <span key={cert.id} className="cp-cert">
+                      <CheckIcon />
+                      {cert.name}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="cp-hero-actions">
-              <button className="cp-btn cp-btn-primary">
+              <button
+                className="cp-btn cp-btn-primary"
+                onClick={() => openMessage({ name: heroName, role: 'Firma' })}
+              >
                 <ChatIcon />
                 Napisz
               </button>
@@ -261,70 +188,62 @@ export default function CompanyProfile() {
             </div>
           </div>
 
-          <nav className="cp-anchors" aria-label="Sekcje profilu">
-            {sectionAnchors.map((a) => (
-              <a key={a.id} href={`#${a.id}`} className="cp-anchor">
-                {a.label}
-              </a>
-            ))}
-          </nav>
+          {anchors.length > 0 && (
+            <nav className="cp-anchors" aria-label="Sekcje profilu">
+              {anchors.map((a) => (
+                <a key={a.id} href={`#${a.id}`} className="cp-anchor">
+                  {a.label}
+                </a>
+              ))}
+            </nav>
+          )}
         </header>
 
-        <Tabs.Root defaultValue="profil" className="cp-tabs">
-          <Tabs.List className="cp-tabs-list" aria-label="Widoki profilu firmy">
-            <Tabs.Trigger value="profil" className="cp-tab">Profil</Tabs.Trigger>
-            <Tabs.Trigger value="dane" className="cp-tab">Dane rejestrowe</Tabs.Trigger>
-            <Tabs.Trigger value="zespol" className="cp-tab">
-              Lista pracowników
-              <span className="cp-tab-count">{company.employees.length}</span>
-            </Tabs.Trigger>
-          </Tabs.List>
-
-          <Tabs.Content value="profil" className="cp-tab-content">
+        <div className="cp-body">
+          {hasHighlights && (
             <section id="oferta" className="cp-section">
               <div className="cp-section-head">
-                <h2>Top {company.topOfferings.length} z oferty</h2>
+                <h2>Czym się zajmujemy</h2>
                 <p>Najważniejsze rzeczy, które firma chce pokazać partnerom.</p>
               </div>
               <ol className="cp-offerings">
-                {offerings.map((o, i) => (
-                  <li key={o.title} className="cp-offering">
+                {data.highlights.map((h, i) => (
+                  <li key={h.id} className="cp-offering">
                     <span className="cp-offering-num">{String(i + 1).padStart(2, '0')}</span>
                     <div>
-                      <h3>{o.title}</h3>
-                      <p>{o.description}</p>
+                      <h3>{h.title}</h3>
+                      {h.description && <p>{h.description}</p>}
                     </div>
                   </li>
                 ))}
               </ol>
-              {company.topOfferings.length > 5 && (
-                <button className="cp-link-btn" onClick={() => setShowAllOfferings((v) => !v)}>
-                  {showAllOfferings ? 'Zwiń' : 'Pokaż wszystkie'}
-                </button>
-              )}
             </section>
+          )}
 
+          {hasDescription && (
             <section id="opis" className="cp-section">
               <div className="cp-section-head">
                 <h2>O firmie</h2>
               </div>
-              <p className="cp-description">{company.description}</p>
+              <p className="cp-description">{data.description}</p>
             </section>
+          )}
 
+          {hasParams && (
             <section id="parametry" className="cp-section">
               <div className="cp-section-head">
                 <h2>Parametry techniczne</h2>
                 <p>Pola strukturyzowane zależne od kategorii działalności.</p>
               </div>
               <div className="cp-params">
-                {Object.entries(company.techParams).map(([group, rows]) => (
-                  <div key={group} className="cp-param-group">
-                    <h3>{group}</h3>
+                {paramGroups.map((group) => (
+                  <div key={group.categoryId} className="cp-param-group">
+                    <h3>{group.label}</h3>
                     <dl>
-                      {rows.map((r) => (
+                      {group.rows.map((r) => (
                         <div key={r.label} className="cp-param-row">
                           <dt>{r.label}</dt>
-                          <dd>{r.value}</dd>
+                          <dd>{r.display}</dd>
                         </div>
                       ))}
                     </dl>
@@ -332,95 +251,99 @@ export default function CompanyProfile() {
                 ))}
               </div>
             </section>
+          )}
 
+          {hasPhotos && (
             <section id="galeria" className="cp-section">
               <div className="cp-section-head">
                 <h2>Galeria</h2>
                 <p>Hala produkcyjna, maszyny, magazyn.</p>
               </div>
-              <div className="cp-gallery">
-                {company.gallery.map((g, i) => (
-                  <figure key={g.src} className={`cp-photo cp-photo-${i + 1}`}>
-                    <span className="cp-photo-label">{g.alt}</span>
+              <div className="cp-gallery-grid">
+                {photos.map((p) => (
+                  <figure key={p.id} className="cp-photo-tile">
+                    <img src={p.file_url} alt={p.file_name ?? heroName} loading="lazy" />
                   </figure>
                 ))}
               </div>
             </section>
+          )}
 
+          {hasDocuments && (
             <section id="dokumenty" className="cp-section">
               <div className="cp-section-head">
                 <h2>Dokumenty do pobrania</h2>
                 <p>PDF, do 10 MB każdy.</p>
               </div>
               <ul className="cp-docs">
-                {company.documents.map((d) => (
-                  <li key={d.name} className="cp-doc">
-                    <span className="cp-doc-icon">{d.type}</span>
+                {documents.map((d) => (
+                  <li key={d.id} className="cp-doc">
+                    <span className="cp-doc-icon">PDF</span>
                     <div className="cp-doc-meta">
-                      <span className="cp-doc-name">{d.name}</span>
-                      <span className="cp-doc-size">{d.size}</span>
+                      <span className="cp-doc-name">{d.file_name ?? 'Dokument'}</span>
                     </div>
-                    <button className="cp-btn cp-btn-ghost cp-btn-sm">
+                    <a className="cp-btn cp-btn-ghost cp-btn-sm" href={d.file_url} target="_blank" rel="noreferrer">
                       <DownloadIcon />
                       Pobierz
-                    </button>
+                    </a>
                   </li>
                 ))}
               </ul>
             </section>
-          </Tabs.Content>
+          )}
 
-          <Tabs.Content value="dane" className="cp-tab-content">
-            <section className="cp-section">
+          {SHOW_REGISTRY && (
+            <section id="dane" className="cp-section">
               <div className="cp-section-head">
                 <h2>Dane rejestrowe</h2>
                 <p>Twarde dane firmy — gotowe do skopiowania do systemu ERP / na fakturę.</p>
               </div>
               <div className="cp-registry">
-                {Object.entries({
-                  'Nazwa rejestrowa': company.registry.legalName,
-                  NIP: company.registry.nip,
-                  REGON: company.registry.regon,
-                  KRS: company.registry.krs,
-                  'Siedziba': company.registry.headquarters,
-                  'Adres produkcji': company.registry.productionAddress,
-                  'Kapitał zakładowy': company.registry.capital,
-                  'Zatrudnienie': company.registry.employees,
-                  'Przychód (2025)': company.registry.revenue,
-                  'Strona WWW': company.registry.website,
-                }).map(([k, v]) => (
-                  <div key={k} className="cp-registry-row">
-                    <span className="cp-registry-key">{k}</span>
-                    <span className="cp-registry-val">{v}</span>
-                  </div>
-                ))}
+                {([
+                  ['Nazwa rejestrowa', data.name],
+                  ['NIP', data.nip],
+                  ['REGON', data.regon],
+                  ['KRS', data.krs],
+                  ['Siedziba', data.headquarters_address],
+                  ['Adres produkcji', data.plant_address],
+                  ['Strona WWW', data.website],
+                ] as const)
+                  .filter(([, v]) => Boolean(v))
+                  .map(([k, v]) => (
+                    <div key={k} className="cp-registry-row">
+                      <span className="cp-registry-key">{k}</span>
+                      <span className="cp-registry-val">{v}</span>
+                    </div>
+                  ))}
               </div>
             </section>
-          </Tabs.Content>
+          )}
 
-          <Tabs.Content value="zespol" className="cp-tab-content">
-            <section className="cp-section">
+          {hasEmployees && (
+            <section id="pracownicy" className="cp-section">
               <div className="cp-section-head">
-                <h2>Lista pracowników</h2>
+                <h2>Pracownicy</h2>
                 <p>Kliknij „Napisz", aby otworzyć komunikator 1:1.</p>
               </div>
               <ul className="cp-team">
-                {company.employees.map((e) => (
-                  <li key={e.email} className="cp-person">
+                {data.employees.map((e) => (
+                  <li key={e.id} className="cp-person">
                     <Avatar.Root className="cp-person-avatar">
-                      <Avatar.Fallback className="cp-person-fallback">{e.initials}</Avatar.Fallback>
-                      <span className={`cp-presence ${e.online ? 'is-online' : ''}`} aria-hidden />
+                      <Avatar.Fallback className="cp-person-fallback">{initials(e.full_name)}</Avatar.Fallback>
                     </Avatar.Root>
                     <div className="cp-person-body">
-                      <div className="cp-person-name">{e.name}</div>
-                      <div className="cp-person-role">{e.role}</div>
-                      <div className="cp-person-contact">
-                        <span>{e.email}</span>
-                        <span className="cp-person-sep">·</span>
-                        <span>{e.phone}</span>
-                      </div>
+                      <div className="cp-person-name">{e.full_name}</div>
+                      <div className="cp-person-role">{e.job_title}</div>
+                      {e.phone && (
+                        <div className="cp-person-contact">
+                          <span>{e.phone}</span>
+                        </div>
+                      )}
                     </div>
-                    <button className="cp-btn cp-btn-primary cp-btn-sm">
+                    <button
+                      className="cp-btn cp-btn-primary cp-btn-sm"
+                      onClick={() => openMessage({ name: e.full_name, role: e.job_title })}
+                    >
                       <ChatIcon />
                       Napisz
                     </button>
@@ -428,8 +351,10 @@ export default function CompanyProfile() {
                 ))}
               </ul>
             </section>
-          </Tabs.Content>
-        </Tabs.Root>
+          )}
+        </div>
+
+        <MessageDrawerPlaceholder open={drawerOpen} onOpenChange={setDrawerOpen} target={messageTarget} />
       </div>
     </Tooltip.Provider>
   )
