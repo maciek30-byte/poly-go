@@ -645,8 +645,8 @@ Seed jest idempotentny i bezpieczny do wielokrotnego `db:reset`.
 
 #### Automated
 
-- [x] 4.1 `pnpm build` zielony, `pnpm lint` czysty
-- [x] 4.2 `pnpm db:test:rls` zielony (favorites prywatne per user)
+- [x] 4.1 `pnpm build` zielony, `pnpm lint` czysty — c39d702
+- [x] 4.2 `pnpm db:test:rls` zielony (favorites prywatne per user) — c39d702
 
 #### Manual
 
@@ -658,8 +658,8 @@ Seed jest idempotentny i bezpieczny do wielokrotnego `db:reset`.
 
 #### Automated
 
-- [ ] 5.1 `pnpm build` zielony, `pnpm lint` czysty
-- [ ] 5.2 `pnpm db:test:rls` zielony (brak edycji cudzej firmy/parametrów/highlights)
+- [x] 5.1 `pnpm build` zielony, `pnpm lint` czysty (21 błędów pre-existing `explicit-function-return-type` w nietkniętych plikach — baseline z fazy 1.4; nowy kod czysty. 1 warning React-Compiler na `useFieldArray` — znana niekompatybilność rhf, nie błąd)
+- [x] 5.2 `pnpm db:test:rls` zielony (dodane TEST 2a parametry + TEST 2b highlights: user A nie zapisuje cudzych; 12/12)
 
 #### Manual
 

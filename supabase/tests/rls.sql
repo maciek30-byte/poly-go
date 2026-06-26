@@ -34,12 +34,17 @@ DECLARE
     user_b    UUID := '44444444-4444-4444-4444-4444444444bb';
     conv_ab   UUID := '55555555-5555-5555-5555-555555555555';
     msg_a     UUID := '66666666-6666-6666-6666-6666666666aa';
+    hl_b      UUID := '77777777-7777-7777-7777-7777777777bb';
+    test_cat  INTEGER;
+    def_b     INTEGER;
 BEGIN
     -- Clear any leftovers from a prior run.
     DELETE FROM messages       WHERE id IN (msg_a);
     DELETE FROM conversations  WHERE id = conv_ab;
     DELETE FROM favorites      WHERE user_id IN (user_a, user_b);
     DELETE FROM user_roles     WHERE user_id IN (user_a, user_b);
+    DELETE FROM highlights     WHERE company_id IN (company_a, company_b);
+    DELETE FROM company_parameter_values WHERE company_id IN (company_a, company_b);
     DELETE FROM users          WHERE id IN (user_a, user_b);
     DELETE FROM auth.users     WHERE id IN (user_a, user_b);
     DELETE FROM companies      WHERE id IN (company_a, company_b);
@@ -48,6 +53,21 @@ BEGIN
     INSERT INTO companies (id, name, description, region) VALUES
         (company_a, 'Firma A', 'Test company A', 'Mazowieckie'),
         (company_b, 'Firma B', 'Test company B', 'Małopolskie');
+
+    -- A parameter definition (słownik) tied to any existing category, plus a
+    -- value + a highlight owned by company B — targets for the write-isolation
+    -- assertions (user A must not touch B's parameters/highlights).
+    SELECT id INTO test_cat FROM categories ORDER BY id LIMIT 1;
+    INSERT INTO parameter_definitions (category_id, key, label, value_type)
+    VALUES (test_cat, 'rls_test_key', 'RLS Test Param', 'text')
+    ON CONFLICT (category_id, key) DO UPDATE SET label = EXCLUDED.label
+    RETURNING id INTO def_b;
+
+    INSERT INTO company_parameter_values (company_id, definition_id, value)
+    VALUES (company_b, def_b, 'B-owned value');
+
+    INSERT INTO highlights (id, company_id, title, sort_order) VALUES
+        (hl_b, company_b, 'B highlight', 0);
 
     -- auth.users (minimal columns — Supabase tolerates this for service-level tests)
     INSERT INTO auth.users (id, email, instance_id, aud, role, created_at, updated_at)
@@ -132,6 +152,81 @@ BEGIN
     RESET ROLE;
 END
 $test2$;
+
+
+-- ============================================================
+-- TEST 2a: company_parameter_values — A cannot write B's parameters
+-- ============================================================
+-- INSERT for company B blocked by WITH CHECK; UPDATE/DELETE of B's existing
+-- value filtered to 0 rows by USING. Mutacje tylko własnej firmy.
+DO $test2a$
+DECLARE
+    def_b    INTEGER;
+    blocked  BOOLEAN := FALSE;
+    affected INTEGER;
+BEGIN
+    SELECT id INTO def_b FROM parameter_definitions WHERE key = 'rls_test_key' LIMIT 1;
+
+    SET LOCAL ROLE authenticated;
+    SET LOCAL "request.jwt.claims" = '{"sub":"33333333-3333-3333-3333-3333333333aa","role":"authenticated"}';
+
+    BEGIN
+        INSERT INTO company_parameter_values (company_id, definition_id, value)
+        VALUES ('22222222-2222-2222-2222-2222222222bb', def_b, 'hacked');
+    EXCEPTION WHEN insufficient_privilege OR check_violation THEN
+        blocked := TRUE;
+    END;
+    IF NOT blocked THEN
+        RAISE EXCEPTION 'TEST 2a FAILED: user A inserted a parameter for company B';
+    END IF;
+
+    UPDATE company_parameter_values SET value = 'hacked'
+    WHERE company_id = '22222222-2222-2222-2222-2222222222bb' AND definition_id = def_b;
+    GET DIAGNOSTICS affected = ROW_COUNT;
+    IF affected <> 0 THEN
+        RAISE EXCEPTION 'TEST 2a FAILED: user A updated company B parameter (affected=%)', affected;
+    END IF;
+
+    RAISE NOTICE 'TEST 2a OK: user A cannot write company B parameters.';
+
+    RESET ROLE;
+END
+$test2a$;
+
+
+-- ============================================================
+-- TEST 2b: highlights — A cannot write B's highlights
+-- ============================================================
+DO $test2b$
+DECLARE
+    blocked  BOOLEAN := FALSE;
+    affected INTEGER;
+BEGIN
+    SET LOCAL ROLE authenticated;
+    SET LOCAL "request.jwt.claims" = '{"sub":"33333333-3333-3333-3333-3333333333aa","role":"authenticated"}';
+
+    BEGIN
+        INSERT INTO highlights (company_id, title, sort_order)
+        VALUES ('22222222-2222-2222-2222-2222222222bb', 'hacked', 0);
+    EXCEPTION WHEN insufficient_privilege OR check_violation THEN
+        blocked := TRUE;
+    END;
+    IF NOT blocked THEN
+        RAISE EXCEPTION 'TEST 2b FAILED: user A inserted a highlight for company B';
+    END IF;
+
+    UPDATE highlights SET title = 'hacked'
+    WHERE company_id = '22222222-2222-2222-2222-2222222222bb';
+    GET DIAGNOSTICS affected = ROW_COUNT;
+    IF affected <> 0 THEN
+        RAISE EXCEPTION 'TEST 2b FAILED: user A updated company B highlight (affected=%)', affected;
+    END IF;
+
+    RAISE NOTICE 'TEST 2b OK: user A cannot write company B highlights.';
+
+    RESET ROLE;
+END
+$test2b$;
 
 
 -- ============================================================
@@ -365,7 +460,7 @@ $test10$;
 DO $banner$
 BEGIN
     RAISE NOTICE '----------------------------------------';
-    RAISE NOTICE 'RLS isolation OK — 10/10 assertions passed';
+    RAISE NOTICE 'RLS isolation OK — 12/12 assertions passed';
     RAISE NOTICE '----------------------------------------';
 END
 $banner$;
