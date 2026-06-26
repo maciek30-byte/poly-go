@@ -658,8 +658,8 @@ Seed jest idempotentny i bezpieczny do wielokrotnego `db:reset`.
 
 #### Automated
 
-- [x] 5.1 `pnpm build` zielony, `pnpm lint` czysty (21 błędów pre-existing `explicit-function-return-type` w nietkniętych plikach — baseline z fazy 1.4; nowy kod czysty. 1 warning React-Compiler na `useFieldArray` — znana niekompatybilność rhf, nie błąd)
-- [x] 5.2 `pnpm db:test:rls` zielony (dodane TEST 2a parametry + TEST 2b highlights: user A nie zapisuje cudzych; 12/12)
+- [x] 5.1 `pnpm build` zielony, `pnpm lint` czysty (21 błędów pre-existing `explicit-function-return-type` w nietkniętych plikach — baseline z fazy 1.4; nowy kod czysty. 1 warning React-Compiler na `useFieldArray` — znana niekompatybilność rhf, nie błąd) — d5e0c34
+- [x] 5.2 `pnpm db:test:rls` zielony (dodane TEST 2a parametry + TEST 2b highlights: user A nie zapisuje cudzych; 12/12) — d5e0c34
 
 #### Manual
 
@@ -672,8 +672,8 @@ Seed jest idempotentny i bezpieczny do wielokrotnego `db:reset`.
 
 #### Automated
 
-- [ ] 6.1 Migracja aplikuje się: `pnpm db:reset`
-- [ ] 6.2 `pnpm build` zielony, `pnpm db:test:rls` zielony
+- [x] 6.1 Migracja aplikuje się: `pnpm db:reset`
+- [x] 6.2 `pnpm build` zielony, `pnpm db:test:rls` zielony (dodany TEST 8a: Storage write tylko własny prefiks; 13/13)
 
 #### Manual
 

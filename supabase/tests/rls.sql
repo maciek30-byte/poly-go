@@ -409,6 +409,50 @@ $test8$;
 
 
 -- ============================================================
+-- TEST 8a: Storage — A cannot write to company B's prefix
+-- ============================================================
+-- Polityki storage.objects (company-media) wymuszają pierwszy folder ścieżki =
+-- current_user_company_id(). A (firma 1111..aa) może wgrać do "1111..aa/...",
+-- ale NIE do "2222..bb/...".
+DO $test8a$
+DECLARE
+    blocked   BOOLEAN := FALSE;
+    own_ok    BOOLEAN := FALSE;
+BEGIN
+    SET LOCAL ROLE authenticated;
+    SET LOCAL "request.jwt.claims" = '{"sub":"33333333-3333-3333-3333-3333333333aa","role":"authenticated"}';
+
+    -- Zapis do cudzego prefiksu (firma B) — zablokowany przez WITH CHECK.
+    BEGIN
+        INSERT INTO storage.objects (bucket_id, name)
+        VALUES ('company-media', '22222222-2222-2222-2222-2222222222bb/photos/x.jpg');
+    EXCEPTION WHEN insufficient_privilege OR check_violation THEN
+        blocked := TRUE;
+    END;
+    IF NOT blocked THEN
+        RAISE EXCEPTION 'TEST 8a FAILED: user A wrote to company B storage prefix';
+    END IF;
+
+    -- Zapis do własnego prefiksu (firma A) — dozwolony.
+    BEGIN
+        INSERT INTO storage.objects (bucket_id, name)
+        VALUES ('company-media', '11111111-1111-1111-1111-1111111111aa/photos/ok.jpg');
+        own_ok := TRUE;
+    EXCEPTION WHEN insufficient_privilege OR check_violation THEN
+        own_ok := FALSE;
+    END;
+    IF NOT own_ok THEN
+        RAISE EXCEPTION 'TEST 8a FAILED: user A could NOT write to own storage prefix';
+    END IF;
+
+    RAISE NOTICE 'TEST 8a OK: storage write scoped to own company prefix.';
+
+    RESET ROLE;
+END
+$test8a$;
+
+
+-- ============================================================
 -- TEST 9: user_roles SELECT-self — A sees their own role row
 -- ============================================================
 DO $test9$
@@ -460,7 +504,7 @@ $test10$;
 DO $banner$
 BEGIN
     RAISE NOTICE '----------------------------------------';
-    RAISE NOTICE 'RLS isolation OK — 12/12 assertions passed';
+    RAISE NOTICE 'RLS isolation OK — 13/13 assertions passed';
     RAISE NOTICE '----------------------------------------';
 END
 $banner$;

@@ -7,6 +7,7 @@ type CategoryRow = Database['public']['Tables']['categories']['Row']
 type CertificateRow = Database['public']['Tables']['certificates']['Row']
 type ParameterDefinitionRow = Database['public']['Tables']['parameter_definitions']['Row']
 type HighlightRow = Database['public']['Tables']['highlights']['Row']
+type CompanyMediaRow = Database['public']['Tables']['company_media']['Row']
 
 // Edytowalny kształt własnej firmy. Pola tekstowe/rejestrowe + relacje
 // rozłożone tak, by łatwo wpiąć je w react-hook-form (płaskie pola + listy id).
@@ -14,6 +15,7 @@ export type OwnCompanyData = {
   id: string
   name: string
   display_name: string | null
+  logo_url: string | null
   founding_year: number | null
   description: string | null
   region: string | null
@@ -27,6 +29,7 @@ export type OwnCompanyData = {
   certificateIds: number[]
   parameterValues: Record<number, string> // definition_id -> value
   highlights: HighlightRow[]
+  media: CompanyMediaRow[]
 }
 
 // Słowniki + definicje pasujące do kategorii firmy. Render parametrów jest
@@ -45,12 +48,13 @@ export type OwnCompanyState =
   | { status: 'ready'; data: OwnCompanyData; dictionaries: OwnCompanyDictionaries; reload: () => void }
 
 const COMPANY_SELECT = `
-  id, name, display_name, founding_year, description, region,
+  id, name, display_name, logo_url, founding_year, description, region,
   nip, regon, krs, headquarters_address, plant_address, website,
   company_categories ( category_id ),
   company_certificates ( certificate_id ),
   company_parameter_values ( definition_id, value ),
-  highlights ( id, company_id, title, description, sort_order, created_at )
+  highlights ( id, company_id, title, description, sort_order, created_at ),
+  company_media ( id, company_id, media_type, file_url, file_name, created_at )
 `
 
 // Wynik ładowania bez `reload` — `reload` dokładamy stabilnie przy zwrocie,
@@ -142,6 +146,7 @@ export function useOwnCompany(): OwnCompanyState {
         id: company.id,
         name: company.name,
         display_name: company.display_name,
+        logo_url: company.logo_url,
         founding_year: company.founding_year,
         description: company.description,
         region: company.region,
@@ -155,6 +160,7 @@ export function useOwnCompany(): OwnCompanyState {
         certificateIds: (company.company_certificates ?? []).map((c) => c.certificate_id),
         parameterValues,
         highlights: [...(company.highlights ?? [])].sort((a, b) => a.sort_order - b.sort_order),
+        media: company.company_media ?? [],
       }
 
       if (seq !== requestSeq) return

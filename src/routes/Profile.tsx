@@ -12,6 +12,7 @@ import {
   type OwnCompanyData,
   type OwnCompanyDictionaries,
 } from '../lib/use-own-company'
+import { useCompanyMedia, type UploadKind } from '../lib/use-company-media'
 import './Profile.css'
 
 const MAX_HIGHLIGHTS = 5
@@ -364,7 +365,145 @@ function ProfileForm({ data, dictionaries, onSaved }: ProfileFormProps): JSX.Ele
           </button>
         </div>
       </form>
+
+      {/* Media poza <form> — uploady są niezależne (natychmiastowe), więc reload
+          po wgraniu nie kasuje niezapisanych zmian tekstowych w formularzu. */}
+      <MediaSection
+        companyId={companyId}
+        logoUrl={data.logo_url}
+        media={data.media}
+        onChanged={onSaved}
+      />
     </main>
+  )
+}
+
+type MediaSectionProps = {
+  companyId: string
+  logoUrl: string | null
+  media: OwnCompanyData['media']
+  onChanged: () => void
+}
+
+function MediaSection({ companyId, logoUrl, media, onChanged }: MediaSectionProps): JSX.Element {
+  const { uploading, upload, remove, removeLogo, error } = useCompanyMedia(companyId)
+
+  const photos = media.filter((m) => m.media_type === 'PHOTO')
+  const documents = media.filter((m) => m.media_type === 'DOCUMENT')
+
+  async function onPick(kind: UploadKind, currentCount: number, input: HTMLInputElement): Promise<void> {
+    const file = input.files?.[0]
+    input.value = '' // pozwól ponownie wybrać ten sam plik
+    if (!file) return
+    const ok = await upload(kind, file, currentCount)
+    if (ok) {
+      toast.success('Plik wgrany.')
+      onChanged()
+    }
+  }
+
+  async function onRemove(media: OwnCompanyData['media'][number]): Promise<void> {
+    const ok = await remove(media)
+    if (ok) {
+      toast.success('Plik usunięty.')
+      onChanged()
+    }
+  }
+
+  async function onRemoveLogo(): Promise<void> {
+    const ok = await removeLogo(logoUrl)
+    if (ok) {
+      toast.success('Logo usunięte.')
+      onChanged()
+    }
+  }
+
+  return (
+    <section className="pf__section">
+      <h2>Media</h2>
+      {error && <p className="pf__error">{error}</p>}
+
+      <div className="pf__media-block">
+        <h3>Logo</h3>
+        <div className="pf__media-logo">
+          {logoUrl ? (
+            <>
+              <img src={logoUrl} alt="Logo firmy" className="pf__logo-preview" />
+              <button type="button" className="pf__btn pf__btn--ghost" onClick={onRemoveLogo} disabled={uploading}>
+                Usuń logo
+              </button>
+            </>
+          ) : (
+            <span className="pf__hint">Brak logo.</span>
+          )}
+        </div>
+        <label className="pf__upload">
+          <span>{logoUrl ? 'Zmień logo' : 'Wgraj logo'}</span>
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            disabled={uploading}
+            onChange={(e) => void onPick('logo', 0, e.currentTarget)}
+          />
+        </label>
+      </div>
+
+      <div className="pf__media-block">
+        <h3>Galeria ({photos.length}/5)</h3>
+        {photos.length > 0 && (
+          <div className="pf__gallery">
+            {photos.map((p) => (
+              <figure key={p.id} className="pf__gallery-item">
+                <img src={p.file_url} alt={p.file_name ?? 'Zdjęcie'} loading="lazy" />
+                <button type="button" className="pf__btn pf__btn--ghost pf__btn--sm" onClick={() => void onRemove(p)} disabled={uploading}>
+                  Usuń
+                </button>
+              </figure>
+            ))}
+          </div>
+        )}
+        {photos.length < 5 && (
+          <label className="pf__upload">
+            <span>Dodaj zdjęcie</span>
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              disabled={uploading}
+              onChange={(e) => void onPick('photo', photos.length, e.currentTarget)}
+            />
+          </label>
+        )}
+      </div>
+
+      <div className="pf__media-block">
+        <h3>Dokumenty PDF ({documents.length}/5)</h3>
+        {documents.length > 0 && (
+          <ul className="pf__doc-list">
+            {documents.map((d) => (
+              <li key={d.id} className="pf__doc-item">
+                <a href={d.file_url} target="_blank" rel="noreferrer">
+                  {d.file_name ?? 'Dokument'}
+                </a>
+                <button type="button" className="pf__btn pf__btn--ghost pf__btn--sm" onClick={() => void onRemove(d)} disabled={uploading}>
+                  Usuń
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        {documents.length < 5 && (
+          <label className="pf__upload">
+            <span>Dodaj PDF</span>
+            <input
+              type="file"
+              accept="application/pdf"
+              disabled={uploading}
+              onChange={(e) => void onPick('document', documents.length, e.currentTarget)}
+            />
+          </label>
+        )}
+      </div>
+    </section>
   )
 }
 
