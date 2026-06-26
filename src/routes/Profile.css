@@ -317,3 +317,54 @@
   padding: var(--space-1, 4px) var(--space-2);
   font-size: 0.8125rem;
 }
+
+.pf__employees {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pf__employee {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 8px);
+}
+
+.pf__employee-name {
+  font-weight: 600;
+  color: var(--color-text-strong);
+  flex-basis: 100%;
+}
+
+.pf__employee-fields {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.pf__employee-fields .pf__input {
+  width: auto;
+  flex: 1;
+  min-width: 140px;
+}
+
+.pf__employee-visible {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.pf__employee-visible input {
+  accent-color: var(--color-accent, #2563eb);
+}

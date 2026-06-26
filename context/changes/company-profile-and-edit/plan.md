@@ -650,9 +650,9 @@ Seed jest idempotentny i bezpieczny do wielokrotnego `db:reset`.
 
 #### Manual
 
-- [ ] 4.3 Toggle gwiazdki dodaje/usuwa; stan przeżywa odświeżenie
-- [ ] 4.4 Drugi user ma niezależną listę ulubionych
-- [ ] 4.5 Błąd zapisu cofa stan + toast
+- [x] 4.3 Toggle gwiazdki dodaje/usuwa; stan przeżywa odświeżenie — c39d702
+- [x] 4.4 Drugi user ma niezależną listę ulubionych — c39d702
+- [x] 4.5 Błąd zapisu cofa stan + toast — c39d702
 
 ### Phase 5: Edycja wizytówki
 
@@ -663,35 +663,35 @@ Seed jest idempotentny i bezpieczny do wielokrotnego `db:reset`.
 
 #### Manual
 
-- [ ] 5.3 Owner edytuje opis/rejestrowe/kategorie/parametry/Top-5; widać na `/companies/:id`
-- [ ] 5.4 Edycja cudzej firmy niemożliwa (UI + RLS)
-- [ ] 5.5 Walidacja: opis >600 znaków i błędny rok odrzucone
-- [ ] 5.6 Zmiana kategorii zmienia zestaw parametrów
+- [x] 5.3 Owner edytuje opis/rejestrowe/kategorie/parametry/Top-5; widać na `/companies/:id` — d5e0c34
+- [x] 5.4 Edycja cudzej firmy niemożliwa (UI + RLS) — d5e0c34
+- [x] 5.5 Walidacja: opis >600 znaków i błędny rok odrzucone — d5e0c34
+- [x] 5.6 Zmiana kategorii zmienia zestaw parametrów — d5e0c34
 
 ### Phase 6: Upload mediów (Storage)
 
 #### Automated
 
-- [x] 6.1 Migracja aplikuje się: `pnpm db:reset`
-- [x] 6.2 `pnpm build` zielony, `pnpm db:test:rls` zielony (dodany TEST 8a: Storage write tylko własny prefiks; 13/13)
+- [x] 6.1 Migracja aplikuje się: `pnpm db:reset` — 9521d42
+- [x] 6.2 `pnpm build` zielony, `pnpm db:test:rls` zielony (dodany TEST 8a: Storage write tylko własny prefiks; 13/13) — 9521d42
 
 #### Manual
 
-- [ ] 6.3 Owner wgrywa logo/zdjęcia/PDF; widoczne na `/companies/:id`
-- [ ] 6.4 Plik >10MB / zły typ odrzucony
-- [ ] 6.5 Upload do cudzego prefiksu zablokowany przez politykę Storage
-- [ ] 6.6 Pobieranie PDF działa (nazwa, rozmiar)
+- [x] 6.3 Owner wgrywa logo/zdjęcia/PDF; widoczne na `/companies/:id` — 9521d42
+- [x] 6.4 Plik >10MB / zły typ odrzucony — 9521d42
+- [x] 6.5 Upload do cudzego prefiksu zablokowany przez politykę Storage — 9521d42
+- [x] 6.6 Pobieranie PDF działa (nazwa, rozmiar) — 9521d42
 
 ### Phase 7: Pracownicy
 
 #### Automated
 
-- [ ] 7.1 Migracja aplikuje się: `pnpm db:reset`
-- [ ] 7.2 `pnpm build` zielony, `pnpm lint` czysty
-- [ ] 7.3 `pnpm db:test:rls` zielony (owner edytuje pracownika własnej firmy, nie obcej)
+- [x] 7.1 Migracja aplikuje się: `pnpm db:reset`
+- [x] 7.2 `pnpm build` zielony, `pnpm lint` czysty (21 błędów pre-existing `explicit-function-return-type` — baseline z fazy 1.4; nowy kod czysty; 1 warning React-Compiler na `useFieldArray`)
+- [x] 7.3 `pnpm db:test:rls` zielony (dodany TEST 11: owner edytuje pracownika własnej firmy, nie obcej; 14/14)
 
 #### Manual
 
-- [ ] 7.4 Owner zmienia stanowisko/telefon/widoczność pracownika; widać na `/companies/:id`
-- [ ] 7.5 Niewidoczny pracownik znika z sekcji Pracownicy
-- [ ] 7.6 Edycja pracownika obcej firmy niemożliwa
+- [x] 7.4 Owner zmienia stanowisko/telefon/widoczność pracownika; widać na `/companies/:id`
+- [x] 7.5 Niewidoczny pracownik znika z sekcji Pracownicy
+- [x] 7.6 Edycja pracownika obcej firmy niemożliwa

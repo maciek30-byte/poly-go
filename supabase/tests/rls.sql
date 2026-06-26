@@ -32,6 +32,7 @@ DECLARE
     company_b UUID := '22222222-2222-2222-2222-2222222222bb';
     user_a    UUID := '33333333-3333-3333-3333-3333333333aa';
     user_b    UUID := '44444444-4444-4444-4444-4444444444bb';
+    user_c    UUID := '33333333-3333-3333-3333-3333333333cc'; -- drugi pracownik firmy A
     conv_ab   UUID := '55555555-5555-5555-5555-555555555555';
     msg_a     UUID := '66666666-6666-6666-6666-6666666666aa';
     hl_b      UUID := '77777777-7777-7777-7777-7777777777bb';
@@ -42,11 +43,11 @@ BEGIN
     DELETE FROM messages       WHERE id IN (msg_a);
     DELETE FROM conversations  WHERE id = conv_ab;
     DELETE FROM favorites      WHERE user_id IN (user_a, user_b);
-    DELETE FROM user_roles     WHERE user_id IN (user_a, user_b);
+    DELETE FROM user_roles     WHERE user_id IN (user_a, user_b, user_c);
     DELETE FROM highlights     WHERE company_id IN (company_a, company_b);
     DELETE FROM company_parameter_values WHERE company_id IN (company_a, company_b);
-    DELETE FROM users          WHERE id IN (user_a, user_b);
-    DELETE FROM auth.users     WHERE id IN (user_a, user_b);
+    DELETE FROM users          WHERE id IN (user_a, user_b, user_c);
+    DELETE FROM auth.users     WHERE id IN (user_a, user_b, user_c);
     DELETE FROM companies      WHERE id IN (company_a, company_b);
 
     -- Companies
@@ -73,12 +74,15 @@ BEGIN
     INSERT INTO auth.users (id, email, instance_id, aud, role, created_at, updated_at)
     VALUES
         (user_a, 'a@test.local', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', NOW(), NOW()),
-        (user_b, 'b@test.local', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', NOW(), NOW());
+        (user_b, 'b@test.local', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', NOW(), NOW()),
+        (user_c, 'employee-a2@test.local', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', NOW(), NOW());
 
-    -- Profiles
+    -- Profiles. user_c jest drugim pracownikiem firmy A (cel testu edycji
+    -- pracownika własnej firmy przez ownera). E-mail celowo różny od TEST 6.
     INSERT INTO users (id, company_id, full_name, job_title) VALUES
-        (user_a, company_a, 'Alice A', 'Handlowiec'),
-        (user_b, company_b, 'Bob B',   'Handlowiec');
+        (user_a, company_a, 'Alice A',     'Handlowiec'),
+        (user_b, company_b, 'Bob B',       'Handlowiec'),
+        (user_c, company_a, 'Dawid A',     'Technolog');
 
     -- Favorites: each user marks the other's company.
     INSERT INTO favorites (user_id, company_id) VALUES
@@ -499,12 +503,50 @@ $test10$;
 
 
 -- ============================================================
+-- TEST 11: users_update_own_company — owner edits own-company employee,
+--          not a foreign-company one
+-- ============================================================
+-- Polityka users_update_own_company (0006): A (firma A) może edytować Carol
+-- (user_c, firma A), ale NIE Boba (user_b, firma B). users_update_self nie
+-- pomaga przy cudzych wierszach, więc test izoluje nową politykę.
+DO $test11$
+DECLARE
+    own_affected     INTEGER;
+    foreign_affected INTEGER;
+BEGIN
+    SET LOCAL ROLE authenticated;
+    SET LOCAL "request.jwt.claims" = '{"sub":"33333333-3333-3333-3333-3333333333aa","role":"authenticated"}';
+
+    -- Edycja pracownika własnej firmy (Carol, firma A) — dozwolona.
+    UPDATE users SET job_title = 'Kierownik Technologii'
+    WHERE id = '33333333-3333-3333-3333-3333333333cc';
+    GET DIAGNOSTICS own_affected = ROW_COUNT;
+    IF own_affected <> 1 THEN
+        RAISE EXCEPTION 'TEST 11 FAILED: owner could NOT edit own-company employee (affected=%)', own_affected;
+    END IF;
+
+    -- Edycja pracownika obcej firmy (Bob, firma B) — filtrowana do 0.
+    UPDATE users SET job_title = 'hacked'
+    WHERE id = '44444444-4444-4444-4444-4444444444bb';
+    GET DIAGNOSTICS foreign_affected = ROW_COUNT;
+    IF foreign_affected <> 0 THEN
+        RAISE EXCEPTION 'TEST 11 FAILED: owner edited foreign-company employee (affected=%)', foreign_affected;
+    END IF;
+
+    RAISE NOTICE 'TEST 11 OK: owner edits own-company employee, not foreign.';
+
+    RESET ROLE;
+END
+$test11$;
+
+
+-- ============================================================
 -- Final banner (inside a DO block — psql can't RAISE NOTICE bare)
 -- ============================================================
 DO $banner$
 BEGIN
     RAISE NOTICE '----------------------------------------';
-    RAISE NOTICE 'RLS isolation OK — 13/13 assertions passed';
+    RAISE NOTICE 'RLS isolation OK — 14/14 assertions passed';
     RAISE NOTICE '----------------------------------------';
 END
 $banner$;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type JSX } from 'react'
+import { useEffect, useMemo, useState, type JSX } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -13,6 +13,7 @@ import {
   type OwnCompanyDictionaries,
 } from '../lib/use-own-company'
 import { useCompanyMedia, type UploadKind } from '../lib/use-company-media'
+import { saveEmployee, useCompanyEmployees, type EmployeeRow } from '../lib/use-company-employees'
 import './Profile.css'
 
 const MAX_HIGHLIGHTS = 5
@@ -374,7 +375,115 @@ function ProfileForm({ data, dictionaries, onSaved }: ProfileFormProps): JSX.Ele
         media={data.media}
         onChanged={onSaved}
       />
+
+      <EmployeesSection />
     </main>
+  )
+}
+
+function EmployeesSection(): JSX.Element {
+  const state = useCompanyEmployees()
+
+  if (state.status === 'loading') {
+    return (
+      <section className="pf__section">
+        <h2>Pracownicy</h2>
+        <p className="pf__hint">Ładowanie…</p>
+      </section>
+    )
+  }
+
+  if (state.status !== 'ready') {
+    return (
+      <section className="pf__section">
+        <h2>Pracownicy</h2>
+        <p className="pf__hint">Nie udało się wczytać pracowników.</p>
+      </section>
+    )
+  }
+
+  return (
+    <section className="pf__section">
+      <h2>Pracownicy</h2>
+      <p className="pf__hint">
+        Edytuj stanowisko, telefon i widoczność pracownika na profilu firmy.
+      </p>
+      <ul className="pf__employees">
+        {state.employees.map((emp) => (
+          <EmployeeRowEditor key={emp.id} employee={emp} onSaved={state.reload} />
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+type EmployeeRowEditorProps = {
+  employee: EmployeeRow
+  onSaved: () => void
+}
+
+function EmployeeRowEditor({ employee, onSaved }: EmployeeRowEditorProps): JSX.Element {
+  const [jobTitle, setJobTitle] = useState(employee.job_title)
+  const [phone, setPhone] = useState(employee.phone ?? '')
+  const [visible, setVisible] = useState(employee.is_visible_on_profile)
+  const [saving, setSaving] = useState(false)
+
+  const dirty =
+    jobTitle !== employee.job_title ||
+    phone !== (employee.phone ?? '') ||
+    visible !== employee.is_visible_on_profile
+
+  async function onSave(): Promise<void> {
+    if (jobTitle.trim() === '') {
+      toast.error('Stanowisko nie może być puste.')
+      return
+    }
+    setSaving(true)
+    try {
+      await saveEmployee(employee.id, { job_title: jobTitle, phone, is_visible_on_profile: visible })
+      toast.success('Dane pracownika zapisane.')
+      onSaved()
+    } catch {
+      toast.error('Nie udało się zapisać danych pracownika.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <li className="pf__employee">
+      <div className="pf__employee-name">{employee.full_name}</div>
+      <div className="pf__employee-fields">
+        <input
+          className="pf__input"
+          placeholder="Stanowisko"
+          value={jobTitle}
+          onChange={(e) => setJobTitle(e.currentTarget.value)}
+        />
+        <input
+          className="pf__input"
+          placeholder="Telefon"
+          value={phone}
+          onChange={(e) => setPhone(e.currentTarget.value)}
+        />
+        <label className="pf__employee-visible">
+          <input
+            type="checkbox"
+            checked={visible}
+            onChange={(e) => setVisible(e.currentTarget.checked)}
+          />
+          Widoczny na profilu
+        </label>
+      </div>
+      <button
+        type="button"
+        className="pf__btn pf__btn--primary pf__btn--sm"
+        onClick={() => void onSave()}
+        disabled={saving || !dirty}
+      >
+        {saving ? 'Zapisywanie…' : 'Zapisz'}
+      </button>
+    </li>
   )
 }
 
