@@ -91,7 +91,7 @@ export default function AuthCallback() {
   }, [oauthError, navigate])
 
   return (
-    <div style={{ padding: 'var(--space-6, 24px)', textAlign: 'center' }}>
+    <div className="p-6 text-center">
       {exchanging ? 'Łączenie…' : 'Przekierowywanie…'}
     </div>
   )

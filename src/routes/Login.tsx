@@ -11,7 +11,7 @@ import {
   signInWithPassword,
 } from '../lib/auth'
 import { Logo } from '../components/Logo'
-import './Login.css'
+import { Input } from '@/components/ui/input'
 
 const NEXT_STORAGE_KEY = 'polygo:auth:next'
 
@@ -25,7 +25,7 @@ type LoginValues = z.infer<typeof loginSchema>
 function GoogleIcon() {
   return (
     <svg
-      className="login__google-icon"
+      className="size-[18px] shrink-0"
       viewBox="0 0 24 24"
       aria-hidden="true"
       focusable="false"
@@ -51,7 +51,13 @@ function GoogleIcon() {
 }
 
 function Spinner() {
-  return <span className="login__spinner" role="status" aria-label="Ładowanie" />
+  return (
+    <span
+      className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+      role="status"
+      aria-label="Ładowanie"
+    />
+  )
 }
 
 export default function Login() {
@@ -126,75 +132,75 @@ export default function Login() {
   const busy = isSubmitting || googleStarting
 
   return (
-    <main className="login">
-      <div className="login__card">
-        <div className="login__header">
+    <main className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden p-6 bg-[radial-gradient(1200px_600px_at_10%_-10%,rgba(47,111,78,0.18),transparent_60%),radial-gradient(900px_500px_at_110%_110%,rgba(124,193,150,0.16),transparent_55%),var(--color-bg)] before:pointer-events-none before:absolute before:inset-0 before:content-[''] before:bg-[linear-gradient(rgba(13,17,23,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(13,17,23,0.04)_1px,transparent_1px)] before:bg-[length:56px_56px] before:[mask-image:radial-gradient(closest-side_at_50%_40%,rgba(0,0,0,0.9),transparent_75%)]">
+      <div className="relative flex w-full max-w-[420px] flex-col gap-6 rounded-xl border border-border bg-bg p-8 backdrop-blur-[8px] shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_24px_60px_-20px_rgba(13,17,23,0.18),0_8px_24px_-12px_rgba(31,74,55,0.18)]">
+        <div className="flex flex-col items-center gap-3 text-center">
           <Logo size="lg" decorative />
-          <h1 className="login__title">Witaj z powrotem</h1>
-          <p className="login__subtitle">
+          <h1 className="text-[22px] font-semibold leading-[1.3] tracking-[-0.015em] text-text-strong">Witaj z powrotem</h1>
+          <p className="text-body text-text-muted">
             Zaloguj się, aby kontynuować
           </p>
         </div>
 
         {submitError && (
-          <div role="alert" className="login__alert">
+          <div role="alert" className="flex items-start gap-2 rounded-md border border-error-border bg-error-bg px-4 py-3 text-body text-error before:mt-px before:inline-flex before:size-[18px] before:shrink-0 before:items-center before:justify-center before:rounded-full before:bg-[var(--color-error)] before:text-[12px] before:font-bold before:text-[var(--color-bg)] before:content-['!']">
             {submitError}
           </div>
         )}
 
-        <form className="login__form" onSubmit={handleSubmit(onSubmit)} noValidate>
-          <div className="login__field">
-            <label className="login__label" htmlFor="login-email">
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+          <div className="flex flex-col gap-2">
+            <label className="text-label font-semibold tracking-[0.01em] text-text" htmlFor="login-email">
               Email
             </label>
-            <input
+            <Input
               id="login-email"
               type="email"
               autoComplete="email"
-              className={`login__input${errors.email ? ' login__input--invalid' : ''}`}
+              className="min-h-[46px]"
               disabled={busy}
               aria-invalid={errors.email ? true : undefined}
               aria-describedby={errors.email ? 'login-email-error' : undefined}
               {...register('email')}
             />
             {errors.email && (
-              <span id="login-email-error" className="login__field-error">
+              <span id="login-email-error" className="inline-flex items-center gap-1.5 text-label text-error before:size-1 before:rounded-full before:bg-[var(--color-error)] before:content-['']">
                 {errors.email.message}
               </span>
             )}
           </div>
 
-          <div className="login__field">
-            <label className="login__label" htmlFor="login-password">
+          <div className="flex flex-col gap-2">
+            <label className="text-label font-semibold tracking-[0.01em] text-text" htmlFor="login-password">
               Hasło
             </label>
-            <input
+            <Input
               id="login-password"
               type="password"
               autoComplete="current-password"
-              className={`login__input${errors.password ? ' login__input--invalid' : ''}`}
+              className="min-h-[46px]"
               disabled={busy}
               aria-invalid={errors.password ? true : undefined}
               aria-describedby={errors.password ? 'login-password-error' : undefined}
               {...register('password')}
             />
             {errors.password && (
-              <span id="login-password-error" className="login__field-error">
+              <span id="login-password-error" className="inline-flex items-center gap-1.5 text-label text-error before:size-1 before:rounded-full before:bg-[var(--color-error)] before:content-['']">
                 {errors.password.message}
               </span>
             )}
           </div>
 
-          <button type="submit" className="login__submit" disabled={busy}>
+          <button type="submit" className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-md border border-accent-hover bg-gradient-to-br from-accent to-accent-hover px-4 py-3 text-body font-semibold text-accent-on transition-all hover:not-disabled:-translate-y-px disabled:cursor-not-allowed disabled:opacity-55 shadow-[0_1px_0_rgba(255,255,255,0.15)_inset,0_6px_14px_-6px_rgba(31,74,55,0.45)]" disabled={busy}>
             {isSubmitting ? <Spinner /> : 'Zaloguj się'}
           </button>
         </form>
 
-        <div className="login__divider">lub</div>
+        <div className="flex items-center gap-3 text-eyebrow uppercase text-text-subtle before:h-px before:flex-1 before:bg-gradient-to-r before:from-transparent before:via-border before:to-transparent before:content-[''] after:h-px after:flex-1 after:bg-gradient-to-r after:from-transparent after:via-border after:to-transparent after:content-['']">lub</div>
 
         <button
           type="button"
-          className="login__google"
+          className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-md border border-border-strong bg-bg px-4 py-3 text-body font-semibold text-text-strong transition-all hover:not-disabled:border-text-subtle hover:not-disabled:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-55"
           onClick={handleGoogle}
           disabled={busy}
         >

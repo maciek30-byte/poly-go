@@ -1,9 +1,9 @@
 ---
 change_id: company-profile-and-edit
 title: Strona profilu firmy (oglądanie) + edycja własnej wizytówki (S-03 + S-02)
-status: implemented
+status: impl_reviewed
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-06-29
 archived_at: null
 ---
 

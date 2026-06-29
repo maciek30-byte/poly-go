@@ -1,22 +1,14 @@
+import { type JSX } from 'react'
+
 type ComingSoonProps = {
   title: string
 }
 
-export function ComingSoon({ title }: ComingSoonProps) {
+export function ComingSoon({ title }: ComingSoonProps): JSX.Element {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 'var(--space-2, 8px)',
-        padding: 'var(--space-6, 48px)',
-        textAlign: 'center',
-      }}
-    >
+    <div className="flex flex-col items-center justify-center gap-2 p-6 text-center">
       <h1>{title}</h1>
-      <p style={{ color: 'var(--color-text-muted, #666)' }}>Wkrótce</p>
+      <p className="text-text-muted">Wkrótce</p>
     </div>
   )
 }

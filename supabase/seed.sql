@@ -99,11 +99,57 @@ BEGIN
     -- --------------------------------------------------------
     -- 3a. Konta auth.users (lokalnie tworzy, zdalnie no-op)
     -- --------------------------------------------------------
-    INSERT INTO auth.users (id, email, instance_id, aud, role, created_at, updated_at)
+    -- Tworzymy konta z hasłem (logowanie email+hasło dev) ORAZ potwierdzonym
+    -- e-mailem. Hasło dev dla OBU kont: "haslo123" (zmień w razie potrzeby).
+    -- ON CONFLICT (id) DO NOTHING → zdalnie (gdzie konta Google już istnieją)
+    -- NIE nadpisuje hasłem realnych kont. Logowanie przez Google nadal działa:
+    -- GoTrue dołoży identity 'google' do tego samego usera po zgodnym e-mailu.
+    INSERT INTO auth.users (
+        id, email, encrypted_password, email_confirmed_at,
+        instance_id, aud, role,
+        raw_app_meta_data, raw_user_meta_data,
+        created_at, updated_at
+    )
     VALUES
-        (owner_maciek_id, owner_maciek_email, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', NOW(), NOW()),
-        (owner_grzes_id,  owner_grzes_email,  '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', NOW(), NOW())
+        (owner_maciek_id, owner_maciek_email,
+         crypt('haslo123', gen_salt('bf')), NOW(),
+         '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
+         '{"provider":"email","providers":["email"]}', '{}',
+         NOW(), NOW()),
+        (owner_grzes_id, owner_grzes_email,
+         crypt('haslo123', gen_salt('bf')), NOW(),
+         '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
+         '{"provider":"email","providers":["email"]}', '{}',
+         NOW(), NOW())
     ON CONFLICT (id) DO NOTHING;
+
+    -- GoTrue skanuje kolumny token do Go string (nie *string) → NULL wywala
+    -- logowanie błędem "Database error querying schema". Ustawiamy '' dla
+    -- ręcznie wstawionych kont. Dotyka tylko nasze 2 konta (po id).
+    UPDATE auth.users SET
+        confirmation_token          = COALESCE(confirmation_token, ''),
+        recovery_token              = COALESCE(recovery_token, ''),
+        email_change                = COALESCE(email_change, ''),
+        email_change_token_new      = COALESCE(email_change_token_new, ''),
+        email_change_token_current  = COALESCE(email_change_token_current, ''),
+        phone_change                = COALESCE(phone_change, ''),
+        phone_change_token          = COALESCE(phone_change_token, ''),
+        reauthentication_token      = COALESCE(reauthentication_token, '')
+    WHERE id IN (owner_maciek_id, owner_grzes_id);
+
+    -- Identities provider 'email' — GoTrue wymaga ich do logowania email+hasło.
+    -- provider_id = user id (konwencja dla providera 'email'). Idempotentne.
+    INSERT INTO auth.identities (
+        provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at
+    )
+    VALUES
+        (owner_maciek_id::text, owner_maciek_id,
+         jsonb_build_object('sub', owner_maciek_id::text, 'email', owner_maciek_email, 'email_verified', true),
+         'email', NOW(), NOW(), NOW()),
+        (owner_grzes_id::text, owner_grzes_id,
+         jsonb_build_object('sub', owner_grzes_id::text, 'email', owner_grzes_email, 'email_verified', true),
+         'email', NOW(), NOW(), NOW())
+    ON CONFLICT (provider_id, provider) DO NOTHING;
 
     -- --------------------------------------------------------
     -- 3b. Firma BOGATA (Ty) — Producent, pełny profil

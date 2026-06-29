@@ -4,7 +4,8 @@ import * as Tooltip from '@radix-ui/react-tooltip'
 import type { CompanyProfileData } from '../lib/use-company-profile'
 import { useFavorite } from '../lib/use-favorite'
 import { MessageDrawerPlaceholder, type MessageTarget } from './MessageDrawerPlaceholder'
-import './CompanyProfile.css'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 // Dane rejestrowe ukryte w demo (kolumny istnieją, integracja GUS/KRS poza zakresem).
 const SHOW_REGISTRY = false
@@ -32,6 +33,14 @@ function toneForCategory(name: string): CategoryTone {
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).slice(0, 2)
   return parts.map((p) => p[0]?.toUpperCase() ?? '').join('') || '?'
+}
+
+// Per-ton override koloru kropki (::before) — odpowiednik .cp-tag-*::before.
+const tagDotClass: Record<CategoryTone, string> = {
+  producer: 'before:bg-[var(--color-dot-producer)]',
+  recycler: 'before:bg-[var(--color-dot-recycler)]',
+  distributor: 'before:bg-[var(--color-dot-distributor)]',
+  service: 'before:bg-[var(--color-dot-service)]',
 }
 
 function ChatIcon(): JSX.Element {
@@ -129,29 +138,35 @@ export default function CompanyProfile({ data }: CompanyProfileProps): JSX.Eleme
 
   return (
     <Tooltip.Provider delayDuration={200}>
-      <div className="cp-shell">
-        <header className="cp-hero">
-          <div className="cp-hero-main">
-            <Avatar.Root className="cp-logo">
-              {data.logo_url && <Avatar.Image className="cp-logo-img" src={data.logo_url} alt={heroName} />}
-              <Avatar.Fallback className="cp-logo-fallback">{initials(heroName)}</Avatar.Fallback>
+      <div className="text-left text-text pb-18">
+        <header className="border-b border-border px-10 pt-10 max-md:px-5 max-md:pt-6">
+          <div className="grid grid-cols-[auto_1fr_auto] gap-8 items-start max-md:grid-cols-[auto_1fr] max-md:gap-4">
+            <Avatar.Root className="size-20 rounded-xl overflow-hidden bg-brand grid place-items-center shadow-brand max-md:size-15 max-md:rounded-xl">
+              {data.logo_url && <Avatar.Image className="size-full object-cover" src={data.logo_url} alt={heroName} />}
+              <Avatar.Fallback className="text-white font-bold text-[22px] tracking-[-0.02em] max-md:text-[18px]">{initials(heroName)}</Avatar.Fallback>
             </Avatar.Root>
 
-            <div className="cp-hero-body">
-              <div className="cp-hero-meta">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 text-eyebrow uppercase text-text-muted mb-3 flex-wrap">
                 {data.founding_year != null && (
-                  <span className="cp-meta-text">założono {data.founding_year}</span>
+                  <span className="font-medium">założono {data.founding_year}</span>
                 )}
-                {data.founding_year != null && data.region && <span className="cp-meta-dot">·</span>}
-                {data.region && <span className="cp-meta-text">{data.region}</span>}
+                {data.founding_year != null && data.region && <span className="text-text-subtle -mx-0.5">·</span>}
+                {data.region && <span className="font-medium">{data.region}</span>}
               </div>
 
-              <h1 className="cp-name">{heroName}</h1>
+              <h1 className="text-display text-text-strong mb-4 max-md:text-[24px]">{heroName}</h1>
 
               {data.categories.length > 0 && (
-                <div className="cp-tags">
+                <div className="flex flex-wrap gap-2 mb-3">
                   {data.categories.map((c) => (
-                    <span key={c.id} className={`cp-tag cp-tag-${toneForCategory(c.name)}`}>
+                    <span
+                      key={c.id}
+                      className={cn(
+                        "inline-flex items-center gap-1.5 pl-2 pr-2.5 py-[3px] rounded-sm text-label font-medium bg-surface border border-border text-text before:content-[''] before:size-1.5 before:rounded-full before:bg-text-muted before:shrink-0",
+                        tagDotClass[toneForCategory(c.name)],
+                      )}
+                    >
                       {c.name}
                     </span>
                   ))}
@@ -159,9 +174,12 @@ export default function CompanyProfile({ data }: CompanyProfileProps): JSX.Eleme
               )}
 
               {data.certificates.length > 0 && (
-                <div className="cp-certs">
+                <div className="flex flex-wrap gap-2">
                   {data.certificates.map((cert) => (
-                    <span key={cert.id} className="cp-cert">
+                    <span
+                      key={cert.id}
+                      className="inline-flex items-center gap-1.5 pl-[7px] pr-[9px] py-0.5 rounded-sm bg-bg border border-border text-label font-medium text-text-muted cursor-default [&_svg]:text-accent [&_svg]:opacity-90"
+                    >
                       <CheckIcon />
                       {cert.name}
                     </span>
@@ -170,30 +188,39 @@ export default function CompanyProfile({ data }: CompanyProfileProps): JSX.Eleme
               )}
             </div>
 
-            <div className="cp-hero-actions">
-              <button
-                className="cp-btn cp-btn-primary"
+            <div className="flex flex-col gap-2 min-w-[200px] max-md:col-span-full max-md:flex-row max-md:min-w-0 max-md:mt-1">
+              <Button
+                variant="primary"
+                className="max-md:flex-1"
                 onClick={() => openMessage({ name: heroName, role: 'Firma' })}
               >
                 <ChatIcon />
                 Napisz
-              </button>
-              <button
-                className={`cp-btn cp-btn-ghost ${isFavorite ? 'is-active' : ''}`}
+              </Button>
+              <Button
+                variant="ghost"
+                className={cn('max-md:flex-1', isFavorite && 'bg-accent-bg border-accent-border text-accent')}
                 onClick={toggleFavorite}
                 disabled={favoritePending}
                 aria-pressed={isFavorite}
               >
                 <StarIcon filled={isFavorite} />
                 {isFavorite ? 'W ulubionych' : 'Dodaj do ulubionych'}
-              </button>
+              </Button>
             </div>
           </div>
 
           {anchors.length > 0 && (
-            <nav className="cp-anchors" aria-label="Sekcje profilu">
+            <nav
+              className="flex gap-1 mt-8 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              aria-label="Sekcje profilu"
+            >
               {anchors.map((a) => (
-                <a key={a.id} href={`#${a.id}`} className="cp-anchor">
+                <a
+                  key={a.id}
+                  href={`#${a.id}`}
+                  className="px-3.5 py-2.5 text-body font-medium text-text-muted no-underline border-b-2 border-transparent -mb-px whitespace-nowrap transition-colors hover:text-text-strong"
+                >
                   {a.label}
                 </a>
               ))}
@@ -201,20 +228,20 @@ export default function CompanyProfile({ data }: CompanyProfileProps): JSX.Eleme
           )}
         </header>
 
-        <div className="cp-body">
+        <div className="px-10 pt-10 max-md:px-5 max-md:pt-6">
           {hasHighlights && (
-            <section id="oferta" className="cp-section">
-              <div className="cp-section-head">
-                <h2>Czym się zajmujemy</h2>
-                <p>Najważniejsze rzeczy, które firma chce pokazać partnerom.</p>
+            <section id="oferta" className="mb-14 scroll-mt-6">
+              <div className="mb-5 pb-4 border-b border-border">
+                <h2 className="text-heading text-text-strong mb-1">Czym się zajmujemy</h2>
+                <p className="text-value text-text-muted">Najważniejsze rzeczy, które firma chce pokazać partnerom.</p>
               </div>
-              <ol className="cp-offerings">
+              <ol className="grid">
                 {data.highlights.map((h, i) => (
-                  <li key={h.id} className="cp-offering">
-                    <span className="cp-offering-num">{String(i + 1).padStart(2, '0')}</span>
+                  <li key={h.id} className="grid grid-cols-[32px_1fr] gap-4 items-start py-4 border-b border-border last:border-b-0">
+                    <span className="font-mono text-label text-text-subtle font-medium pt-[3px] tabular-nums">{String(i + 1).padStart(2, '0')}</span>
                     <div>
-                      <h3>{h.title}</h3>
-                      {h.description && <p>{h.description}</p>}
+                      <h3 className="text-body font-semibold text-text-strong mb-0.5 tracking-[-0.005em]">{h.title}</h3>
+                      {h.description && <p className="text-value text-text-muted">{h.description}</p>}
                     </div>
                   </li>
                 ))}
@@ -223,29 +250,29 @@ export default function CompanyProfile({ data }: CompanyProfileProps): JSX.Eleme
           )}
 
           {hasDescription && (
-            <section id="opis" className="cp-section">
-              <div className="cp-section-head">
-                <h2>O firmie</h2>
+            <section id="opis" className="mb-14 scroll-mt-6">
+              <div className="mb-5 pb-4 border-b border-border">
+                <h2 className="text-heading text-text-strong mb-1">O firmie</h2>
               </div>
-              <p className="cp-description">{data.description}</p>
+              <p className="text-[15px] leading-[1.7] text-text max-w-[68ch]">{data.description}</p>
             </section>
           )}
 
           {hasParams && (
-            <section id="parametry" className="cp-section">
-              <div className="cp-section-head">
-                <h2>Parametry techniczne</h2>
-                <p>Pola strukturyzowane zależne od kategorii działalności.</p>
+            <section id="parametry" className="mb-14 scroll-mt-6">
+              <div className="mb-5 pb-4 border-b border-border">
+                <h2 className="text-heading text-text-strong mb-1">Parametry techniczne</h2>
+                <p className="text-value text-text-muted">Pola strukturyzowane zależne od kategorii działalności.</p>
               </div>
-              <div className="cp-params">
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-3">
                 {paramGroups.map((group) => (
-                  <div key={group.categoryId} className="cp-param-group">
-                    <h3>{group.label}</h3>
-                    <dl>
+                  <div key={group.categoryId} className="border border-border rounded-lg p-5 bg-bg">
+                    <h3 className="text-eyebrow uppercase text-text-muted mb-4">{group.label}</h3>
+                    <dl className="grid gap-3">
                       {group.rows.map((r) => (
-                        <div key={r.label} className="cp-param-row">
-                          <dt>{r.label}</dt>
-                          <dd>{r.display}</dd>
+                        <div key={r.label} className="grid grid-cols-[130px_1fr] gap-3 items-baseline max-[480px]:grid-cols-1 max-[480px]:gap-0.5">
+                          <dt className="text-text-muted text-label">{r.label}</dt>
+                          <dd className="text-text-strong font-medium text-value">{r.display}</dd>
                         </div>
                       ))}
                     </dl>
@@ -256,15 +283,15 @@ export default function CompanyProfile({ data }: CompanyProfileProps): JSX.Eleme
           )}
 
           {hasPhotos && (
-            <section id="galeria" className="cp-section">
-              <div className="cp-section-head">
-                <h2>Galeria</h2>
-                <p>Hala produkcyjna, maszyny, magazyn.</p>
+            <section id="galeria" className="mb-14 scroll-mt-6">
+              <div className="mb-5 pb-4 border-b border-border">
+                <h2 className="text-heading text-text-strong mb-1">Galeria</h2>
+                <p className="text-value text-text-muted">Hala produkcyjna, maszyny, magazyn.</p>
               </div>
-              <div className="cp-gallery-grid">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2">
                 {photos.map((p) => (
-                  <figure key={p.id} className="cp-photo-tile">
-                    <img src={p.file_url} alt={p.file_name ?? heroName} loading="lazy" />
+                  <figure key={p.id} className="aspect-[4/3] rounded-md overflow-hidden bg-surface border border-border">
+                    <img className="size-full object-cover block" src={p.file_url} alt={p.file_name ?? heroName} loading="lazy" />
                   </figure>
                 ))}
               </div>
@@ -272,22 +299,24 @@ export default function CompanyProfile({ data }: CompanyProfileProps): JSX.Eleme
           )}
 
           {hasDocuments && (
-            <section id="dokumenty" className="cp-section">
-              <div className="cp-section-head">
-                <h2>Dokumenty do pobrania</h2>
-                <p>PDF, do 10 MB każdy.</p>
+            <section id="dokumenty" className="mb-14 scroll-mt-6">
+              <div className="mb-5 pb-4 border-b border-border">
+                <h2 className="text-heading text-text-strong mb-1">Dokumenty do pobrania</h2>
+                <p className="text-value text-text-muted">PDF, do 10 MB każdy.</p>
               </div>
-              <ul className="cp-docs">
+              <ul className="grid gap-2">
                 {documents.map((d) => (
-                  <li key={d.id} className="cp-doc">
-                    <span className="cp-doc-icon">PDF</span>
-                    <div className="cp-doc-meta">
-                      <span className="cp-doc-name">{d.file_name ?? 'Dokument'}</span>
+                  <li key={d.id} className="grid grid-cols-[auto_1fr_auto] gap-4 items-center px-4 py-3 border border-border rounded-md bg-bg transition-colors hover:border-border-strong hover:bg-surface">
+                    <span className="size-9 rounded-md bg-surface text-text-muted border border-border grid place-items-center text-eyebrow font-bold tracking-[0.04em]">PDF</span>
+                    <div className="flex flex-col gap-px min-w-0">
+                      <span className="text-body font-medium text-text-strong truncate tracking-[-0.005em]">{d.file_name ?? 'Dokument'}</span>
                     </div>
-                    <a className="cp-btn cp-btn-ghost cp-btn-sm" href={d.file_url} target="_blank" rel="noreferrer">
-                      <DownloadIcon />
-                      Pobierz
-                    </a>
+                    <Button asChild variant="ghost" size="sm">
+                      <a href={d.file_url} target="_blank" rel="noreferrer">
+                        <DownloadIcon />
+                        Pobierz
+                      </a>
+                    </Button>
                   </li>
                 ))}
               </ul>
@@ -295,12 +324,12 @@ export default function CompanyProfile({ data }: CompanyProfileProps): JSX.Eleme
           )}
 
           {SHOW_REGISTRY && (
-            <section id="dane" className="cp-section">
-              <div className="cp-section-head">
-                <h2>Dane rejestrowe</h2>
-                <p>Twarde dane firmy — gotowe do skopiowania do systemu ERP / na fakturę.</p>
+            <section id="dane" className="mb-14 scroll-mt-6">
+              <div className="mb-5 pb-4 border-b border-border">
+                <h2 className="text-heading text-text-strong mb-1">Dane rejestrowe</h2>
+                <p className="text-value text-text-muted">Twarde dane firmy — gotowe do skopiowania do systemu ERP / na fakturę.</p>
               </div>
-              <div className="cp-registry">
+              <div className="border border-border rounded-lg overflow-hidden bg-bg">
                 {([
                   ['Nazwa rejestrowa', data.name],
                   ['NIP', data.nip],
@@ -312,9 +341,9 @@ export default function CompanyProfile({ data }: CompanyProfileProps): JSX.Eleme
                 ] as const)
                   .filter(([, v]) => Boolean(v))
                   .map(([k, v]) => (
-                    <div key={k} className="cp-registry-row">
-                      <span className="cp-registry-key">{k}</span>
-                      <span className="cp-registry-val">{v}</span>
+                    <div key={k} className="grid grid-cols-[200px_1fr] gap-6 px-5 py-3 border-b border-border items-baseline last:border-b-0 hover:bg-surface max-[600px]:grid-cols-1 max-[600px]:gap-0.5">
+                      <span className="text-text-muted text-label">{k}</span>
+                      <span className="text-text-strong font-medium text-value tracking-[-0.003em]">{v}</span>
                     </div>
                   ))}
               </div>
@@ -322,33 +351,35 @@ export default function CompanyProfile({ data }: CompanyProfileProps): JSX.Eleme
           )}
 
           {hasEmployees && (
-            <section id="pracownicy" className="cp-section">
-              <div className="cp-section-head">
-                <h2>Pracownicy</h2>
-                <p>Kliknij „Napisz", aby otworzyć komunikator 1:1.</p>
+            <section id="pracownicy" className="mb-14 scroll-mt-6">
+              <div className="mb-5 pb-4 border-b border-border">
+                <h2 className="text-heading text-text-strong mb-1">Pracownicy</h2>
+                <p className="text-value text-text-muted">Kliknij „Napisz", aby otworzyć komunikator 1:1.</p>
               </div>
-              <ul className="cp-team">
+              <ul className="grid gap-2">
                 {data.employees.map((e) => (
-                  <li key={e.id} className="cp-person">
-                    <Avatar.Root className="cp-person-avatar">
-                      <Avatar.Fallback className="cp-person-fallback">{initials(e.full_name)}</Avatar.Fallback>
+                  <li key={e.id} className="grid grid-cols-[auto_1fr_auto] gap-4 items-center px-5 py-4 border border-border rounded-lg bg-bg transition-colors hover:border-border-strong hover:bg-surface max-[600px]:grid-cols-[auto_1fr]">
+                    <Avatar.Root className="relative size-10 rounded-full bg-avatar grid place-items-center shrink-0">
+                      <Avatar.Fallback className="text-white text-label font-semibold tracking-[-0.01em]">{initials(e.full_name)}</Avatar.Fallback>
                     </Avatar.Root>
-                    <div className="cp-person-body">
-                      <div className="cp-person-name">{e.full_name}</div>
-                      <div className="cp-person-role">{e.job_title}</div>
+                    <div className="min-w-0">
+                      <div className="text-body font-semibold text-text-strong mb-px tracking-[-0.005em]">{e.full_name}</div>
+                      <div className="text-label text-text-muted mb-1">{e.job_title}</div>
                       {e.phone && (
-                        <div className="cp-person-contact">
+                        <div className="text-label text-text-muted flex gap-1.5 flex-wrap">
                           <span>{e.phone}</span>
                         </div>
                       )}
                     </div>
-                    <button
-                      className="cp-btn cp-btn-primary cp-btn-sm"
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className="max-[600px]:col-span-full"
                       onClick={() => openMessage({ name: e.full_name, role: e.job_title })}
                     >
                       <ChatIcon />
                       Napisz
-                    </button>
+                    </Button>
                   </li>
                 ))}
               </ul>
