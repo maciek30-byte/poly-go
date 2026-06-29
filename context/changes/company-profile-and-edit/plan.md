@@ -686,12 +686,12 @@ Seed jest idempotentny i bezpieczny do wielokrotnego `db:reset`.
 
 #### Automated
 
-- [x] 7.1 Migracja aplikuje się: `pnpm db:reset`
-- [x] 7.2 `pnpm build` zielony, `pnpm lint` czysty (21 błędów pre-existing `explicit-function-return-type` — baseline z fazy 1.4; nowy kod czysty; 1 warning React-Compiler na `useFieldArray`)
-- [x] 7.3 `pnpm db:test:rls` zielony (dodany TEST 11: owner edytuje pracownika własnej firmy, nie obcej; 14/14)
+- [x] 7.1 Migracja aplikuje się: `pnpm db:reset` — 8743e02
+- [x] 7.2 `pnpm build` zielony, `pnpm lint` czysty (21 błędów pre-existing `explicit-function-return-type` — baseline z fazy 1.4; nowy kod czysty; 1 warning React-Compiler na `useFieldArray`) — 8743e02
+- [x] 7.3 `pnpm db:test:rls` zielony (dodany TEST 11: owner edytuje pracownika własnej firmy, nie obcej; 14/14) — 8743e02
 
 #### Manual
 
-- [x] 7.4 Owner zmienia stanowisko/telefon/widoczność pracownika; widać na `/companies/:id`
-- [x] 7.5 Niewidoczny pracownik znika z sekcji Pracownicy
-- [x] 7.6 Edycja pracownika obcej firmy niemożliwa
+- [x] 7.4 Owner zmienia stanowisko/telefon/widoczność pracownika; widać na `/companies/:id` — 8743e02
+- [x] 7.5 Niewidoczny pracownik znika z sekcji Pracownicy — 8743e02
+- [x] 7.6 Edycja pracownika obcej firmy niemożliwa — 8743e02
