@@ -14,7 +14,9 @@
     "db:push": "supabase db push",
     "db:diff": "supabase db diff",
     "db:types": "supabase gen types typescript --local > src/lib/database.types.ts",
-    "db:test:rls": "psql postgresql://postgres:postgres@localhost:54322/postgres -f supabase/tests/rls.sql"
+    "db:test:rls": "psql postgresql://postgres:postgres@localhost:54322/postgres -f supabase/tests/rls.sql",
+    "db:seed:prod": "test -n \"$SUPABASE_DB_URL\" && psql \"$SUPABASE_DB_URL\" -f supabase/seed.sql || (echo 'Ustaw SUPABASE_DB_URL (connection string prod) przed db:seed:prod' && exit 1)",
+    "deploy:db": "supabase db push && pnpm db:seed:prod"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.12",
