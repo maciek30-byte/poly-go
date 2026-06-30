@@ -161,10 +161,10 @@ function ProfilePreview({ data, dictionaries, employees, onEdit }: ProfilePrevie
 
   return (
     <main className="text-text pb-18">
-      {/* Sticky pasek akcji: szklisty (backdrop-blur), trzyma się góry przy
-          scrollu długiej wizytówki. Lewa strona = status „to widzą klienci",
-          prawa = wejście w edycję. */}
-      <div className="sticky top-0 z-20 -mx-[clamp(1rem,5vw,6rem)] px-[clamp(1rem,5vw,6rem)] border-b border-border/70 bg-bg/70 backdrop-blur-xl">
+      {/* Sticky pasek akcji: szklisty (backdrop-blur), przykleja się POD
+          nagłówkiem aplikacji (top = wysokość headera), z niższym z-index niż
+          header — inaczej zasłaniałby menu konta z „Wyloguj". */}
+      <div className="sticky top-[57px] z-[5] -mx-[clamp(1rem,5vw,6rem)] px-[clamp(1rem,5vw,6rem)] border-b border-border/70 bg-bg/70 backdrop-blur-xl">
         <div className="flex items-center justify-between gap-4 flex-wrap max-w-[1100px] mx-auto py-3.5">
           <div className="flex items-center gap-3 min-w-0">
             <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-border pl-2 pr-3 py-1 text-eyebrow uppercase font-medium text-text-muted">
@@ -363,10 +363,10 @@ function ProfileForm({ data, dictionaries, onSaved, onBack }: ProfileFormProps):
 
   return (
     <main className="text-text pb-18">
-      {/* Sticky pasek edycji: spójny ze szklistym paskiem podglądu. Lewa = powrót,
-          prawa = zapis (zawsze w zasięgu, mimo długiego formularza). Przycisk
-          „Zapisz" celuje w <form> po id, bo siedzi poza nim. */}
-      <div className="sticky top-0 z-20 -mx-[clamp(1rem,5vw,6rem)] px-[clamp(1rem,5vw,6rem)] border-b border-border/70 bg-bg/70 backdrop-blur-xl">
+      {/* Sticky pasek edycji: spójny ze szklistym paskiem podglądu. Przykleja się
+          POD nagłówkiem aplikacji z niższym z-index, by nie zasłaniać menu „Wyloguj".
+          Lewa = powrót, prawa = zapis. Przycisk „Zapisz" celuje w <form> po id. */}
+      <div className="sticky top-[57px] z-[5] -mx-[clamp(1rem,5vw,6rem)] px-[clamp(1rem,5vw,6rem)] border-b border-border/70 bg-bg/70 backdrop-blur-xl">
         <div className="flex items-center justify-between gap-4 max-w-[880px] mx-auto py-3.5">
           <button
             type="button"
