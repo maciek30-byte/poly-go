@@ -22,9 +22,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # Przypięta wersja, nie `latest` — setup-cli@v2 z `latest` odpytuje GitHub
+      # API anonimowo i pada na rate limit. GITHUB_TOKEN podnosi limit pobierania.
       - uses: supabase/setup-cli@v2
         with:
-          version: latest
+          version: 2.108.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push migrations to prod
         env:
