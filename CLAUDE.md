@@ -2,15 +2,19 @@
 
 Nie dodawaj komentarzy do kodu, chyba że użytkownik wprost o to poprosi.
 
+## Architektura
+
+Vertical slice: `src/app` (kompozycja), `src/shared` (`data/`, `ui/`, `components/`, `lib/`, `locales/`), `src/features/<slice>` (auth, company, profile, favorites, chat, admin). `features/A` nigdy nie importuje z `features/B`, `shared` nigdy nie importuje z `features`. Bez barreli — importy to pełne ścieżki `@/shared/...` / `@/features/<slice>/...`, jedyny wyjątek to `features/<slice>/routes.tsx` (eksportuje `<slice>Routes` dla `app/router.tsx`). Granice egzekwuje ESLint (`import/no-restricted-paths` w `eslint.config.js`). Szczegóły: `context/foundation/vertical-slices-plan.md`.
+
 ## Treści / i18n
 
 Cały tekst widoczny dla użytkownika (etykiety, nagłówki, przyciski, komunikaty, placeholdery) ma pochodzić z plików JSON będących tłumaczeniami — nie zapisuj literałów tekstowych na sztywno w komponentach. Nowy content dodawaj jako klucze w plikach tłumaczeń i odwołuj się do nich w kodzie.
 
-Stack: `react-i18next` (init w `src/i18n/index.ts`, importowany w `main.tsx`). Klucze trzymamy w `src/locales/pl/<namespace>.json` (namespace'y: common, auth, company, profile, validation, media, errors). W komponentach: `const { t } = useTranslation('<namespace>')`, klucz z innego namespace przez prefiks `t('common:actions.save')`. Interpolacja `{{var}}`, pluralizacja przez `t('key', { count })` (formy `_one/_few/_many` dla polskiego). Schematy zod buduj jako funkcję `(t) => z.object(...)` i twórz w komponencie przez `useMemo`. Moduły bez dostępu do hooka (np. `auth.ts`) zwracają klucze i18n, a tłumaczenie następuje w miejscu renderu. Dane z bazy (nazwy firm, kategorii, certyfikatów, parametrów) NIE są tłumaczeniami — zostają bez `t`.
+Stack: `react-i18next` (init w `src/app/i18n/index.ts`, importowany w `main.tsx`). Klucze trzymamy per-slice: `src/shared/locales/pl/<namespace>.json` (common, validation, errors) i `src/features/<slice>/locales/pl/<namespace>.json` (auth, company, media, profile). W komponentach: `const { t } = useTranslation('<namespace>')`, klucz z innego namespace przez prefiks `t('common:actions.save')`. Interpolacja `{{var}}`, pluralizacja przez `t('key', { count })` (formy `_one/_few/_many` dla polskiego). Schematy zod buduj jako funkcję `(t) => z.object(...)` i twórz w komponencie przez `useMemo`. Moduły bez dostępu do hooka (np. `auth.ts`) zwracają klucze i18n, a tłumaczenie następuje w miejscu renderu. Dane z bazy (nazwy firm, kategorii, certyfikatów, parametrów) NIE są tłumaczeniami — zostają bez `t`.
 
 ## Database workflow
 
-Schema changes go through versioned migrations in `supabase/migrations/` (Supabase CLI). After every new migration, regenerate TypeScript types with `pnpm db:types` and commit `src/lib/database.types.ts` in the same commit as the migration — the client (`src/lib/supabase.ts`) uses `createClient<Database>` so out-of-sync types will surface as `tsc` errors immediately. RLS policy changes are exercised by `supabase/tests/rls.sql` (run with `pnpm db:test:rls`); add a new assertion when you introduce a new policy.
+Schema changes go through versioned migrations in `supabase/migrations/` (Supabase CLI). After every new migration, regenerate TypeScript types with `pnpm db:types` and commit `src/shared/lib/database.types.ts` in the same commit as the migration — the client (`src/shared/lib/supabase.ts`) uses `createClient<Database>` so out-of-sync types will surface as `tsc` errors immediately. RLS policy changes are exercised by `supabase/tests/rls.sql` (run with `pnpm db:test:rls`); add a new assertion when you introduce a new policy.
 
 <!-- BEGIN @przeprogramowani/10x-cli -->
 
