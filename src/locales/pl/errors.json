@@ -1,0 +1,21 @@
+{
+  "notFound": {
+    "title": "404 — strona nie istnieje"
+  },
+  "forbidden": {
+    "title": "403 — brak dostępu",
+    "body": "Nie masz uprawnień, aby zobaczyć tę stronę."
+  },
+  "comingSoon": {
+    "default": "Wkrótce"
+  },
+  "admin": {
+    "title": "Panel administratora"
+  },
+  "messageDrawer": {
+    "titleTo": "Napisz do: {{name}}",
+    "titleFallback": "Napisz wiadomość",
+    "comingTitle": "Komunikator 1:1 pojawi się wkrótce.",
+    "comingBody": "Wkrótce będzie tu można rozpocząć rozmowę z firmą bez wychodzenia z platformy. Na razie to podgląd — wiadomości jeszcze nie wysyłamy."
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "login": {
+    "email": "Podaj prawidłowy email.",
+    "passwordMin": "Hasło musi mieć co najmniej 6 znaków."
+  },
+  "profile": {
+    "nameRequired": "Nazwa firmy jest wymagana.",
+    "yearFourDigits": "Rok musi być czterocyfrowy.",
+    "yearRange": "Rok musi być w zakresie 1800–{{max}}.",
+    "descriptionMax": "Opis może mieć maks. 600 znaków."
+  }
+}

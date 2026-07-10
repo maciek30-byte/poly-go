@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Navigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { useAuth } from '../lib/use-auth'
 import {
-  errorCodeToMessage,
+  errorCodeToMessageKey,
   safeNext,
   signInWithGoogleOAuth,
   signInWithPassword,
@@ -15,12 +17,14 @@ import { Input } from '@/components/ui/input'
 
 const NEXT_STORAGE_KEY = 'polygo:auth:next'
 
-const loginSchema = z.object({
-  email: z.email('Podaj prawidłowy email.'),
-  password: z.string().min(6, 'Hasło musi mieć co najmniej 6 znaków.'),
-})
+function makeLoginSchema(t: TFunction) {
+  return z.object({
+    email: z.email(t('validation:login.email')),
+    password: z.string().min(6, t('validation:login.passwordMin')),
+  })
+}
 
-type LoginValues = z.infer<typeof loginSchema>
+type LoginValues = z.infer<ReturnType<typeof makeLoginSchema>>
 
 function GoogleIcon() {
   return (
@@ -51,25 +55,29 @@ function GoogleIcon() {
 }
 
 function Spinner() {
+  const { t } = useTranslation(['auth', 'validation'])
   return (
     <span
       className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"
       role="status"
-      aria-label="Ładowanie"
+      aria-label={t('login.loadingAria')}
     />
   )
 }
 
 export default function Login() {
+  const { t } = useTranslation(['auth', 'validation'])
   const { status } = useAuth()
   const [searchParams] = useSearchParams()
   const next = safeNext(searchParams.get('next'))
   const urlError = searchParams.get('error')
 
   const [submitError, setSubmitError] = useState<string | null>(() =>
-    urlError ? errorCodeToMessage(urlError) : null,
+    urlError ? t(errorCodeToMessageKey(urlError)) : null,
   )
   const [googleStarting, setGoogleStarting] = useState(false)
+
+  const loginSchema = useMemo(() => makeLoginSchema(t), [t])
 
   const {
     register,
@@ -102,10 +110,10 @@ export default function Login() {
     setSubmitError(null)
     const result = await signInWithPassword(email, password)
     if (!result.ok) {
-      setSubmitError(result.message)
+      setSubmitError(t(result.messageKey))
       return
     }
-    toast.success('Zalogowano pomyślnie')
+    toast.success(t('login.success'))
   }
 
   const handleGoogle = async () => {
@@ -124,7 +132,7 @@ export default function Login() {
       } catch {
         // ignore
       }
-      setSubmitError(result.message)
+      setSubmitError(t(result.messageKey))
       setGoogleStarting(false)
     }
   }
@@ -136,9 +144,9 @@ export default function Login() {
       <div className="relative flex w-full max-w-[420px] flex-col gap-6 rounded-xl border border-border bg-bg p-8 backdrop-blur-[8px] shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_24px_60px_-20px_rgba(13,17,23,0.18),0_8px_24px_-12px_rgba(31,74,55,0.18)]">
         <div className="flex flex-col items-center gap-3 text-center">
           <Logo size="lg" decorative />
-          <h1 className="text-[22px] font-semibold leading-[1.3] tracking-[-0.015em] text-text-strong">Witaj z powrotem</h1>
+          <h1 className="text-[22px] font-semibold leading-[1.3] tracking-[-0.015em] text-text-strong">{t('login.title')}</h1>
           <p className="text-body text-text-muted">
-            Zaloguj się, aby kontynuować
+            {t('login.subtitle')}
           </p>
         </div>
 
@@ -151,7 +159,7 @@ export default function Login() {
         <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="flex flex-col gap-2">
             <label className="text-label font-semibold tracking-[0.01em] text-text" htmlFor="login-email">
-              Email
+              {t('login.emailLabel')}
             </label>
             <Input
               id="login-email"
@@ -172,7 +180,7 @@ export default function Login() {
 
           <div className="flex flex-col gap-2">
             <label className="text-label font-semibold tracking-[0.01em] text-text" htmlFor="login-password">
-              Hasło
+              {t('login.passwordLabel')}
             </label>
             <Input
               id="login-password"
@@ -192,11 +200,11 @@ export default function Login() {
           </div>
 
           <button type="submit" className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-md border border-accent-hover bg-gradient-to-br from-accent to-accent-hover px-4 py-3 text-body font-semibold text-accent-on transition-all hover:not-disabled:-translate-y-px disabled:cursor-not-allowed disabled:opacity-55 shadow-[0_1px_0_rgba(255,255,255,0.15)_inset,0_6px_14px_-6px_rgba(31,74,55,0.45)]" disabled={busy}>
-            {isSubmitting ? <Spinner /> : 'Zaloguj się'}
+            {isSubmitting ? <Spinner /> : t('login.submit')}
           </button>
         </form>
 
-        <div className="flex items-center gap-3 text-eyebrow uppercase text-text-subtle before:h-px before:flex-1 before:bg-gradient-to-r before:from-transparent before:via-border before:to-transparent before:content-[''] after:h-px after:flex-1 after:bg-gradient-to-r after:from-transparent after:via-border after:to-transparent after:content-['']">lub</div>
+        <div className="flex items-center gap-3 text-eyebrow uppercase text-text-subtle before:h-px before:flex-1 before:bg-gradient-to-r before:from-transparent before:via-border before:to-transparent before:content-[''] after:h-px after:flex-1 after:bg-gradient-to-r after:from-transparent after:via-border after:to-transparent after:content-['']">{t('login.or')}</div>
 
         <button
           type="button"
@@ -209,7 +217,7 @@ export default function Login() {
           ) : (
             <>
               <GoogleIcon />
-              Zaloguj przez Google
+              {t('login.google')}
             </>
           )}
         </button>

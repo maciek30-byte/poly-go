@@ -14,43 +14,43 @@ export type AuthErrorCode =
 
 export type AuthResult =
   | { ok: true }
-  | { ok: false; code: AuthErrorCode; message: string }
+  | { ok: false; code: AuthErrorCode; messageKey: string }
 
-const MESSAGES: Record<AuthErrorCode, string> = {
-  invalid_credentials: 'Nieprawidłowy email lub hasło.',
-  email_not_confirmed: 'Email nie został potwierdzony. Skontaktuj się z administratorem.',
-  too_many_requests: 'Zbyt wiele prób. Spróbuj ponownie za chwilę.',
-  oauth_cancelled: 'Logowanie przez Google zostało anulowane.',
-  network: 'Brak połączenia. Sprawdź internet i spróbuj ponownie.',
-  unknown: 'Coś poszło nie tak. Spróbuj ponownie.',
+const MESSAGE_KEYS: Record<AuthErrorCode, string> = {
+  invalid_credentials: 'auth:errors.invalidCredentials',
+  email_not_confirmed: 'auth:errors.emailNotConfirmed',
+  too_many_requests: 'auth:errors.tooManyRequests',
+  oauth_cancelled: 'auth:errors.oauthCancelled',
+  network: 'auth:errors.network',
+  unknown: 'auth:errors.unknown',
 }
 
-export function formatAuthError(error: unknown): { code: AuthErrorCode; message: string } {
+export function formatAuthError(error: unknown): { code: AuthErrorCode; messageKey: string } {
   if (!error || typeof error !== 'object') {
-    return { code: 'unknown', message: MESSAGES.unknown }
+    return { code: 'unknown', messageKey: MESSAGE_KEYS.unknown }
   }
   const err = error as { code?: string; status?: number; name?: string; message?: string }
 
   if (err.code === 'invalid_credentials' || err.code === 'invalid_grant') {
-    return { code: 'invalid_credentials', message: MESSAGES.invalid_credentials }
+    return { code: 'invalid_credentials', messageKey: MESSAGE_KEYS.invalid_credentials }
   }
   if (err.code === 'email_not_confirmed') {
-    return { code: 'email_not_confirmed', message: MESSAGES.email_not_confirmed }
+    return { code: 'email_not_confirmed', messageKey: MESSAGE_KEYS.email_not_confirmed }
   }
   if (err.code === 'over_request_rate_limit' || err.status === 429) {
-    return { code: 'too_many_requests', message: MESSAGES.too_many_requests }
+    return { code: 'too_many_requests', messageKey: MESSAGE_KEYS.too_many_requests }
   }
   if (err.name === 'AuthRetryableFetchError' || err.message?.toLowerCase().includes('network')) {
-    return { code: 'network', message: MESSAGES.network }
+    return { code: 'network', messageKey: MESSAGE_KEYS.network }
   }
-  return { code: 'unknown', message: MESSAGES.unknown }
+  return { code: 'unknown', messageKey: MESSAGE_KEYS.unknown }
 }
 
-export function errorCodeToMessage(code: string): string {
-  if (code in MESSAGES) {
-    return MESSAGES[code as AuthErrorCode]
+export function errorCodeToMessageKey(code: string): string {
+  if (code in MESSAGE_KEYS) {
+    return MESSAGE_KEYS[code as AuthErrorCode]
   }
-  return MESSAGES.unknown
+  return MESSAGE_KEYS.unknown
 }
 
 export function safeNext(raw: string | null): string {

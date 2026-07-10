@@ -1,79 +1,91 @@
 /* =============================================================
    PolyGo — Design Tokens
    Single source of truth for colors, type, spacing, radii, shadow.
-   Locked palette: zielony butelkowy akcent + neutralne szarości.
+   Paleta przeniesiona 1:1 z mockupu polyGo_mockup_v4/co-ecoplas.html
+   (warstwa „v4 MODERNIZATION"): teal akcent + neutralne chłodne szarości.
    ============================================================= */
 
 :root {
   /* ---------- Color: surfaces ---------- */
+  /* mockup: --bg / --bg2 / --bg3 / --bd / --bd2 */
   --color-bg: #ffffff;
-  --color-surface: #f7f8f9;
-  --color-surface-hover: #f0f2f4;
-  --color-border: #e6e8eb;
-  --color-border-strong: #d4d7db;
+  --color-surface: #f0f3f7;
+  --color-surface-hover: #e5eaf1;
+  --color-border: #e4e4e4;
+  --color-border-strong: #cccccc;
 
   /* ---------- Color: text (3 poziomy hierarchii) ---------- */
-  --color-text-strong: #0d1117;     /* nagłówki, nazwy, kluczowe wartości */
-  --color-text: #424950;            /* body, opisy */
-  --color-text-muted: #6b7480;      /* labels, captions, meta */
-  --color-text-subtle: #98a0a8;     /* disabled, separatory tekstowe */
+  /* mockup: --fg / --fg2 / --fg3 */
+  --color-text-strong: #111111;     /* nagłówki, nazwy, kluczowe wartości */
+  --color-text: #555555;            /* body, opisy */
+  --color-text-muted: #999999;      /* labels, captions, meta */
+  --color-text-subtle: #999999;     /* disabled, separatory tekstowe */
 
-  /* ---------- Color: accent (zielony butelkowy) ---------- */
-  --color-accent: #2f6f4e;
-  --color-accent-hover: #245840;
-  --color-accent-bg: rgba(47, 111, 78, 0.08);
-  --color-accent-border: rgba(47, 111, 78, 0.35);
+  /* ---------- Color: accent (teal) ---------- */
+  /* mockup: --p / --pd / --pl */
+  --color-accent: hsl(196 82% 40%);
+  --color-accent-hover: hsl(196 82% 28%);
+  --color-accent-bg: hsl(196 65% 92%);
+  --color-accent-border: hsl(196 55% 84%);
   --color-accent-on: #ffffff;       /* tekst na akcencie */
 
   /* ---------- Color: error (form alerts) ---------- */
-  --color-error: #b3261e;
-  --color-error-bg: #fdecea;
-  --color-error-border: rgba(179, 38, 30, 0.35);
+  /* mockup: --rv / --rl */
+  --color-error: hsl(0 52% 48%);
+  --color-error-bg: hsl(0 50% 96%);
+  --color-error-border: hsl(0 50% 84%);
 
   /* ---------- Color: kropki kategorii ---------- */
-  --color-dot-producer: #3b6ea5;
-  --color-dot-recycler: #4a8a64;
-  --color-dot-distributor: #b5763a;
-  --color-dot-service: #8a6db1;
+  /* mockup nie używa kropek na tagach (pigułki teal), ale utrzymujemy
+     tokeny dla ewentualnych oznaczeń kategorii w innych widokach:
+     producent=teal(--p), recykler=zielony(--g), dystrybutor=amber(--av),
+     serwis=czerwony(--rv). */
+  --color-dot-producer: hsl(196 82% 40%);
+  --color-dot-recycler: hsl(142 45% 40%);
+  --color-dot-distributor: hsl(38 65% 44%);
+  --color-dot-service: hsl(0 52% 48%);
 
   /* ---------- Color: gradients (logo, awatary, fotki) ---------- */
-  --gradient-brand: linear-gradient(140deg, #34795a 0%, #1f4a37 100%);
-  --gradient-avatar: linear-gradient(140deg, #4a8a6d 0%, #2d5a45 100%);
-  --gradient-photo-1: linear-gradient(140deg, #3b6e54 0%, #1f4234 100%);
-  --gradient-photo-2: linear-gradient(140deg, #5a6e7a 0%, #3a4651 100%);
-  --gradient-photo-3: linear-gradient(140deg, #4a7a66 0%, #2c4d40 100%);
-  --gradient-photo-4: linear-gradient(140deg, #6b7a8a 0%, #424c58 100%);
-  --gradient-photo-5: linear-gradient(140deg, #557066 0%, #354842 100%);
+  /* logo firmy — zielony gradient z v4 (.co-logo override) */
+  --gradient-brand: linear-gradient(145deg, hsl(142 45% 40%) 0%, hsl(142 55% 30%) 100%);
+  /* awatar pracownika — pełna zieleń (.worker-av) */
+  --gradient-avatar: linear-gradient(145deg, hsl(142 45% 40%) 0%, hsl(142 50% 32%) 100%);
+  --gradient-photo-1: linear-gradient(140deg, hsl(196 45% 45%) 0%, hsl(196 55% 30%) 100%);
+  --gradient-photo-2: linear-gradient(140deg, hsl(210 20% 55%) 0%, hsl(210 25% 38%) 100%);
+  --gradient-photo-3: linear-gradient(140deg, hsl(142 40% 44%) 0%, hsl(142 45% 30%) 100%);
+  --gradient-photo-4: linear-gradient(140deg, hsl(210 18% 60%) 0%, hsl(210 22% 42%) 100%);
+  --gradient-photo-5: linear-gradient(140deg, hsl(180 25% 46%) 0%, hsl(180 30% 32%) 100%);
 
   /* ---------- Typography: family ---------- */
-  --font-sans: 'Manrope', system-ui, 'Segoe UI', Roboto, sans-serif;
+  /* mockup: 'Inter', -apple-system, ... (self-hosted @font-face w index.css) */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, 'JetBrains Mono', Consolas, monospace;
 
-  /* ---------- Typography: scale (Stripe-like, szeroki rozstaw) ----------
-     28 — display (nazwa firmy)
-     18 — heading (h2 sekcji)
-     14 — body (default)
-     13 — value (wartości w listach, body w cards)
-     12 — label / caption (eyebrows, meta, mała ikona)
-     11 — micro (uppercase eyebrows) */
-  --type-display-size: 28px;
+  /* ---------- Typography: scale (mockup co-ecoplas) ----------
+     19 — display (nazwa firmy: 19px / 600 / -.02em)
+     14 — heading (tytuł sekcji .sc-ttl: 14px / 600 / -.01em)
+     13 — body (default: 13px, lh 1.6–1.7)
+     13 — value (wartości .param-val / .doc-name: 13px / 500)
+     12 — label / meta (12px)
+     10 — eyebrow (uppercase labels .param-lbl / .ofk-l: 10px / .05em) */
+  --type-display-size: 19px;
   --type-display-lh: 1.2;
   --type-display-tracking: -0.02em;
   --type-display-weight: 600;
 
-  --type-heading-size: 18px;
+  --type-heading-size: 14px;
   --type-heading-lh: 1.35;
-  --type-heading-tracking: -0.015em;
+  --type-heading-tracking: -0.01em;
   --type-heading-weight: 600;
 
-  --type-body-size: 14px;
-  --type-body-lh: 1.55;
-  --type-body-tracking: -0.003em;
+  --type-body-size: 13px;
+  --type-body-lh: 1.6;
+  --type-body-tracking: 0;
   --type-body-weight: 400;
 
   --type-value-size: 13px;
   --type-value-lh: 1.45;
-  --type-value-tracking: -0.003em;
+  --type-value-tracking: 0;
   --type-value-weight: 500;
 
   --type-label-size: 12px;
@@ -81,10 +93,10 @@
   --type-label-tracking: 0;
   --type-label-weight: 500;
 
-  --type-eyebrow-size: 11px;
-  --type-eyebrow-lh: 1.2;
-  --type-eyebrow-tracking: 0.06em;
-  --type-eyebrow-weight: 600;
+  --type-eyebrow-size: 10px;
+  --type-eyebrow-lh: 1.3;
+  --type-eyebrow-tracking: 0.05em;
+  --type-eyebrow-weight: 500;
 
   /* ---------- Spacing (rytm pionowy) ---------- */
   --space-1: 4px;
@@ -99,42 +111,49 @@
   --space-10: 72px;
 
   /* ---------- Radii ---------- */
-  --radius-sm: 4px;
+  /* mockup: --r:12px (karty), --r-sm:6px (przyciski/tagi), 99px pigułki */
+  --radius-sm: 6px;
   --radius-md: 6px;
-  --radius-lg: 10px;
+  --radius-lg: 12px;
   --radius-xl: 16px;
   --radius-full: 999px;
 
   /* ---------- Shadow ---------- */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 14px rgba(13, 17, 23, 0.08);
-  --shadow-brand: 0 4px 14px rgba(31, 74, 55, 0.18);
+  /* mockup: --shadow: 0 1px 3px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.07) */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 14px rgba(0, 0, 0, 0.07);
+  --shadow-brand: 0 2px 10px rgba(0, 0, 0, 0.18);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: #15171a;
-    --color-surface: #1c1e22;
-    --color-surface-hover: #23262b;
-    --color-border: #2a2d33;
-    --color-border-strong: #383c42;
+    /* mockup [data-theme=dark] */
+    --color-bg: #141414;
+    --color-surface: #1d1d1d;
+    --color-surface-hover: #262626;
+    --color-border: #2a2a2a;
+    --color-border-strong: #3a3a3a;
 
-    --color-text-strong: #f0f2f4;
-    --color-text: #c4cad1;
-    --color-text-muted: #8a929b;
-    --color-text-subtle: #5a6068;
+    --color-text-strong: #e8e8e8;
+    --color-text: #888888;
+    --color-text-muted: #555555;
+    --color-text-subtle: #555555;
 
-    --color-accent: #7cc196;
-    --color-accent-hover: #6db585;
-    --color-accent-bg: rgba(124, 193, 150, 0.12);
-    --color-accent-border: rgba(124, 193, 150, 0.4);
-    --color-accent-on: #0f1a14;
+    --color-accent: hsl(196 75% 52%);
+    --color-accent-hover: hsl(196 75% 62%);
+    --color-accent-bg: hsl(196 55% 12%);
+    --color-accent-border: hsl(196 40% 22%);
+    --color-accent-on: #08222e;
 
-    --color-error: #f28b82;
-    --color-error-bg: rgba(242, 139, 130, 0.14);
-    --color-error-border: rgba(242, 139, 130, 0.4);
+    --color-error: hsl(0 52% 60%);
+    --color-error-bg: hsl(0 50% 10%);
+    --color-error-border: hsl(0 40% 22%);
 
-    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.3);
-    --shadow-brand: 0 4px 14px rgba(0, 0, 0, 0.4);
+    --color-dot-recycler: hsl(142 45% 52%);
+    --color-dot-distributor: hsl(38 65% 55%);
+    --color-dot-service: hsl(0 52% 60%);
+
+    --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.4);
+    --shadow-brand: 0 2px 10px rgba(0, 0, 0, 0.5);
   }
 }

@@ -1,0 +1,93 @@
+{
+  "loadingAria": "Ładowanie wizytówki",
+  "noCompany": {
+    "title": "Brak przypisanej firmy",
+    "body": "Twoje konto nie jest jeszcze powiązane z żadną firmą. Skontaktuj się z operatorem."
+  },
+  "loadError": {
+    "title": "Nie udało się wczytać wizytówki",
+    "body": "Spróbuj odświeżyć stronę."
+  },
+  "preview": {
+    "badge": "Podgląd publiczny",
+    "hint": "Tak Twoją wizytówkę widzą klienci.",
+    "edit": "Edytuj wizytówkę"
+  },
+  "form": {
+    "back": "Podgląd",
+    "save": "Zapisz wizytówkę",
+    "eyebrow": "Tryb edycji",
+    "title": "Twoja wizytówka",
+    "subtitle": "Edytuj dane swojej firmy. Zmiany są widoczne na profilu publicznym.",
+    "sections": {
+      "basics": "Dane podstawowe",
+      "registry": "Dane rejestrowe",
+      "categories": "Kategorie działalności",
+      "certificates": "Certyfikaty",
+      "params": "Parametry techniczne",
+      "top5": "Czym się zajmujemy (Top-5)",
+      "media": "Media",
+      "employees": "Pracownicy"
+    },
+    "fields": {
+      "name": "Nazwa rejestrowa",
+      "displayName": "Nazwa wyświetlana",
+      "foundingYear": "Rok założenia",
+      "region": "Region / województwo",
+      "description": "Opis firmy ({{count}}/600)",
+      "nip": "NIP",
+      "regon": "REGON",
+      "krs": "KRS",
+      "website": "Strona WWW",
+      "headquarters": "Adres siedziby",
+      "plant": "Adres zakładu / produkcji"
+    },
+    "categoriesHint": "Zmiana kategorii zmienia zestaw dostępnych parametrów po zapisaniu.",
+    "paramsHint": "Pola zależne od wybranych kategorii.",
+    "paramWithUnit": "{{label}} [{{unit}}]",
+    "top5": {
+      "titlePlaceholder": "Tytuł",
+      "descriptionPlaceholder": "Opis (opcjonalny)",
+      "remove": "Usuń",
+      "add": "+ Dodaj pozycję"
+    },
+    "toast": {
+      "saved": "Wizytówka zapisana.",
+      "saveError": "Nie udało się zapisać wizytówki. Spróbuj ponownie."
+    }
+  },
+  "media": {
+    "logo": "Logo",
+    "noLogo": "Brak logo.",
+    "changeLogo": "Zmień logo",
+    "uploadLogo": "Wgraj logo",
+    "removeLogo": "Usuń logo",
+    "logoAlt": "Logo firmy",
+    "photoAlt": "Zdjęcie",
+    "gallery": "Galeria ({{count}}/5)",
+    "addPhoto": "Dodaj zdjęcie",
+    "documents": "Dokumenty PDF ({{count}}/5)",
+    "addPdf": "Dodaj PDF",
+    "docFallback": "Dokument",
+    "remove": "Usuń",
+    "toast": {
+      "uploaded": "Plik wgrany.",
+      "removed": "Plik usunięty.",
+      "logoRemoved": "Logo usunięte."
+    }
+  },
+  "employees": {
+    "loading": "Ładowanie…",
+    "loadError": "Nie udało się wczytać pracowników.",
+    "hint": "Edytuj stanowisko, telefon i widoczność pracownika na profilu firmy.",
+    "jobTitlePlaceholder": "Stanowisko",
+    "phonePlaceholder": "Telefon",
+    "visible": "Widoczny na profilu",
+    "save": "Zapisz",
+    "toast": {
+      "jobTitleEmpty": "Stanowisko nie może być puste.",
+      "saved": "Dane pracownika zapisane.",
+      "saveError": "Nie udało się zapisać danych pracownika."
+    }
+  }
+}

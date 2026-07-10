@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { supabase } from './supabase'
 import type { Database } from './database.types'
 
@@ -22,17 +23,21 @@ export type CompanyMediaApi = {
   error: string | null
 }
 
+type ValidationProblem =
+  | { key: 'tooLarge' | 'notPdf' | 'notImage' }
+  | { key: 'limitReached'; params: { max: number } }
+
 // Walidacja klienta — bucket i tak wymusza typ/rozmiar, ale lokalna walidacja
 // daje czytelny komunikat zanim poleci request.
-function validate(kind: UploadKind, file: File, currentCount: number): string | null {
-  if (file.size > MAX_BYTES) return 'Plik przekracza 10 MB.'
+function validate(kind: UploadKind, file: File, currentCount: number): ValidationProblem | null {
+  if (file.size > MAX_BYTES) return { key: 'tooLarge' }
   if (kind === 'document') {
-    if (file.type !== PDF_TYPE) return 'Dokument musi być plikiem PDF.'
+    if (file.type !== PDF_TYPE) return { key: 'notPdf' }
   } else if (!IMAGE_TYPES.includes(file.type)) {
-    return 'Obraz musi być w formacie PNG, JPEG lub WebP.'
+    return { key: 'notImage' }
   }
   if (kind !== 'logo' && currentCount >= MAX_PER_TYPE) {
-    return `Limit ${MAX_PER_TYPE} plików tego typu został osiągnięty.`
+    return { key: 'limitReached', params: { max: MAX_PER_TYPE } }
   }
   return null
 }
@@ -46,6 +51,7 @@ function pathFromPublicUrl(url: string): string | null {
 }
 
 export function useCompanyMedia(companyId: string): CompanyMediaApi {
+  const { t } = useTranslation('media')
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -53,7 +59,7 @@ export function useCompanyMedia(companyId: string): CompanyMediaApi {
     setError(null)
     const problem = validate(kind, file, currentCount)
     if (problem) {
-      setError(problem)
+      setError('params' in problem ? t(problem.key, problem.params) : t(problem.key))
       return false
     }
 
@@ -70,7 +76,7 @@ export function useCompanyMedia(companyId: string): CompanyMediaApi {
         upsert: false,
       })
       if (up.error) {
-        setError('Nie udało się wgrać pliku. Spróbuj ponownie.')
+        setError(t('uploadFailed'))
         return false
       }
 
@@ -80,7 +86,7 @@ export function useCompanyMedia(companyId: string): CompanyMediaApi {
       if (kind === 'logo') {
         const updated = await supabase.from('companies').update({ logo_url: fileUrl }).eq('id', companyId)
         if (updated.error) {
-          setError('Wgrano plik, ale nie udało się ustawić logo.')
+          setError(t('logoSetFailed'))
           return false
         }
       } else {
@@ -92,7 +98,7 @@ export function useCompanyMedia(companyId: string): CompanyMediaApi {
           file_name: file.name,
         })
         if (inserted.error) {
-          setError('Wgrano plik, ale nie udało się zapisać wpisu.')
+          setError(t('entrySaveFailed'))
           return false
         }
       }
@@ -107,7 +113,7 @@ export function useCompanyMedia(companyId: string): CompanyMediaApi {
     setError(null)
     const del = await supabase.from('company_media').delete().eq('id', media.id)
     if (del.error) {
-      setError('Nie udało się usunąć pliku.')
+      setError(t('deleteFailed'))
       return false
     }
     const path = pathFromPublicUrl(media.file_url)
@@ -122,7 +128,7 @@ export function useCompanyMedia(companyId: string): CompanyMediaApi {
     setError(null)
     const updated = await supabase.from('companies').update({ logo_url: null }).eq('id', companyId)
     if (updated.error) {
-      setError('Nie udało się usunąć logo.')
+      setError(t('logoDeleteFailed'))
       return false
     }
     const path = logoUrl ? pathFromPublicUrl(logoUrl) : null

@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom'
+import i18n from './i18n'
 import { AppShell } from './components/AppShell'
 import { RequireAuth } from './components/RequireAuth'
 import { RequireRole } from './components/RequireRole'
@@ -31,7 +32,7 @@ export const router = createBrowserRouter([
         path: 'admin',
         element: (
           <RequireRole allowedRoles={['super_admin']}>
-            <ComingSoon title="Panel administratora" />
+            <ComingSoon title={i18n.t('errors:admin.title')} />
           </RequireRole>
         ),
       },

@@ -1,0 +1,11 @@
+{
+  "tooLarge": "Plik przekracza 10 MB.",
+  "notPdf": "Dokument musi być plikiem PDF.",
+  "notImage": "Obraz musi być w formacie PNG, JPEG lub WebP.",
+  "limitReached": "Limit {{max}} plików tego typu został osiągnięty.",
+  "uploadFailed": "Nie udało się wgrać pliku. Spróbuj ponownie.",
+  "logoSetFailed": "Wgrano plik, ale nie udało się ustawić logo.",
+  "entrySaveFailed": "Wgrano plik, ale nie udało się zapisać wpisu.",
+  "deleteFailed": "Nie udało się usunąć pliku.",
+  "logoDeleteFailed": "Nie udało się usunąć logo."
+}

@@ -7,9 +7,6 @@ import { router } from './router'
 const GAP_BELOW_TOPBAR = 10
 
 function App() {
-  // Offset mierzony z realnej wysokości top bara (.app-shell__header), żeby
-  // toast siadał 10px pod nim niezależnie od paddingu/responsywności. Na
-  // trasach bez paska (login, callback) fallback = sam GAP od góry.
   const [toastOffsetTop, setToastOffsetTop] = useState(GAP_BELOW_TOPBAR)
 
   useEffect(() => {
@@ -20,7 +17,6 @@ function App() {
     }
     measure()
     window.addEventListener('resize', measure)
-    // Pasek pojawia się/znika przy zmianie trasy (login ↔ app) — obserwuj DOM.
     const observer = new MutationObserver(measure)
     observer.observe(document.body, { childList: true, subtree: true })
     return () => {

@@ -1,5 +1,6 @@
 import { useState, type JSX } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../lib/use-auth'
 
 function initialsFromEmail(email: string | null | undefined): string {
@@ -10,6 +11,7 @@ function initialsFromEmail(email: string | null | undefined): string {
 }
 
 export function AppShell(): JSX.Element {
+  const { t } = useTranslation('common')
   const { user, signOut } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -20,14 +22,14 @@ export function AppShell(): JSX.Element {
         className="sticky top-0 z-10 flex items-center justify-between gap-5 px-5 py-3 bg-bg border-b border-border"
       >
         <Link to="/" className="text-heading font-semibold text-text-strong no-underline">
-          PolyGo
+          {t('brand')}
         </Link>
         <nav className="flex gap-5 ml-6 flex-1 [&_a]:text-text-muted [&_a]:no-underline [&_a]:text-body [&_a]:font-medium [&_a]:py-2 [&_a]:aria-[current=page]:text-text-strong [&_a]:aria-[current=page]:border-b-2 [&_a]:aria-[current=page]:border-accent">
           <NavLink to="/" end>
-            Wyszukaj
+            {t('nav.search')}
           </NavLink>
-          <NavLink to="/favorites">Ulubione</NavLink>
-          <NavLink to="/profile">Profil</NavLink>
+          <NavLink to="/favorites">{t('nav.favorites')}</NavLink>
+          <NavLink to="/profile">{t('nav.profile')}</NavLink>
         </nav>
         <div
           className="relative"
@@ -47,7 +49,7 @@ export function AppShell(): JSX.Element {
             <span className="w-6 h-6 rounded-full bg-avatar text-accent-on inline-flex items-center justify-center text-label font-semibold">
               {initialsFromEmail(user?.email)}
             </span>
-            <span>{user?.email ?? 'Konto'}</span>
+            <span>{user?.email ?? t('account.fallback')}</span>
           </button>
           {menuOpen && (
             <div
@@ -63,7 +65,7 @@ export function AppShell(): JSX.Element {
                   void signOut()
                 }}
               >
-                Wyloguj
+                {t('account.signOut')}
               </button>
             </div>
           )}

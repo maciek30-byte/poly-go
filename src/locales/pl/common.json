@@ -1,0 +1,30 @@
+{
+  "brand": "PolyGo",
+  "nav": {
+    "search": "Wyszukaj",
+    "favorites": "Ulubione",
+    "profile": "Profil"
+  },
+  "account": {
+    "fallback": "Konto",
+    "signOut": "Wyloguj"
+  },
+  "actions": {
+    "save": "Zapisz",
+    "saving": "Zapisywanie…",
+    "remove": "Usuń",
+    "cancel": "Anuluj",
+    "close": "Zamknij",
+    "download": "Pobierz",
+    "write": "Napisz",
+    "backHome": "Wróć do strony głównej"
+  },
+  "status": {
+    "loading": "Ładowanie…",
+    "connecting": "Łączenie…",
+    "redirecting": "Przekierowywanie…"
+  },
+  "favorites": {
+    "saveError": "Nie udało się zapisać ulubionych. Spróbuj ponownie."
+  }
+}

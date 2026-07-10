@@ -1,0 +1,77 @@
+{
+  "detail": {
+    "loadingAria": "Ładowanie profilu firmy",
+    "notFoundTitle": "Nie znaleziono firmy",
+    "notFoundBody": "Firma o tym identyfikatorze nie istnieje lub nie jest dostępna.",
+    "errorTitle": "Nie udało się wczytać profilu",
+    "errorBody": "Spróbuj odświeżyć stronę."
+  },
+  "hero": {
+    "foundedShort": "zał. {{year}}",
+    "employeesCount_one": "{{count}} pracownik",
+    "employeesCount_few": "{{count}} pracownicy",
+    "employeesCount_many": "{{count}} pracowników",
+    "favoriteAdd": "Dodaj do ulubionych",
+    "favoriteActive": "W ulubionych",
+    "certsLabel": "Certyfikaty:"
+  },
+  "tabs": {
+    "profile": "Profil",
+    "registry": "Dane rejestrowe",
+    "employees": "Pracownicy ({{count}})"
+  },
+  "anchors": {
+    "about": "O firmie",
+    "top5": "Top 5",
+    "params": "Parametry",
+    "gallery": "Galeria",
+    "documents": "Dokumenty",
+    "sectionsNav": "Sekcje profilu"
+  },
+  "about": {
+    "title": "O firmie",
+    "kpiFounded": "Rok założenia",
+    "kpiEmployees": "Pracownicy",
+    "kpiLocation": "Lokalizacja"
+  },
+  "top5": {
+    "title": "Top 5 z oferty",
+    "subtitle": "Wybrane przez firmę"
+  },
+  "params": {
+    "title": "Parametry techniczne"
+  },
+  "gallery": {
+    "title": "Galeria",
+    "count_one": "{{count}} zdjęcie",
+    "count_few": "{{count}} zdjęcia",
+    "count_many": "{{count}} zdjęć"
+  },
+  "documents": {
+    "title": "Dokumenty do pobrania",
+    "count_one": "{{count}} plik",
+    "count_few": "{{count}} pliki",
+    "count_many": "{{count}} plików",
+    "fallbackName": "Dokument"
+  },
+  "registry": {
+    "identityTitle": "Dane identyfikacyjne",
+    "addressTitle": "Adres i kontakt",
+    "fields": {
+      "fullName": "Pełna nazwa",
+      "nip": "NIP",
+      "regon": "REGON",
+      "krs": "KRS",
+      "headquarters": "Siedziba",
+      "plant": "Adres produkcji",
+      "region": "Województwo / region",
+      "website": "Strona WWW"
+    }
+  },
+  "employees": {
+    "title": "Pracownicy ({{count}})",
+    "subtitle": "Widoczni członkowie sieci polyGo",
+    "roleFallback": "Pracownik"
+  },
+  "messageTargetCompany": "Firma"
+}

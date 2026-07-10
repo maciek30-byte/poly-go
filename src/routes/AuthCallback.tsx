@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { supabase } from '../lib/supabase'
 import { safeNext } from '../lib/auth'
@@ -33,6 +34,7 @@ function clearStoredNext(): void {
 
 export default function AuthCallback() {
   const navigate = useNavigate()
+  const { t } = useTranslation(['common', 'auth'])
   const [exchanging, setExchanging] = useState(true)
 
 
@@ -64,7 +66,7 @@ export default function AuthCallback() {
           return
         }
 
-        toast.success('Zalogowano pomyślnie')
+        toast.success(t('auth:login.success'))
         navigate(consumeStoredNext(), { replace: true })
         return
       }
@@ -88,11 +90,11 @@ export default function AuthCallback() {
     return () => {
       cancelled = true
     }
-  }, [oauthError, navigate])
+  }, [oauthError, navigate, t])
 
   return (
     <div className="p-6 text-center">
-      {exchanging ? 'Łączenie…' : 'Przekierowywanie…'}
+      {exchanging ? t('common:status.connecting') : t('common:status.redirecting')}
     </div>
   )
 }

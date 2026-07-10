@@ -1,3 +1,13 @@
+## Code style
+
+Nie dodawaj komentarzy do kodu, chyba że użytkownik wprost o to poprosi.
+
+## Treści / i18n
+
+Cały tekst widoczny dla użytkownika (etykiety, nagłówki, przyciski, komunikaty, placeholdery) ma pochodzić z plików JSON będących tłumaczeniami — nie zapisuj literałów tekstowych na sztywno w komponentach. Nowy content dodawaj jako klucze w plikach tłumaczeń i odwołuj się do nich w kodzie.
+
+Stack: `react-i18next` (init w `src/i18n/index.ts`, importowany w `main.tsx`). Klucze trzymamy w `src/locales/pl/<namespace>.json` (namespace'y: common, auth, company, profile, validation, media, errors). W komponentach: `const { t } = useTranslation('<namespace>')`, klucz z innego namespace przez prefiks `t('common:actions.save')`. Interpolacja `{{var}}`, pluralizacja przez `t('key', { count })` (formy `_one/_few/_many` dla polskiego). Schematy zod buduj jako funkcję `(t) => z.object(...)` i twórz w komponencie przez `useMemo`. Moduły bez dostępu do hooka (np. `auth.ts`) zwracają klucze i18n, a tłumaczenie następuje w miejscu renderu. Dane z bazy (nazwy firm, kategorii, certyfikatów, parametrów) NIE są tłumaczeniami — zostają bez `t`.
+
 ## Database workflow
 
 Schema changes go through versioned migrations in `supabase/migrations/` (Supabase CLI). After every new migration, regenerate TypeScript types with `pnpm db:types` and commit `src/lib/database.types.ts` in the same commit as the migration — the client (`src/lib/supabase.ts`) uses `createClient<Database>` so out-of-sync types will surface as `tsc` errors immediately. RLS policy changes are exercised by `supabase/tests/rls.sql` (run with `pnpm db:test:rls`); add a new assertion when you introduce a new policy.

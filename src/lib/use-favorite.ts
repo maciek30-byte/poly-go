@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { supabase } from './supabase'
 import { useAuthStore } from './auth-store'
@@ -13,6 +14,7 @@ export type FavoriteState = {
 // RLS (`favorites_own`) sam zawęża SELECT/INSERT/DELETE do `user_id = auth.uid()`,
 // więc nie podajemy user_id jawnie przy odczycie; przy zapisie podajemy go z sesji.
 export function useFavorite(companyId: string | undefined): FavoriteState {
+  const { t } = useTranslation('common')
   const userId = useAuthStore((s) => s.user?.id ?? null)
 
   const [isFavorite, setIsFavorite] = useState(false)
@@ -64,7 +66,7 @@ export function useFavorite(companyId: string | undefined): FavoriteState {
 
       if (error) {
         setIsFavorite(!next) // rollback do poprzedniego stanu
-        toast.error('Nie udało się zapisać ulubionych. Spróbuj ponownie.')
+        toast.error(t('favorites.saveError'))
       }
     })()
   }

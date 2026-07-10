@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -28,31 +30,33 @@ const CURRENT_YEAR = new Date().getFullYear()
 // nip/regon/krs — format luźny (pilot, dane ręczne). Puste pola → null.
 const emptyToNull = (v: string): string | null => (v.trim() === '' ? null : v.trim())
 
-const profileSchema = z.object({
-  name: z.string().trim().min(1, 'Nazwa firmy jest wymagana.'),
-  display_name: z.string(),
-  founding_year: z
-    .string()
-    .refine(
-      (v) => v.trim() === '' || /^\d{4}$/.test(v.trim()),
-      'Rok musi być czterocyfrowy.',
-    )
-    .refine((v) => {
-      if (v.trim() === '') return true
-      const n = Number(v)
-      return n >= 1800 && n <= CURRENT_YEAR
-    }, `Rok musi być w zakresie 1800–${CURRENT_YEAR}.`),
-  description: z.string().max(600, 'Opis może mieć maks. 600 znaków.'),
-  region: z.string(),
-  nip: z.string(),
-  regon: z.string(),
-  krs: z.string(),
-  headquarters_address: z.string(),
-  plant_address: z.string(),
-  website: z.string(),
-})
+function makeProfileSchema(t: TFunction) {
+  return z.object({
+    name: z.string().trim().min(1, t('validation:profile.nameRequired')),
+    display_name: z.string(),
+    founding_year: z
+      .string()
+      .refine(
+        (v) => v.trim() === '' || /^\d{4}$/.test(v.trim()),
+        t('validation:profile.yearFourDigits'),
+      )
+      .refine((v) => {
+        if (v.trim() === '') return true
+        const n = Number(v)
+        return n >= 1800 && n <= CURRENT_YEAR
+      }, t('validation:profile.yearRange', { max: CURRENT_YEAR })),
+    description: z.string().max(600, t('validation:profile.descriptionMax')),
+    region: z.string(),
+    nip: z.string(),
+    regon: z.string(),
+    krs: z.string(),
+    headquarters_address: z.string(),
+    plant_address: z.string(),
+    website: z.string(),
+  })
+}
 
-type ProfileFormValues = z.infer<typeof profileSchema> & {
+type ProfileFormValues = z.infer<ReturnType<typeof makeProfileSchema>> & {
   categoryIds: number[]
   certificateIds: number[]
   parameters: { definitionId: number; value: string }[]
@@ -83,6 +87,7 @@ function toFormValues(data: OwnCompanyData, dict: OwnCompanyDictionaries): Profi
 }
 
 export default function Profile(): JSX.Element {
+  const { t } = useTranslation(['profile', 'common', 'validation'])
   const state = useOwnCompany()
   const employeesState = useCompanyEmployees()
   // Domyślnie podgląd (tak jak widzą to klienci); edycję włącza dopiero przycisk.
@@ -91,7 +96,7 @@ export default function Profile(): JSX.Element {
   if (state.status === 'loading') {
     return (
       <main className="max-w-[880px] mx-auto px-5 pt-10 pb-18 text-text">
-        <div className="h-[320px] rounded-lg bg-border opacity-40 animate-pulse" aria-busy="true" aria-label="Ładowanie wizytówki" />
+        <div className="h-[320px] rounded-lg bg-border opacity-40 animate-pulse" aria-busy="true" aria-label={t('loadingAria')} />
       </main>
     )
   }
@@ -100,8 +105,8 @@ export default function Profile(): JSX.Element {
     return (
       <main className="max-w-[880px] mx-auto px-5 pt-10 pb-18 text-text">
         <div className="text-center px-5 py-18">
-          <h1 className="text-heading text-text-strong mb-2">Brak przypisanej firmy</h1>
-          <p className="text-text-muted">Twoje konto nie jest jeszcze powiązane z żadną firmą. Skontaktuj się z operatorem.</p>
+          <h1 className="text-heading text-text-strong mb-2">{t('noCompany.title')}</h1>
+          <p className="text-text-muted">{t('noCompany.body')}</p>
         </div>
       </main>
     )
@@ -111,8 +116,8 @@ export default function Profile(): JSX.Element {
     return (
       <main className="max-w-[880px] mx-auto px-5 pt-10 pb-18 text-text">
         <div className="text-center px-5 py-18">
-          <h1 className="text-heading text-text-strong mb-2">Nie udało się wczytać wizytówki</h1>
-          <p className="text-text-muted">Spróbuj odświeżyć stronę.</p>
+          <h1 className="text-heading text-text-strong mb-2">{t('loadError.title')}</h1>
+          <p className="text-text-muted">{t('loadError.body')}</p>
         </div>
       </main>
     )
@@ -154,6 +159,7 @@ type ProfilePreviewProps = {
 // Podgląd własnej wizytówki dokładnie w kształcie, w jakim widzą ją klienci —
 // reużywamy publiczny <CompanyProfile/>. Pasek nad podglądem przełącza w edycję.
 function ProfilePreview({ data, dictionaries, employees, onEdit }: ProfilePreviewProps): JSX.Element {
+  const { t } = useTranslation(['profile', 'common', 'validation'])
   const profile = useMemo(
     () => toCompanyProfileData(data, dictionaries, employees),
     [data, dictionaries, employees],
@@ -172,15 +178,15 @@ function ProfilePreview({ data, dictionaries, employees, onEdit }: ProfilePrevie
                 <span className="absolute inline-flex size-full rounded-full bg-accent opacity-60 animate-ping" />
                 <span className="relative inline-flex size-2 rounded-full bg-accent" />
               </span>
-              Podgląd publiczny
+              {t('preview.badge')}
             </span>
             <p className="text-label text-text-subtle truncate max-sm:hidden">
-              Tak Twoją wizytówkę widzą klienci.
+              {t('preview.hint')}
             </p>
           </div>
           <Button variant="primary" onClick={onEdit} className="gap-2 shadow-sm">
             <PencilIcon />
-            Edytuj wizytówkę
+            {t('preview.edit')}
           </Button>
         </div>
       </div>
@@ -263,8 +269,10 @@ type ProfileFormProps = {
 }
 
 function ProfileForm({ data, dictionaries, onSaved, onBack }: ProfileFormProps): JSX.Element {
+  const { t } = useTranslation(['profile', 'common', 'validation'])
   const companyId = data.id
   const defaults = useMemo(() => toFormValues(data, dictionaries), [data, dictionaries])
+  const profileSchema = useMemo(() => makeProfileSchema(t), [t])
 
   const {
     register,
@@ -334,11 +342,11 @@ function ProfileForm({ data, dictionaries, onSaved, onBack }: ProfileFormProps):
         companyId,
         values.highlights.map((h) => ({ title: h.title, description: h.description })),
       )
-      toast.success('Wizytówka zapisana.')
+      toast.success(t('form.toast.saved'))
       onSaved()
       onBack() // po zapisie wracamy do podglądu, by pokazać efekt zmian
     } catch {
-      toast.error('Nie udało się zapisać wizytówki. Spróbuj ponownie.')
+      toast.error(t('form.toast.saveError'))
     }
   }
 
@@ -374,69 +382,69 @@ function ProfileForm({ data, dictionaries, onSaved, onBack }: ProfileFormProps):
             className="inline-flex items-center gap-1.5 text-label font-medium text-text-muted hover:text-text-strong transition-colors -ml-1 px-1 py-1 rounded-sm"
           >
             <ArrowLeftIcon />
-            Podgląd
+            {t('form.back')}
           </button>
           <Button type="submit" form="profile-form" variant="primary" disabled={isSubmitting} className="shadow-sm">
-            {isSubmitting ? 'Zapisywanie…' : 'Zapisz wizytówkę'}
+            {isSubmitting ? t('common:actions.saving') : t('form.save')}
           </Button>
         </div>
       </div>
 
       <div className="max-w-[880px] mx-auto px-5 pt-8">
         <header className="mb-8">
-          <span className="text-eyebrow uppercase font-medium text-accent">Tryb edycji</span>
-          <h1 className="text-display text-text-strong mt-1.5 mb-2">Twoja wizytówka</h1>
-          <p className="text-text-muted">Edytuj dane swojej firmy. Zmiany są widoczne na profilu publicznym.</p>
+          <span className="text-eyebrow uppercase font-medium text-accent">{t('form.eyebrow')}</span>
+          <h1 className="text-display text-text-strong mt-1.5 mb-2">{t('form.title')}</h1>
+          <p className="text-text-muted">{t('form.subtitle')}</p>
         </header>
 
       <form id="profile-form" className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)} noValidate>
         <section className="border border-border rounded-lg p-6 bg-surface">
-          <h2 className="text-heading font-semibold text-text-strong mb-4">Dane podstawowe</h2>
+          <h2 className="text-heading font-semibold text-text-strong mb-4">{t('form.sections.basics')}</h2>
           <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
-            <Field label="Nazwa rejestrowa" error={errors.name?.message} required>
+            <Field label={t('form.fields.name')} error={errors.name?.message} required>
               <Input {...register('name')} />
             </Field>
-            <Field label="Nazwa wyświetlana">
+            <Field label={t('form.fields.displayName')}>
               <Input {...register('display_name')} />
             </Field>
-            <Field label="Rok założenia" error={errors.founding_year?.message}>
+            <Field label={t('form.fields.foundingYear')} error={errors.founding_year?.message}>
               <Input inputMode="numeric" {...register('founding_year')} />
             </Field>
-            <Field label="Region / województwo">
+            <Field label={t('form.fields.region')}>
               <Input {...register('region')} />
             </Field>
           </div>
-          <Field label={`Opis firmy (${description.length}/600)`} error={errors.description?.message}>
+          <Field label={t('form.fields.description', { count: description.length })} error={errors.description?.message}>
             <Textarea className="mt-4" rows={5} {...register('description')} />
           </Field>
         </section>
 
         <section className="border border-border rounded-lg p-6 bg-surface">
-          <h2 className="text-heading font-semibold text-text-strong mb-4">Dane rejestrowe</h2>
+          <h2 className="text-heading font-semibold text-text-strong mb-4">{t('form.sections.registry')}</h2>
           <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
-            <Field label="NIP">
+            <Field label={t('form.fields.nip')}>
               <Input {...register('nip')} />
             </Field>
-            <Field label="REGON">
+            <Field label={t('form.fields.regon')}>
               <Input {...register('regon')} />
             </Field>
-            <Field label="KRS">
+            <Field label={t('form.fields.krs')}>
               <Input {...register('krs')} />
             </Field>
-            <Field label="Strona WWW">
+            <Field label={t('form.fields.website')}>
               <Input {...register('website')} />
             </Field>
-            <Field label="Adres siedziby">
+            <Field label={t('form.fields.headquarters')}>
               <Input {...register('headquarters_address')} />
             </Field>
-            <Field label="Adres zakładu / produkcji">
+            <Field label={t('form.fields.plant')}>
               <Input {...register('plant_address')} />
             </Field>
           </div>
         </section>
 
         <section className="border border-border rounded-lg p-6 bg-surface">
-          <h2 className="text-heading font-semibold text-text-strong mb-4">Kategorie działalności</h2>
+          <h2 className="text-heading font-semibold text-text-strong mb-4">{t('form.sections.categories')}</h2>
           <div className="flex flex-wrap gap-2">
             {dictionaries.categories.map((c) => (
               <label
@@ -456,11 +464,11 @@ function ProfileForm({ data, dictionaries, onSaved, onBack }: ProfileFormProps):
               </label>
             ))}
           </div>
-          <p className="text-[0.8125rem] text-text-subtle mt-3">Zmiana kategorii zmienia zestaw dostępnych parametrów po zapisaniu.</p>
+          <p className="text-[0.8125rem] text-text-subtle mt-3">{t('form.categoriesHint')}</p>
         </section>
 
         <section className="border border-border rounded-lg p-6 bg-surface">
-          <h2 className="text-heading font-semibold text-text-strong mb-4">Certyfikaty</h2>
+          <h2 className="text-heading font-semibold text-text-strong mb-4">{t('form.sections.certificates')}</h2>
           <div className="flex flex-wrap gap-2">
             {dictionaries.certificates.map((c) => (
               <label
@@ -484,8 +492,8 @@ function ProfileForm({ data, dictionaries, onSaved, onBack }: ProfileFormProps):
 
         {paramGroups.length > 0 && (
           <section className="border border-border rounded-lg p-6 bg-surface">
-            <h2 className="text-heading font-semibold text-text-strong mb-4">Parametry techniczne</h2>
-            <p className="text-[0.8125rem] text-text-subtle mt-3">Pola zależne od wybranych kategorii.</p>
+            <h2 className="text-heading font-semibold text-text-strong mb-4">{t('form.sections.params')}</h2>
+            <p className="text-[0.8125rem] text-text-subtle mt-3">{t('form.paramsHint')}</p>
             {paramGroups.map((group) => (
               <div
                 key={group.label}
@@ -494,7 +502,7 @@ function ProfileForm({ data, dictionaries, onSaved, onBack }: ProfileFormProps):
                 <h3 className="text-base font-semibold text-text mt-4 mb-3">{group.label}</h3>
                 <div className="grid grid-cols-2 gap-4 max-[640px]:grid-cols-1">
                   {group.items.map((item) => (
-                    <Field key={item.index} label={item.unit ? `${item.label} [${item.unit}]` : item.label}>
+                    <Field key={item.index} label={item.unit ? t('form.paramWithUnit', { label: item.label, unit: item.unit }) : item.label}>
                       <Input
                         inputMode={item.valueType === 'number' ? 'numeric' : undefined}
                         {...register(`parameters.${item.index}.value` as const)}
@@ -508,22 +516,22 @@ function ProfileForm({ data, dictionaries, onSaved, onBack }: ProfileFormProps):
         )}
 
         <section className="border border-border rounded-lg p-6 bg-surface">
-          <h2 className="text-heading font-semibold text-text-strong mb-4">Czym się zajmujemy (Top-5)</h2>
+          <h2 className="text-heading font-semibold text-text-strong mb-4">{t('form.sections.top5')}</h2>
           <ol className="list-none m-0 mb-3 p-0 flex flex-col gap-3">
             {highlightFields.map((field, i) => (
               <li key={field.id} className="flex items-start gap-3">
                 <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-2 flex-1 max-[640px]:grid-cols-1">
                   <Input
-                    placeholder="Tytuł"
+                    placeholder={t('form.top5.titlePlaceholder')}
                     {...register(`highlights.${i}.title` as const)}
                   />
                   <Input
-                    placeholder="Opis (opcjonalny)"
+                    placeholder={t('form.top5.descriptionPlaceholder')}
                     {...register(`highlights.${i}.description` as const)}
                   />
                 </div>
                 <Button type="button" variant="ghost" onClick={() => remove(i)}>
-                  Usuń
+                  {t('form.top5.remove')}
                 </Button>
               </li>
             ))}
@@ -534,14 +542,14 @@ function ProfileForm({ data, dictionaries, onSaved, onBack }: ProfileFormProps):
               variant="ghost"
               onClick={() => append({ title: '', description: '' })}
             >
-              + Dodaj pozycję
+              {t('form.top5.add')}
             </Button>
           )}
         </section>
 
         <div className="flex justify-end">
           <Button type="submit" variant="primary" disabled={isSubmitting}>
-            {isSubmitting ? 'Zapisywanie…' : 'Zapisz wizytówkę'}
+            {isSubmitting ? t('common:actions.saving') : t('form.save')}
           </Button>
         </div>
       </form>
@@ -562,13 +570,14 @@ function ProfileForm({ data, dictionaries, onSaved, onBack }: ProfileFormProps):
 }
 
 function EmployeesSection(): JSX.Element {
+  const { t } = useTranslation(['profile', 'common', 'validation'])
   const state = useCompanyEmployees()
 
   if (state.status === 'loading') {
     return (
       <section className="border border-border rounded-lg p-6 bg-surface">
-        <h2 className="text-heading font-semibold text-text-strong mb-4">Pracownicy</h2>
-        <p className="text-[0.8125rem] text-text-subtle mt-3">Ładowanie…</p>
+        <h2 className="text-heading font-semibold text-text-strong mb-4">{t('form.sections.employees')}</h2>
+        <p className="text-[0.8125rem] text-text-subtle mt-3">{t('employees.loading')}</p>
       </section>
     )
   }
@@ -576,17 +585,17 @@ function EmployeesSection(): JSX.Element {
   if (state.status !== 'ready') {
     return (
       <section className="border border-border rounded-lg p-6 bg-surface">
-        <h2 className="text-heading font-semibold text-text-strong mb-4">Pracownicy</h2>
-        <p className="text-[0.8125rem] text-text-subtle mt-3">Nie udało się wczytać pracowników.</p>
+        <h2 className="text-heading font-semibold text-text-strong mb-4">{t('form.sections.employees')}</h2>
+        <p className="text-[0.8125rem] text-text-subtle mt-3">{t('employees.loadError')}</p>
       </section>
     )
   }
 
   return (
     <section className="border border-border rounded-lg p-6 bg-surface">
-      <h2 className="text-heading font-semibold text-text-strong mb-4">Pracownicy</h2>
+      <h2 className="text-heading font-semibold text-text-strong mb-4">{t('form.sections.employees')}</h2>
       <p className="text-[0.8125rem] text-text-subtle mt-3">
-        Edytuj stanowisko, telefon i widoczność pracownika na profilu firmy.
+        {t('employees.hint')}
       </p>
       <ul className="list-none m-0 p-0 flex flex-col gap-3">
         {state.employees.map((emp) => (
@@ -603,6 +612,7 @@ type EmployeeRowEditorProps = {
 }
 
 function EmployeeRowEditor({ employee, onSaved }: EmployeeRowEditorProps): JSX.Element {
+  const { t } = useTranslation(['profile', 'common', 'validation'])
   const [jobTitle, setJobTitle] = useState(employee.job_title)
   const [phone, setPhone] = useState(employee.phone ?? '')
   const [visible, setVisible] = useState(employee.is_visible_on_profile)
@@ -615,16 +625,16 @@ function EmployeeRowEditor({ employee, onSaved }: EmployeeRowEditorProps): JSX.E
 
   async function onSave(): Promise<void> {
     if (jobTitle.trim() === '') {
-      toast.error('Stanowisko nie może być puste.')
+      toast.error(t('employees.toast.jobTitleEmpty'))
       return
     }
     setSaving(true)
     try {
       await saveEmployee(employee.id, { job_title: jobTitle, phone, is_visible_on_profile: visible })
-      toast.success('Dane pracownika zapisane.')
+      toast.success(t('employees.toast.saved'))
       onSaved()
     } catch {
-      toast.error('Nie udało się zapisać danych pracownika.')
+      toast.error(t('employees.toast.saveError'))
     } finally {
       setSaving(false)
     }
@@ -636,13 +646,13 @@ function EmployeeRowEditor({ employee, onSaved }: EmployeeRowEditorProps): JSX.E
       <div className="flex items-center gap-3 flex-wrap flex-1">
         <Input
           className="flex-1 min-w-[140px]"
-          placeholder="Stanowisko"
+          placeholder={t('employees.jobTitlePlaceholder')}
           value={jobTitle}
           onChange={(e) => setJobTitle(e.currentTarget.value)}
         />
         <Input
           className="flex-1 min-w-[140px]"
-          placeholder="Telefon"
+          placeholder={t('employees.phonePlaceholder')}
           value={phone}
           onChange={(e) => setPhone(e.currentTarget.value)}
         />
@@ -653,7 +663,7 @@ function EmployeeRowEditor({ employee, onSaved }: EmployeeRowEditorProps): JSX.E
             checked={visible}
             onChange={(e) => setVisible(e.currentTarget.checked)}
           />
-          Widoczny na profilu
+          {t('employees.visible')}
         </label>
       </div>
       <Button
@@ -663,7 +673,7 @@ function EmployeeRowEditor({ employee, onSaved }: EmployeeRowEditorProps): JSX.E
         onClick={() => void onSave()}
         disabled={saving || !dirty}
       >
-        {saving ? 'Zapisywanie…' : 'Zapisz'}
+        {saving ? t('common:actions.saving') : t('employees.save')}
       </Button>
     </li>
   )
@@ -677,6 +687,7 @@ type MediaSectionProps = {
 }
 
 function MediaSection({ companyId, logoUrl, media, onChanged }: MediaSectionProps): JSX.Element {
+  const { t } = useTranslation(['profile', 'common', 'validation'])
   const { uploading, upload, remove, removeLogo, error } = useCompanyMedia(companyId)
 
   const photos = media.filter((m) => m.media_type === 'PHOTO')
@@ -688,7 +699,7 @@ function MediaSection({ companyId, logoUrl, media, onChanged }: MediaSectionProp
     if (!file) return
     const ok = await upload(kind, file, currentCount)
     if (ok) {
-      toast.success('Plik wgrany.')
+      toast.success(t('media.toast.uploaded'))
       onChanged()
     }
   }
@@ -696,7 +707,7 @@ function MediaSection({ companyId, logoUrl, media, onChanged }: MediaSectionProp
   async function onRemove(media: OwnCompanyData['media'][number]): Promise<void> {
     const ok = await remove(media)
     if (ok) {
-      toast.success('Plik usunięty.')
+      toast.success(t('media.toast.removed'))
       onChanged()
     }
   }
@@ -704,32 +715,32 @@ function MediaSection({ companyId, logoUrl, media, onChanged }: MediaSectionProp
   async function onRemoveLogo(): Promise<void> {
     const ok = await removeLogo(logoUrl)
     if (ok) {
-      toast.success('Logo usunięte.')
+      toast.success(t('media.toast.logoRemoved'))
       onChanged()
     }
   }
 
   return (
     <section className="border border-border rounded-lg p-6 bg-surface">
-      <h2 className="text-heading font-semibold text-text-strong mb-4">Media</h2>
+      <h2 className="text-heading font-semibold text-text-strong mb-4">{t('form.sections.media')}</h2>
       {error && <p className="text-[0.8125rem] text-error">{error}</p>}
 
       <div className="[&:not(:first-of-type)]:border-t [&:not(:first-of-type)]:border-border [&:not(:first-of-type)]:mt-4 [&:not(:first-of-type)]:pt-4">
-        <h3 className="text-base font-semibold text-text mt-4 mb-3">Logo</h3>
+        <h3 className="text-base font-semibold text-text mt-4 mb-3">{t('media.logo')}</h3>
         <div className="flex items-center gap-4 mb-3">
           {logoUrl ? (
             <>
-              <img src={logoUrl} alt="Logo firmy" className="size-16 object-contain border border-border rounded-md bg-bg" />
+              <img src={logoUrl} alt={t('media.logoAlt')} className="size-16 object-contain border border-border rounded-md bg-bg" />
               <Button type="button" variant="ghost" onClick={onRemoveLogo} disabled={uploading}>
-                Usuń logo
+                {t('media.removeLogo')}
               </Button>
             </>
           ) : (
-            <span className="text-[0.8125rem] text-text-subtle mt-3">Brak logo.</span>
+            <span className="text-[0.8125rem] text-text-subtle mt-3">{t('media.noLogo')}</span>
           )}
         </div>
         <label className="inline-flex items-center gap-2 px-3 py-2 border border-dashed border-border rounded-md cursor-pointer text-[0.875rem] text-accent">
-          <span>{logoUrl ? 'Zmień logo' : 'Wgraj logo'}</span>
+          <span>{logoUrl ? t('media.changeLogo') : t('media.uploadLogo')}</span>
           <input
             type="file"
             className="text-[0.8125rem] max-w-[200px]"
@@ -741,14 +752,14 @@ function MediaSection({ companyId, logoUrl, media, onChanged }: MediaSectionProp
       </div>
 
       <div className="[&:not(:first-of-type)]:border-t [&:not(:first-of-type)]:border-border [&:not(:first-of-type)]:mt-4 [&:not(:first-of-type)]:pt-4">
-        <h3 className="text-base font-semibold text-text mt-4 mb-3">Galeria ({photos.length}/5)</h3>
+        <h3 className="text-base font-semibold text-text mt-4 mb-3">{t('media.gallery', { count: photos.length })}</h3>
         {photos.length > 0 && (
           <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3 mb-3">
             {photos.map((p) => (
               <figure key={p.id} className="flex flex-col gap-2">
-                <img src={p.file_url} alt={p.file_name ?? 'Zdjęcie'} loading="lazy" className="w-full aspect-[4/3] object-cover rounded-md border border-border" />
+                <img src={p.file_url} alt={p.file_name ?? t('media.photoAlt')} loading="lazy" className="w-full aspect-[4/3] object-cover rounded-md border border-border" />
                 <Button type="button" variant="ghost" size="sm" onClick={() => void onRemove(p)} disabled={uploading}>
-                  Usuń
+                  {t('media.remove')}
                 </Button>
               </figure>
             ))}
@@ -756,7 +767,7 @@ function MediaSection({ companyId, logoUrl, media, onChanged }: MediaSectionProp
         )}
         {photos.length < 5 && (
           <label className="inline-flex items-center gap-2 px-3 py-2 border border-dashed border-border rounded-md cursor-pointer text-[0.875rem] text-accent">
-            <span>Dodaj zdjęcie</span>
+            <span>{t('media.addPhoto')}</span>
             <input
               type="file"
               className="text-[0.8125rem] max-w-[200px]"
@@ -769,16 +780,16 @@ function MediaSection({ companyId, logoUrl, media, onChanged }: MediaSectionProp
       </div>
 
       <div className="[&:not(:first-of-type)]:border-t [&:not(:first-of-type)]:border-border [&:not(:first-of-type)]:mt-4 [&:not(:first-of-type)]:pt-4">
-        <h3 className="text-base font-semibold text-text mt-4 mb-3">Dokumenty PDF ({documents.length}/5)</h3>
+        <h3 className="text-base font-semibold text-text mt-4 mb-3">{t('media.documents', { count: documents.length })}</h3>
         {documents.length > 0 && (
           <ul className="list-none m-0 mb-3 p-0 flex flex-col gap-2">
             {documents.map((d) => (
               <li key={d.id} className="flex items-center justify-between gap-3 px-3 py-2 border border-border rounded-md">
                 <a href={d.file_url} target="_blank" rel="noreferrer">
-                  {d.file_name ?? 'Dokument'}
+                  {d.file_name ?? t('media.docFallback')}
                 </a>
                 <Button type="button" variant="ghost" size="sm" onClick={() => void onRemove(d)} disabled={uploading}>
-                  Usuń
+                  {t('media.remove')}
                 </Button>
               </li>
             ))}
@@ -786,7 +797,7 @@ function MediaSection({ companyId, logoUrl, media, onChanged }: MediaSectionProp
         )}
         {documents.length < 5 && (
           <label className="inline-flex items-center gap-2 px-3 py-2 border border-dashed border-border rounded-md cursor-pointer text-[0.875rem] text-accent">
-            <span>Dodaj PDF</span>
+            <span>{t('media.addPdf')}</span>
             <input
               type="file"
               className="text-[0.8125rem] max-w-[200px]"
